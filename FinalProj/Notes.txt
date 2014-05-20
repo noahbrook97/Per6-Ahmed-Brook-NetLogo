@@ -1,0 +1,16 @@
+Final project githup
+
+GITHUB TUTORIAL: https://try.github.io/
+
+
+Name: Period - last1 -last2- nameofproject
+
+Description: Brief description
+Initialize with a readme
+Public
+
+Settings for repo:  Collaborate, Collaborators, Add your teammates
+
+Use meaningul comments
+
+Look into forking project
