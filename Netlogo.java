@@ -93,7 +93,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	f = new myPanel();
 	//isNew = true;
 	//methods = new HashMap<String , ArrayList<String>>();
-	f.setPreferredSize ( new Dimension ( 200 , 300 ) );
+	f.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	//f.setBackground ( Color.BLUE );
 	//space.add ( new JButton ( "setup" ) );
 	//space.add ( new JButton ( "move" ) );
@@ -160,6 +160,9 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    ans.add ( addLine );
 		}
 		else ans.add ( word );
+	    }
+	    else if ( word.equals ( "breed" ) ) {
+		
 	    }
 	}
 	//System.out.println ( "methods: " + methods.entrySet() );
@@ -252,44 +255,82 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 }
 
 class myPanel extends JPanel {
-    private Patch[][] panels;
+    private Patch[][] patches;
     private ArrayList<Turtle> turtles = new ArrayList<Turtle>();
     private Color backgroundColor;
     //private int xcor = 13 , ycor = 13;
     public myPanel() {
 	super.setLayout ( new GridLayout ( 25 , 25 ) );
-	panels = new Patch [ 25 ] [ 25 ];
+	super.setPreferredSize ( new Dimension ( 25 , 25 ) );
+	super.setMinimumSize ( new Dimension ( 25 , 25 ) );
+	super.setMaximumSize ( new Dimension ( 25 , 25 ) );
+	patches = new Patch [ 25 ] [ 25 ];
 	backgroundColor = Color.BLACK;
 	for ( int r = 0 ; r < 25 ; r++ ) {
 	    for ( int c = 0 ; c < 25 ; c++ ) {
 		Patch p = new Patch();
 		p.setBackground ( Color.BLACK ); 
 		this.add ( p );
-		panels [ r ] [ c ] = p;
+		patches [ r ] [ c ] = p;
 	    }
 	}
     }
     public void ca() {
 	backgroundColor = Color.BLACK;
-	for ( JPanel[] panelRows : panels ) {
-	    for ( JPanel panel : panelRows ) {
-		panel.setBackground ( Color.BLACK );
+	for ( Patch[] patchRows : patches ) {
+	    for ( Patch patch : patchRows ) {
+		patch.setBackground ( Color.BLACK );
+		patch.setImage ( null );
 	    }
 	}
+	turtles.clear();
     }
     public void crt ( String s ) {
 	int nums = Integer.parseInt ( s );
-	Turtle turtle = new Turtle ( panels.length / 2 , panels [ panels.length / 2 ].length / 2 );
+	Turtle turtle = new Turtle ( patches.length / 2 , patches [ patches.length / 2 ].length / 2 );
 	turtles.add ( turtle );
 	try {
-	    Image image = ImageIO.read ( getClass().getResource ( "arrow.gif" ) );
-	    panels [ panels.length / 2 ] [ panels [ panels.length / 2 ].length / 2 ].setImage ( image );
+	    Image image = ImageIO.read ( getClass().getResource ( "arrow.png" ) );
 	    turtle.setImage ( image );
+	    patches [ patches.length / 2 ] [ patches [ patches.length / 2 ].length / 2 ].setImage ( turtle.getImage() );
 	} catch ( Exception e ) {
 	    System.out.println ( "come on man" );
 	}
 	//panels [ panels.length / 2 ] [ panels [ panels.length / 2 ].length / 2 ].setBackground ( Color.GREEN );
     }
+    /*public static BufferedImage rotate(BufferedImage image, double angle) {
+	double sin = Math.abs(Math.sin(angle)), cos = Math.abs(Math.cos(angle));
+	int w = image.getWidth(), h = image.getHeight();
+	int neww = (int)Math.floor(w*cos+h*sin), newh = (int)Math.floor(h*cos+w*sin);
+	GraphicsConfiguration gc = getDefaultConfiguration();
+	BufferedImage result = gc.createCompatibleImage(neww, newh, Transparency.TRANSLUCENT);
+	Graphics2D g = result.createGraphics();
+	g.translate((neww-w)/2, (newh-h)/2);
+	g.rotate(angle, w/2, h/2);
+	g.drawRenderedImage(image, null);
+	g.dispose();
+	return result;
+    }
+    public static Image rotate ( Image img , double angle ) {
+	double sin = Math.abs ( Math.sin ( Math.toRadians( angle ) ) );
+	double cos = Math.abs ( Math.cos ( Math.toRadians( angle ) ) );
+
+	int w = img.getWidth ( null );
+	int h = img.getHeight( null );
+
+	int neww = (int) Math.floor ( w * cos + h * sin );
+	int newh = (int) Math.floor ( h * cos + w * sin );
+
+	BufferedImage bimg = toBufferedImage ( getEmptyImage ( neww , newh ) );
+	Graphics2D g = bimg.createGraphics();
+
+	g.translate ( ( neww - w ) / 2 , ( newh - h ) / 2 );
+	g.rotate( Math.toRadians ( angle ) , w / 2 , h / 2 );
+	g.drawRenderedImage( toBufferedImage ( img ) , null );
+	g.dispose();
+
+	return toImage(bimg);
+    }*/
     public void ask ( String s1 ) {
 	ArrayList<String> agents = new ArrayList<String>();
 	ArrayList<String> commands = new ArrayList<String>();
@@ -321,12 +362,14 @@ class myPanel extends JPanel {
 			for ( Turtle turtle : turtles ) {
 			    int xcor = turtle.getXcor();
 			    int ycor = turtle.getYcor();
+			    int dir = turtle.getDir();
 			    int steps = Integer.parseInt ( commands.get ( i + 1 ) );
-			    panels [ ycor ] [ xcor ].setImage ( null );
+			    patches [ ycor ] [ xcor ].setImage ( null );
 			    i = i + 1;
-			    ycor = ycor + steps;
+			    xcor = xcor - steps * (int) ( Math.cos ( dir ) * 2 );
+			    ycor = ycor + steps * (int) ( Math.sin ( dir ) * 2 );
 			    System.out.println ( "x: " + xcor + "\ny: " + ycor );
-			    panels [ ycor ] [ xcor ].setImage ( turtle.getImage() );
+			    patches [ ycor ] [ xcor ].setImage ( turtle.getImage() );
 			    turtle.setXcor ( xcor );
 			    turtle.setYcor ( ycor );
 			}
@@ -353,11 +396,14 @@ class Patch extends JPanel {
     private Image image;
     public Patch() {
 	image = null;
+	super.setPreferredSize ( new Dimension ( 2 , 2 ) );
+	super.setMaximumSize ( new Dimension ( 2 , 2 ) );
+	super.setMinimumSize ( new Dimension ( 2 , 2 ) );
     }
     public void setImage ( Image image ) {
 	this.image = image;
 	update ( this.getGraphics() );
-	System.out.println ( "patch update here" );
+	//System.out.println ( "patch update here" );
     }
     public void paintComponent ( Graphics g ) {
 	super.paintComponent ( g );
@@ -366,13 +412,16 @@ class Patch extends JPanel {
 }
 
 class Turtle extends JPanel {
-    private int xcor;
-    private int ycor;
+    private int xcor , ycor , dir;
     private Image image;
     public Turtle ( int xcor , int ycor  ) {
 	this.xcor = xcor;
 	this.ycor = ycor;
+	dir = (int) ( Math.random() * 100 );
     }
+    /*public void paintComponent ( Graphics g ) {
+	
+      }*/
     public int getXcor() {
 	return xcor;
     }
@@ -386,15 +435,38 @@ class Turtle extends JPanel {
 	ycor = newY;
     }
     public void setImage ( Image image ) {
-	this.image = image;
+	//this.getContentPane().add ( image );
+	int rotation = (int) ( Math.random() * 100 );
+	//System.out.println ( "rotate " + rotation + " degrees" );
+	this.image = rotate ( (BufferedImage) image , ( rotation ) );
 	update ( this.getGraphics() );
-	System.out.println ( "update here" );
+	//System.out.println ( "update here" );
     }
     public Image getImage() {
 	return image;
     }
+    public void setDir ( int dir ) {
+	this.dir = dir;
+    }
+    public int getDir() {
+	return dir;
+    }
     public void paintComponent ( Graphics g ) {
+	/*BufferedImage image = (BufferedImage) this.image;
+	int rotation = (int) Math.random() * 100;
+	this.image = rotate ( image , rotation );*/
 	super.paintComponent ( g );
 	g.drawImage ( image , 0 , 0 , null );
+    }
+    public BufferedImage rotate ( BufferedImage image , int rotation ) {
+	System.out.println ( "rotate" + rotation );
+	int w = image.getWidth();
+	int h = image.getHeight();
+	BufferedImage buffImage = new BufferedImage ( w , h , image.getType() );
+	Graphics2D g = buffImage.createGraphics();
+	g.setRenderingHint ( RenderingHints.KEY_ANTIALIASING , RenderingHints.VALUE_ANTIALIAS_ON );
+	g.rotate ( Math.toRadians ( rotation ) , w / 2 , h / 2 );
+	g.drawImage ( image , null , 0 , 0 );
+	return buffImage;
     }
 }
