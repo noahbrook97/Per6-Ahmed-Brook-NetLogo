@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-//asefiuhaweiuhaefsiua
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
