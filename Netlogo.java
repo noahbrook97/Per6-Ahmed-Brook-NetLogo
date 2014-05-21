@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -187,7 +186,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 
 	    //create options menu with their buttons and shit
 	    JPopupMenu menu = new JPopupMenu();
-	    JMenuItem button = new JMenuItem ( "Button" );
+	    JMenuItem button = new JMenuItem ( "Button" , 1 );  //add mnemonic
 	    JSlider slider = new JSlider();
 	    JMenuItem swtch = new JMenuItem("Switch");
 
@@ -213,31 +212,35 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     public void actionPerformed ( ActionEvent e ) {
 	try {
 	    //button
-	    System.out.println(((JMenuItem) e.getSource() ).getText());//diag
 	    if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
-	    String s = JOptionPane.showInputDialog ( null , "Type name of button" );
-	    JButton button = new JButton ( s );
-	    space.add ( button );
-	    button.addActionListener ( this );
+		String s = JOptionPane.showInputDialog ("Type name of button" );
+		if(s != null) {
+		    JButton button = new JButton ( s );
+		    space.add ( button );
+		    button.addActionListener ( this );
+		}
 	    }
+		
 	//switch
-	    if(((JMenuItem) e.getSource() ).getText().equals("Switch")) {
+	    else if(((JMenuItem) e.getSource() ).getText().equals("Switch")) {
 		String s = JOptionPane.showInputDialog(null, "Type name of switch");
-	    JButton button = new JButton( s );
-	    space.add( button );
-	    button.addActionListener ( this );
-	    button.setBackground(Color.RED);
-	}
+		if(s != null) {
+		    JButton button = new JButton( s );
+		    space.add( button );
+		    button.addActionListener ( this );
+		    button.setBackground(Color.RED);
+		}
+	    }
 	}//end try
 	
 	catch ( ClassCastException ex ) {
-	    System.out.println("doawetietwwe");//diag
 	    try {
-	    String mthds = ( ( JButton ) e.getSource() ).getText();
-	    ArrayList<String> listOfMethods = methods.get ( mthds );
-	    for ( String mthd : listOfMethods ) {
-		if ( mthd.contains ( ";" ) ) {
-		    Method m = f.getClass().getMethod ( mthd.substring ( 0 , mthd.indexOf ( ";" ) ) , String.class );
+		String mthds = ( ( JButton ) e.getSource() ).getText();
+		ArrayList<String> listOfMethods = methods.get ( mthds );
+		for ( String mthd : listOfMethods ) {
+		    if ( mthd.contains ( ";" ) ) {
+			Method m = f.getClass().getMethod 
+			                        (mthd.substring(0, mthd.indexOf( ";" )) , String.class );
 		    m.invoke ( f , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
 		}
 		else {
