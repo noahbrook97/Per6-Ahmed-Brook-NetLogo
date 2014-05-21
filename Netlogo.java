@@ -107,14 +107,12 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	String s = new String();
 	for ( int i = 0 ; i < s1.length() ; i++ )
 	    s = s + s1.substring ( i , i + 1 );
-	//String s = s1;
-	//System.out.println ( s );
+
 	methods = new HashMap<String , ArrayList<String>>();
-	//System.out.println ( "new now" );
-	//isNew = true;
 	ArrayList<String> words = new ArrayList<String>();
 	boolean inMethod = false;
 	ArrayList<String> ans = new ArrayList<String>();
+
 	while ( s.length() > 0 ) {
 	    //make all newlines into spaces
 	    while ( s.indexOf ( "\n" ) != -1 ) {
@@ -186,12 +184,17 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	System.out.println ( "mouseClicked" );
 	if ( SwingUtilities.isRightMouseButton ( e ) ) {
 	    System.out.println ( "right clicked" );
+
+	    //create options menu with their buttons and shit
 	    JPopupMenu menu = new JPopupMenu();
 	    JMenuItem button = new JMenuItem ( "Button" );
+	    JSlider slider = new JSlider();
+	    JMenuItem swtch = new JMenuItem("Switch");
+
 	    button.addActionListener ( this );
 	    menu.add ( button );
 	    menu.add ( "Slider" );
-	    menu.add ( "Switch" );
+	    menu.add ( swtch );
 	    menu.add ( "Chooser" );
 	    menu.add ( "Input" );
 	    menu.add ( "Moniter" );
@@ -209,14 +212,26 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     }
     public void actionPerformed ( ActionEvent e ) {
 	try {
-	if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
+	    //button
+	    System.out.println(((JMenuItem) e.getSource() ).getText());//diag
+	    if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
 	    String s = JOptionPane.showInputDialog ( null , "Type name of button" );
 	    JButton button = new JButton ( s );
 	    space.add ( button );
 	    button.addActionListener ( this );
+	    }
+	//switch
+	    if(((JMenuItem) e.getSource() ).getText().equals("Switch")) {
+		String s = JOptionPane.showInputDialog(null, "Type name of switch");
+	    JButton button = new JButton( s );
+	    space.add( button );
+	    button.addActionListener ( this );
+	    button.setBackground(Color.RED);
 	}
-	}
+	}//end try
+	
 	catch ( ClassCastException ex ) {
+	    System.out.println("doawetietwwe");//diag
 	    try {
 	    String mthds = ( ( JButton ) e.getSource() ).getText();
 	    ArrayList<String> listOfMethods = methods.get ( mthds );
