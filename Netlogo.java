@@ -298,39 +298,6 @@ class myPanel extends JPanel {
 	}
 	//panels [ panels.length / 2 ] [ panels [ panels.length / 2 ].length / 2 ].setBackground ( Color.GREEN );
     }
-    /*public static BufferedImage rotate(BufferedImage image, double angle) {
-	double sin = Math.abs(Math.sin(angle)), cos = Math.abs(Math.cos(angle));
-	int w = image.getWidth(), h = image.getHeight();
-	int neww = (int)Math.floor(w*cos+h*sin), newh = (int)Math.floor(h*cos+w*sin);
-	GraphicsConfiguration gc = getDefaultConfiguration();
-	BufferedImage result = gc.createCompatibleImage(neww, newh, Transparency.TRANSLUCENT);
-	Graphics2D g = result.createGraphics();
-	g.translate((neww-w)/2, (newh-h)/2);
-	g.rotate(angle, w/2, h/2);
-	g.drawRenderedImage(image, null);
-	g.dispose();
-	return result;
-    }
-    public static Image rotate ( Image img , double angle ) {
-	double sin = Math.abs ( Math.sin ( Math.toRadians( angle ) ) );
-	double cos = Math.abs ( Math.cos ( Math.toRadians( angle ) ) );
-
-	int w = img.getWidth ( null );
-	int h = img.getHeight( null );
-
-	int neww = (int) Math.floor ( w * cos + h * sin );
-	int newh = (int) Math.floor ( h * cos + w * sin );
-
-	BufferedImage bimg = toBufferedImage ( getEmptyImage ( neww , newh ) );
-	Graphics2D g = bimg.createGraphics();
-
-	g.translate ( ( neww - w ) / 2 , ( newh - h ) / 2 );
-	g.rotate( Math.toRadians ( angle ) , w / 2 , h / 2 );
-	g.drawRenderedImage( toBufferedImage ( img ) , null );
-	g.dispose();
-
-	return toImage(bimg);
-    }*/
     public void ask ( String s1 ) {
 	ArrayList<String> agents = new ArrayList<String>();
 	ArrayList<String> commands = new ArrayList<String>();
@@ -366,8 +333,8 @@ class myPanel extends JPanel {
 			    int steps = Integer.parseInt ( commands.get ( i + 1 ) );
 			    patches [ ycor ] [ xcor ].setImage ( null );
 			    i = i + 1;
-			    xcor = xcor - steps * (int) ( Math.cos ( dir ) * 2 );
-			    ycor = ycor + steps * (int) ( Math.sin ( dir ) * 2 );
+			    xcor = xcor + steps * (int) ( Math.sin ( dir ) * 2 );
+			    ycor = ycor + steps * (int) ( Math.cos ( dir ) * 2 );
 			    System.out.println ( "x: " + xcor + "\ny: " + ycor );
 			    patches [ ycor ] [ xcor ].setImage ( turtle.getImage() );
 			    turtle.setXcor ( xcor );
