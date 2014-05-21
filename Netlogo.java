@@ -254,26 +254,34 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     }
 }
 
-class myPanel extends JPanel {
+class myPanel extends JLayeredPane {
     private Patch[][] patches;
+    private JPanel patchSpace;
+    //private TurtleFrame;
     private ArrayList<Turtle> turtles = new ArrayList<Turtle>();
     private Color backgroundColor;
     //private int xcor = 13 , ycor = 13;
     public myPanel() {
-	super.setLayout ( new GridLayout ( 25 , 25 ) );
-	super.setPreferredSize ( new Dimension ( 25 , 25 ) );
-	super.setMinimumSize ( new Dimension ( 25 , 25 ) );
-	super.setMaximumSize ( new Dimension ( 25 , 25 ) );
+	//super.setLayout ( new GridLayout ( 25 , 25 ) );
+	this.setPreferredSize ( new Dimension ( 500 , 500 ) );
+	//super.setMinimumSize ( new Dimension ( 25 , 25 ) );
+	//super.setMaximumSize ( new Dimension ( 25 , 25 ) );
 	patches = new Patch [ 25 ] [ 25 ];
+	patchSpace = new JPanel();
+	patchSpace.setLayout ( new GridLayout ( 25 , 25 ) );	
+	patchSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	//TurtleFrame = new TurtleFrame();
 	backgroundColor = Color.BLACK;
 	for ( int r = 0 ; r < 25 ; r++ ) {
 	    for ( int c = 0 ; c < 25 ; c++ ) {
 		Patch p = new Patch();
 		p.setBackground ( Color.BLACK ); 
-		this.add ( p );
+		patchSpace.add ( p );
 		patches [ r ] [ c ] = p;
 	    }
 	}
+	patchSpace.setBounds ( 25 , 25 , 300 , 300 );
+	this.add ( patchSpace );
     }
     public void ca() {
 	backgroundColor = Color.BLACK;
