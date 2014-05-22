@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -111,14 +110,12 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	String s = new String();
 	for ( int i = 0 ; i < s1.length() ; i++ )
 	    s = s + s1.substring ( i , i + 1 );
-	//String s = s1;
-	//System.out.println ( s );
+
 	methods = new HashMap<String , ArrayList<String>>();
-	//System.out.println ( "new now" );
-	//isNew = true;
 	ArrayList<String> words = new ArrayList<String>();
 	boolean inMethod = false;
 	ArrayList<String> ans = new ArrayList<String>();
+
 	while ( s.length() > 0 ) {
 	    //make all newlines into spaces
 	    while ( s.indexOf ( "\n" ) != -1 ) {
@@ -190,12 +187,17 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	System.out.println ( "mouseClicked" );
 	if ( SwingUtilities.isRightMouseButton ( e ) ) {
 	    System.out.println ( "right clicked" );
+
+	    //create options menu with their buttons and stuff
 	    JPopupMenu menu = new JPopupMenu();
-	    JMenuItem button = new JMenuItem ( "Button" );
+	    JMenuItem button = new JMenuItem ( "Button" , 1 );  //add mnemonic
+	    JSlider slider = new JSlider();
+	    JMenuItem swtch = new JMenuItem("Switch");
+
 	    button.addActionListener ( this );
 	    menu.add ( button );
 	    menu.add ( "Slider" );
-	    menu.add ( "Switch" );
+	    menu.add ( swtch );
 	    menu.add ( "Chooser" );
 	    menu.add ( "Input" );
 	    menu.add ( "Moniter" );
@@ -215,20 +217,42 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	try {
 	if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
 	    String s = JOptionPane.showInputDialog ( null , "Type name of button" );
-	    //if ( s.equals ( "" ) ) {}
-	    //else {
-	    JButton button = new JButton ( s );
-	    space.add ( button );
-	    button.addActionListener ( this );}
-	    //}
+	    if ( s != null ) {
+		JButton button = new JButton ( s );
+		space.add ( button );
+		button.addActionListener ( this );
+	    }
 	}
+	/*//button
+	    if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
+		String s = JOptionPane.showInputDialog ("Type name of button" );
+		if(s != null) {
+		    JButton button = new JButton ( s );
+		    space.add ( button );
+		    button.addActionListener ( this );
+		}
+	    }
+	*/	
+	//switch
+	else if(((JMenuItem) e.getSource() ).getText().equals("Switch")) {
+	    String s = JOptionPane.showInputDialog(null, "Type name of switch");
+	    if(s != null) {
+		JButton button = new JButton( s );
+		space.add( button );
+		button.addActionListener ( this );
+		button.setBackground(Color.RED);
+	    }
+	}
+	}//end try
+	
 	catch ( ClassCastException ex ) {
 	    try {
-	    String mthds = ( ( JButton ) e.getSource() ).getText();
-	    ArrayList<String> listOfMethods = methods.get ( mthds );
-	    for ( String mthd : listOfMethods ) {
-		if ( mthd.contains ( ";" ) ) {
-		    Method m = f.getClass().getMethod ( mthd.substring ( 0 , mthd.indexOf ( ";" ) ) , String.class );
+		String mthds = ( ( JButton ) e.getSource() ).getText();
+		ArrayList<String> listOfMethods = methods.get ( mthds );
+		for ( String mthd : listOfMethods ) {
+		    if ( mthd.contains ( ";" ) ) {
+			Method m = f.getClass().getMethod 
+			                        (mthd.substring(0, mthd.indexOf( ";" )) , String.class );
 		    m.invoke ( f , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
 		}
 		else {
