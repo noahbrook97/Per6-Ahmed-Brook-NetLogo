@@ -215,6 +215,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     }
     public void actionPerformed ( ActionEvent e ) {
 	try {
+	    //choose button, make button
 	if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
 	    String s = JOptionPane.showInputDialog ( null , "Type name of button" );
 	    if ( s != null ) {
@@ -223,7 +224,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		button.addActionListener ( this );
 	    }
 	}
-	/*//button
+	/*
 	    if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
 		String s = JOptionPane.showInputDialog ("Type name of button" );
 		if(s != null) {
@@ -233,7 +234,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		}
 	    }
 	*/	
-	//switch
+	//make switch
 	else if(((JMenuItem) e.getSource() ).getText().equals("Switch")) {
 	    String s = JOptionPane.showInputDialog(null, "Type name of switch");
 	    if(s != null) {
@@ -247,15 +248,18 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	
 	catch ( ClassCastException ex ) {
 	    try {
+		//mthds is name of method that's being called by the button- like setup, move, etc.- not built in methods, but ones that are created
 		String mthds = ( ( JButton ) e.getSource() ).getText();
 		ArrayList<String> listOfMethods = methods.get ( mthds );
 		for ( String mthd : listOfMethods ) {
+		    //mthd has ; if it has parameters- call method with parameters
 		    if ( mthd.contains ( ";" ) ) {
 			Method m = f.getClass().getMethod 
 			                        (mthd.substring(0, mthd.indexOf( ";" )) , String.class );
 		    m.invoke ( f , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
 		}
 		else {
+		    //call method with no parameters
 		    Method m = f.getClass().getMethod ( mthd , null );
 		    m.invoke ( f , null );
 		}
@@ -286,8 +290,8 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 
 class myPanel extends JLayeredPane {
     private Patch[][] patches;
-    private JPanel patchSpace;
-    private JPanel turtleSpace;
+    private JPanel patchSpace; //layer of patches in black screen
+    private JPanel turtleSpace; //layer of turtles
     //private TurtleFrame;
     private ArrayList<Turtle> turtles = new ArrayList<Turtle>();
     private Color backgroundColor;
@@ -305,6 +309,7 @@ class myPanel extends JLayeredPane {
 	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	//TurtleFrame = new TurtleFrame();
 	backgroundColor = Color.BLACK;
+	//array of patches, 25x25
 	for ( int r = 0 ; r < 25 ; r++ ) {
 	    for ( int c = 0 ; c < 25 ; c++ ) {
 		Patch p = new Patch();
@@ -318,16 +323,19 @@ class myPanel extends JLayeredPane {
 	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
 	this.add ( turtleSpace );
     }
+    //clear all
     public void ca() {
 	backgroundColor = Color.BLACK;
 	for ( Patch[] patchRows : patches ) {
 	    for ( Patch patch : patchRows ) {
 		patch.setBackground ( Color.BLACK );
-		patch.setImage ( null );
+		//patch.setImage ( null );
 	    }
 	}
 	turtles.clear();
+	//turtleSpace = new JPanel();
     }
+    //create a new turtle in middle of grid, s is integer of how many turtle you want to create
     public void crt ( String s ) {
 	int nums = Integer.parseInt ( s );
 	Turtle turtle = new Turtle ( patches.length / 2 , patches [ patches.length / 2 ].length / 2 );
@@ -346,13 +354,15 @@ class myPanel extends JLayeredPane {
 	}
 	//panels [ panels.length / 2 ] [ panels [ panels.length / 2 ].length / 2 ].setBackground ( Color.GREEN );
     }
+    //ask commands
     public void ask ( String s1 ) {
 	ArrayList<String> agents = new ArrayList<String>();
 	ArrayList<String> commands = new ArrayList<String>();
 	String s = new String();
 	for ( int i = 0 ; i < s1.length() ; i++ )
 	    s = s + s1.substring ( i , i + 1 );
-	boolean insideWith = false;
+	boolean insideWith = false; //if there is "with" (turtles with who > 1, etc.)
+	//add to agents when beginning of string is not "["
 	while ( s.indexOf ( "[" ) != 0 ) {
 	    agents.add ( s.substring ( 0 , s.indexOf ( ";" ) ) );
 	    s = s.substring ( s.indexOf ( ";" ) + 1 );
@@ -360,6 +370,7 @@ class myPanel extends JLayeredPane {
 	}
 	s = s.substring ( 2 );
 	System.out.println ( agents );
+	//add to commands when beginning of string is not "]"
 	while ( s.indexOf ( "]" ) != 0 ) {
 	    commands.add ( s.substring ( 0 , s.indexOf ( ";" ) ) );
 	    s = s.substring ( s.indexOf ( ";" ) + 1 );
@@ -368,23 +379,23 @@ class myPanel extends JLayeredPane {
 	System.out.println ( agents.size() );
 	if ( agents.size() == 1 ) {
 		System.out.println ( "hi" );
-	    if ( agents.equals ( "patches" ) )
+		if ( agents.equals ( "patches" ) ) //ask patches to do things
 		System.out.println ( "here" );
-	    if ( agents.get ( 0 ).equals ( "turtles" ) ) {
+		if ( agents.get ( 0 ).equals ( "turtles" ) ) { //ask turtles to do things
 		for ( int i = 0 ; i < commands.size() ; i++ ) {
+		    //forward
 		    if ( commands.get ( i ).equals ( "fd" ) ) {
 			System.out.println ( "fd" );
 			for ( Turtle turtle : turtles ) {
 			    double xcor = turtle.getXcor();
 			    double ycor = turtle.getYcor();
 			    int dir = turtle.getDir();
-			    int steps = Integer.parseInt ( commands.get ( i + 1 ) );
-			    //patches [ (int)ycor ] [ (int)xcor ].setImage ( null );
+			    int steps = Integer.parseInt ( commands.get ( i + 1 ) ) * 10;
 			    i = i + 1;
+			    //I DON'T KNOW WHY IT'S 10- CHANGE TO SIZE OF EACH PATCH LATER!!!
 			    xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( dir ) ) );
 			    ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( dir ) ) );
 			    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
-			    //patches [ (int)ycor ] [ (int)xcor ].setImage ( turtle.getImage() );
 			    turtle.setXcor ( xcor );
 			    turtle.setYcor ( ycor );
 			    turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
@@ -396,7 +407,7 @@ class myPanel extends JLayeredPane {
 		}
 	    }
 	}
-	else if ( agents.size() > 1 ) {
+	else if ( agents.size() > 1 ) { //agents has properties, like "with" or "at"- not complete yet
 	    String agentType = agents.get ( 0 );
 	    if ( agents.get ( 1 ).equals ( "with" ) ) {
 		String[] restrictions = new String [ agents.size() - 3 ];
@@ -409,6 +420,7 @@ class myPanel extends JLayeredPane {
 	}
 	//while ( 
     }
+    //round double to smaller double, bc double are slightly off
     public double round ( double x ) {
 	return (int) ( x * 100 ) / (double) 100;
     }
@@ -422,11 +434,13 @@ class Patch extends JPanel {
 	super.setMaximumSize ( new Dimension ( 2 , 2 ) );
 	super.setMinimumSize ( new Dimension ( 2 , 2 ) );
     }
+    //setImage not needed- remove later when sure not called anywhere
     public void setImage ( Image image ) {
 	this.image = image;
 	update ( this.getGraphics() );
 	//System.out.println ( "patch update here" );
     }
+    //since setImage not needed, neither is this
     public void paintComponent ( Graphics g ) {
 	super.paintComponent ( g );
 	g.drawImage ( image , 0 , 0 , null );
@@ -457,6 +471,7 @@ class Turtle extends JPanel {
     public void setYcor ( double newY ) {
 	ycor = newY;
     }
+    //image of turtle- currently only a green arrow
     public void setImage ( Image image ) {
 	//this.getContentPane().add ( image );
 	int rotation = (int) ( Math.random() * -100 );
@@ -482,6 +497,7 @@ class Turtle extends JPanel {
 	super.paintComponent ( g );
 	g.drawImage ( image , 0 , 0 , null );
     }
+    //rotate image
     public BufferedImage rotate ( BufferedImage image , int rotation ) {
 	System.out.println ( "rotate" + rotation );
 	int w = image.getWidth();
