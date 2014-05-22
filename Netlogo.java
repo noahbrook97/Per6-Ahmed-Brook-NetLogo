@@ -253,9 +253,10 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		for ( String mthd : listOfMethods ) {
 		    //mthd has ; if it has parameters- call method with parameters
 		    if ( mthd.contains ( ";" ) ) {
+			//System.out.println ( "mthd: " + mthd );
 			Method m = f.getClass().getMethod 
 			                        (mthd.substring(0, mthd.indexOf( ";" )) , String.class );
-		    m.invoke ( f , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
+			m.invoke ( f , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
 		}
 		else {
 		    //call method with no parameters
@@ -331,7 +332,7 @@ class myPanel extends JLayeredPane {
 		//patch.setImage ( null );
 	    }
 	}
-	turtles.clear();
+	//turtles.clear();
 	//turtleSpace = new JPanel();
     }
     //create a new turtle in middle of grid, s is integer of how many turtle you want to create
@@ -382,18 +383,24 @@ class myPanel extends JLayeredPane {
 		System.out.println ( "here" );
 		if ( agents.get ( 0 ).equals ( "turtles" ) ) { //ask turtles to do things
 		for ( int i = 0 ; i < commands.size() ; i++ ) {
-		    //forward
-		    if ( commands.get ( i ).equals ( "fd" ) ) {
-			System.out.println ( "fd" );
+		    //forward + back
+		    if ( commands.get ( i ).equals ( "fd" ) || commands.get ( i ).equals ( "bk" ) ) {
+			System.out.println ( "command: " + commands.get ( i ) );
+			System.out.println ( turtles );
 			for ( Turtle turtle : turtles ) {
 			    double xcor = turtle.getXcor();
 			    double ycor = turtle.getYcor();
 			    int dir = turtle.getDir();
 			    int steps = Integer.parseInt ( commands.get ( i + 1 ) ) * 10;
-			    i = i + 1;
 			    //I DON'T KNOW WHY IT'S 10- CHANGE TO SIZE OF EACH PATCH LATER!!!
-			    xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( dir ) ) );
-			    ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( dir ) ) );
+			    if ( commands.get ( i ).equals ( "fd" ) ) {
+				xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( dir ) ) );
+				ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( dir ) ) );
+			    }
+			    else {
+				xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( dir ) ) );
+				ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( dir ) ) );
+			    }
 			    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
 			    turtle.setXcor ( xcor );
 			    turtle.setYcor ( ycor );
@@ -402,6 +409,7 @@ class myPanel extends JLayeredPane {
 			    turtleSpace.setBackground ( Color.BLACK );
 			    turtleSpace.add ( turtle );
 			}
+			i = i + 1;
 		    }
 		}
 	    }
