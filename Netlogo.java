@@ -190,13 +190,15 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 
 	    //create options menu with their buttons and stuff
 	    JPopupMenu menu = new JPopupMenu();
-	    JMenuItem button = new JMenuItem ( "Button" , 1 );  //add mnemonic
+	    JMenuItem button = new JMenuItem("Button");
 	    JSlider slider = new JSlider();
 	    JMenuItem swtch = new JMenuItem("Switch");
 
 	    button.addActionListener ( this );
+	    swtch.addActionListener  ( this );
+
 	    menu.add ( button );
-	    menu.add ( "Slider" );
+	    menu.add ( "Slider");
 	    menu.add ( swtch );
 	    menu.add ( "Chooser" );
 	    menu.add ( "Input" );
@@ -216,39 +218,36 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     public void actionPerformed ( ActionEvent e ) {
 	try {
 	    //choose button, make button
-	if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
-	    String s = JOptionPane.showInputDialog ( null , "Type name of button" );
-	    if ( s != null ) {
-		JButton button = new JButton ( s );
-		space.add ( button );
-		button.addActionListener ( this );
-	    }
-	}
-	/*
+	    System.out.println("clicked jmenuitem; " + ((JMenuItem) e.getSource() ) .getText());
 	    if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
-		String s = JOptionPane.showInputDialog ("Type name of button" );
-		if(s != null) {
+ 
+		String s = JOptionPane.showInputDialog ( null , "Type name of button" );
+		if ( s != null && !s.equals("") ) {
 		    JButton button = new JButton ( s );
 		    space.add ( button );
 		    button.addActionListener ( this );
 		}
 	    }
-	*/	
+
 	//make switch
+	
 	else if(((JMenuItem) e.getSource() ).getText().equals("Switch")) {
 	    String s = JOptionPane.showInputDialog(null, "Type name of switch");
-	    if(s != null) {
+	    if(s != null && !s.equals("") ) {
 		JButton button = new JButton( s );
 		space.add( button );
-		button.addActionListener ( this );
-		button.setBackground(Color.RED);
+		//Says swtch can't be found??
+		//	swtch.addActionListener ( this );
+		//	swtch.setBackground(Color.RED);
 	    }
 	}
 	}//end try
 	
 	catch ( ClassCastException ex ) {
+	    System.out.println("Catch");
 	    try {
-		//mthds is name of method that's being called by the button- like setup, move, etc.- not built in methods, but ones that are created
+		//mthds is name of method that's being called by the button- like setup, move, etc.- 
+		//not built in methods, but ones that are created
 		String mthds = ( ( JButton ) e.getSource() ).getText();
 		ArrayList<String> listOfMethods = methods.get ( mthds );
 		for ( String mthd : listOfMethods ) {
