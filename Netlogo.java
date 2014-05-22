@@ -95,8 +95,12 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	//methods = new HashMap<String , ArrayList<String>>();
 	f.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	//f.setBackground ( Color.BLUE );
-	//space.add ( new JButton ( "setup" ) );
-	//space.add ( new JButton ( "move" ) );
+	JButton setup = new JButton ( "setup" );
+	setup.addActionListener ( this );
+	space.add ( setup );
+	JButton move = new JButton ( "move" );
+	move.addActionListener ( this );
+	space.add ( move );
 	this.add ( space );
 	this.add ( f );
 	this.setPreferredSize ( new Dimension ( 400 , 400 ) );
@@ -211,10 +215,12 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	try {
 	if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
 	    String s = JOptionPane.showInputDialog ( null , "Type name of button" );
+	    //if ( s.equals ( "" ) ) {}
+	    //else {
 	    JButton button = new JButton ( s );
 	    space.add ( button );
-	    button.addActionListener ( this );
-	}
+	    button.addActionListener ( this );}
+	    //}
 	}
 	catch ( ClassCastException ex ) {
 	    try {
@@ -257,19 +263,22 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 class myPanel extends JLayeredPane {
     private Patch[][] patches;
     private JPanel patchSpace;
+    private JPanel turtleSpace;
     //private TurtleFrame;
     private ArrayList<Turtle> turtles = new ArrayList<Turtle>();
     private Color backgroundColor;
     //private int xcor = 13 , ycor = 13;
     public myPanel() {
 	//super.setLayout ( new GridLayout ( 25 , 25 ) );
-	this.setPreferredSize ( new Dimension ( 500 , 500 ) );
+	this.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	//super.setMinimumSize ( new Dimension ( 25 , 25 ) );
 	//super.setMaximumSize ( new Dimension ( 25 , 25 ) );
 	patches = new Patch [ 25 ] [ 25 ];
 	patchSpace = new JPanel();
 	patchSpace.setLayout ( new GridLayout ( 25 , 25 ) );	
 	patchSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	turtleSpace = new JPanel();
+	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	//TurtleFrame = new TurtleFrame();
 	backgroundColor = Color.BLACK;
 	for ( int r = 0 ; r < 25 ; r++ ) {
@@ -282,6 +291,8 @@ class myPanel extends JLayeredPane {
 	}
 	patchSpace.setBounds ( 25 , 25 , 300 , 300 );
 	this.add ( patchSpace );
+	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
+	this.add ( turtleSpace );
     }
     public void ca() {
 	backgroundColor = Color.BLACK;
@@ -300,7 +311,12 @@ class myPanel extends JLayeredPane {
 	try {
 	    Image image = ImageIO.read ( getClass().getResource ( "arrow.png" ) );
 	    turtle.setImage ( image );
-	    patches [ patches.length / 2 ] [ patches [ patches.length / 2 ].length / 2 ].setImage ( turtle.getImage() );
+	    //patches [ patches.length / 2 ] [ patches [ patches.length / 2 ].length / 2 ].setImage ( turtle.getImage() );
+	    turtleSpace.add ( turtle );
+	    //I HAVE NO IDEA WHY 135 SETS THE TURTLE AT THE RIGHT SPOT- FIX THIS LATER!!! DON'T BE LAZY/FORGET TO DO THIS!!!
+	    turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 , ( (BufferedImage) image ).getWidth() , ( (BufferedImage) image ).getHeight() );
+	    //System.out.println ( "adasheight: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\niwfwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
+	    System.out.println ( "turtle at : " + patches.length / 2 );
 	} catch ( Exception e ) {
 	    System.out.println ( "come on man" );
 	}
@@ -335,18 +351,22 @@ class myPanel extends JLayeredPane {
 		    if ( commands.get ( i ).equals ( "fd" ) ) {
 			System.out.println ( "fd" );
 			for ( Turtle turtle : turtles ) {
-			    int xcor = turtle.getXcor();
-			    int ycor = turtle.getYcor();
+			    double xcor = turtle.getXcor();
+			    double ycor = turtle.getYcor();
 			    int dir = turtle.getDir();
 			    int steps = Integer.parseInt ( commands.get ( i + 1 ) );
-			    patches [ ycor ] [ xcor ].setImage ( null );
+			    //patches [ (int)ycor ] [ (int)xcor ].setImage ( null );
 			    i = i + 1;
-			    xcor = xcor + steps * (int) ( Math.sin ( dir ) * 2 );
-			    ycor = ycor + steps * (int) ( Math.cos ( dir ) * 2 );
-			    System.out.println ( "x: " + xcor + "\ny: " + ycor );
-			    patches [ ycor ] [ xcor ].setImage ( turtle.getImage() );
+			    xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( dir ) ) );
+			    ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( dir ) ) );
+			    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
+			    //patches [ (int)ycor ] [ (int)xcor ].setImage ( turtle.getImage() );
 			    turtle.setXcor ( xcor );
 			    turtle.setYcor ( ycor );
+			    turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+			    System.out.println ( "height: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\nwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
+			    turtleSpace.setBackground ( Color.BLACK );
+			    turtleSpace.add ( turtle );
 			}
 		    }
 		}
@@ -364,6 +384,9 @@ class myPanel extends JLayeredPane {
 	    //}
 	}
 	//while ( 
+    }
+    public double round ( double x ) {
+	return (int) ( x * 100 ) / (double) 100;
     }
 }
 
@@ -387,9 +410,10 @@ class Patch extends JPanel {
 }
 
 class Turtle extends JPanel {
-    private int xcor , ycor , dir;
+    private double xcor , ycor;
+    private int dir;
     private Image image;
-    public Turtle ( int xcor , int ycor  ) {
+    public Turtle ( double xcor , double ycor  ) {
 	this.xcor = xcor;
 	this.ycor = ycor;
 	dir = (int) ( Math.random() * 100 );
@@ -397,22 +421,23 @@ class Turtle extends JPanel {
     /*public void paintComponent ( Graphics g ) {
 	
       }*/
-    public int getXcor() {
+    public double getXcor() {
 	return xcor;
     }
-    public int getYcor() {
+    public double getYcor() {
 	return ycor;
     }
-    public void setXcor ( int newX ) {
+    public void setXcor ( double newX ) {
 	xcor = newX;
     }
-    public void setYcor ( int newY ) {
+    public void setYcor ( double newY ) {
 	ycor = newY;
     }
     public void setImage ( Image image ) {
 	//this.getContentPane().add ( image );
-	int rotation = (int) ( Math.random() * 100 );
-	//System.out.println ( "rotate " + rotation + " degrees" );
+	int rotation = (int) ( Math.random() * -100 );
+	this.dir = -1 * rotation;
+	System.out.println ( "rotate " + rotation + " degrees" );
 	this.image = rotate ( (BufferedImage) image , ( rotation ) );
 	update ( this.getGraphics() );
 	//System.out.println ( "update here" );
@@ -440,6 +465,7 @@ class Turtle extends JPanel {
 	BufferedImage buffImage = new BufferedImage ( w , h , image.getType() );
 	Graphics2D g = buffImage.createGraphics();
 	g.setRenderingHint ( RenderingHints.KEY_ANTIALIASING , RenderingHints.VALUE_ANTIALIAS_ON );
+	//rotation = -1 * rotation;
 	g.rotate ( Math.toRadians ( rotation ) , w / 2 , h / 2 );
 	g.drawImage ( image , null , 0 , 0 );
 	return buffImage;
