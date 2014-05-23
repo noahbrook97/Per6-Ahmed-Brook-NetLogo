@@ -72,7 +72,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("to setup ca crt 1 end to move ask turtles [ fd 1 ] end");
+	code = new JTextArea("to setup ca crt 1 end to move every .5 [ ask turtles [ fd 1 ] ] end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -165,6 +165,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		ans = new ArrayList<String>();
 	    }
 	    else if ( inMethod ) {
+		System.out.println ( "word: " + word );
 		if ( word.equals ( "crt" ) ) {
 		    ans.add ( word + ";" + words.get ( i + 1 ) );
 		    i = i + 1;
@@ -178,13 +179,28 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    }
 		    ans.add ( addLine );
 		}
+		else if ( word.equals ( "every" ) ) {
+		    String addLine = word + ";";
+		    int inBrackets = -1;
+		    while ( ! word.equals ( "]" ) || inBrackets != 0 ) {
+			if ( word.equals ( "[" ) )
+			    inBrackets++;
+			if ( word.equals ( "]" ) )
+			    inBrackets--;
+			i = i + 1;
+			word = words.get ( i );
+			addLine = addLine + word + ";";
+			System.out.println ( "addLine: " + addLine );
+		    }
+		    ans.add ( addLine );
+		}
 		else ans.add ( word );
 	    }
 	    else if ( word.equals ( "breed" ) ) {
 		
 	    }
 	}
-	//System.out.println ( "methods: " + methods.entrySet() );
+	System.out.println ( "methods: " + methods.entrySet() );
 	//System.out.println ( "method keys: " + methods.keySet() );
 	//System.out.println ( "method values: " + methods.values() );
     }
@@ -498,6 +514,59 @@ class myPanel extends JLayeredPane {
 	    //}
 	}
 	//while ( 
+    }
+    public void every ( String s1 ) {
+	System.out.println ( s1 );
+	double waitTime = Double.parseDouble ( s1.substring ( 0 , s1.indexOf ( ";" ) ) );
+	System.out.println ( "wait: " + waitTime );
+	String mthd = new String();
+ 	mthd = s1.substring ( s1.indexOf ( ";" ) + 1 );
+	mthd = mthd.substring ( mthd.indexOf ( ";" ) + 1 , mthd.length() - 2 );
+	//split up different methods within every- only works with one method right now
+
+	/*String[] words = new String [ StringUtils.countMatches ( s1 , ";" ) ];
+	for ( int j = 0 ; j < words.length ; j++ ) {
+	    words [ j ] = s.substring ( 0 , s.indexOf ( ";" ) );
+	    s = s.substring ( s.indexOf ( ";" ) + 1 );
+	}
+	for ( int i = 0 , i < words.length ; i++ ) {
+	if ( word.equals ( "ask" ) ) {
+	    String addLine = word + ";";
+	    while ( ! word.equals ( "]" ) ) {
+		i = i + 1;
+		word = words [ i ];
+		addLine = addLine + word + ";";
+	    }
+	    ans.add ( addLine );
+	}
+	}
+*/
+	//ArrayList<String> listOfMethods = methods.get ( mthds );
+	//for ( String mthd : listOfMethods ) {
+	    //mthd has ; if it has parameters- call method with parameters
+
+
+	try {
+	    if ( mthd.contains ( ";" ) ) {
+		System.out.println ( "mthd: " + mthd );
+		Method m = this.getClass().getMethod 
+		    ( mthd.substring ( 0 , mthd.indexOf ( ";" ) ) , String.class );
+		System.out.println ( "wait millis: " + (int) ( waitTime * 1000 ) );
+		Thread.sleep ( (int) ( waitTime * 1000 ) );
+		m.invoke ( this , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
+	    }
+	    else {
+		//int wait = waitTime * 1000;
+		Thread.sleep ( (int) ( waitTime * 1000 ) );
+		//Thread.sleep ( wait );
+		//call method with no parameters
+		Method m = this.getClass().getMethod ( mthd , null );
+		m.invoke ( this , null );
+	    }	
+	} catch ( Exception e ) {
+	    System.out.println ( "method call failed in every" );
+	    System.out.println ( mthd );
+	}
     }
     //round double to smaller double, bc double are slightly off
     public double round ( double x ) {
