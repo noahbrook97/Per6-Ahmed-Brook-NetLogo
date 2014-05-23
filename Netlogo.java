@@ -199,7 +199,11 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    else if ( word.equals ( "breed" ) ) {
 		
 	    }
-	}
+	
+	    else 
+		JOptionPane.showMessageDialog(null, "That doesn't match any methods");
+	}    
+	
 	System.out.println ( "methods: " + methods.entrySet() );
 	//System.out.println ( "method keys: " + methods.keySet() );
 	//System.out.println ( "method values: " + methods.values() );
@@ -224,12 +228,13 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 
 	    //create options menu with their buttons and stuff
 	    JPopupMenu menu = new JPopupMenu();
-	    JMenuItem button = new JMenuItem("Button");
+	    JMenuItem button = new JMenuItem("Button" );
 	    JSlider slider = new JSlider();
 	    JMenuItem swtch = new JMenuItem("Switch");
 
 	    button.addActionListener ( this );
 	    swtch.addActionListener  ( this );
+	    //slider.addActionListener ( this );
 
 	    menu.add ( button );
 	    menu.add ( "Slider");
@@ -259,13 +264,20 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		JCheckBox forever = new JCheckBox ( "forever" );
 		Object[] params = { "Type name of button" , forever };
 		String s = JOptionPane.showInputDialog ( null , params );
+
+		
 		System.out.println ( forever.isSelected() );
+		//if user types something
 		if ( s != null && !s.equals("") ) {
+		    //if statement here saying if s does not equal a known method name in code
+		    //                  print fuck you wrong name
+		    //if forever is chosen
 		    if ( !forever.isSelected() ) {
 			JButton button = new JButton ( s );
 			space.add ( button );
 			button.addActionListener ( this );
 		    }
+		    //if forever is not chosen
 		    else {
 			ForeverButton button = new ForeverButton ( s );
 			space.add ( button );
@@ -447,6 +459,7 @@ class myPanel extends JLayeredPane {
 	ArrayList<String> agents = new ArrayList<String>();
 	ArrayList<String> commands = new ArrayList<String>();
 	String s = new String();
+	
 	for ( int i = 0 ; i < s1.length() ; i++ )
 	    s = s + s1.substring ( i , i + 1 );
 	boolean insideWith = false; //if there is "with" (turtles with who > 1, etc.)
@@ -619,6 +632,11 @@ class Turtle extends JPanel {
     public void setYcor ( double newY ) {
 	ycor = newY;
     }
+    public void setColor(Color color) {
+	if(color.equals(Color.RED)){
+
+	}
+	    
     //image of turtle- currently only a green arrow
     public void setImage ( Image image ) {
 	//this.getContentPane().add ( image );
