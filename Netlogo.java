@@ -72,7 +72,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("to setup ca crt 1 end to move every .5 [ ask turtles [ fd 1 ] ] end");
+	code = new JTextArea("to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 ] end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -171,8 +171,13 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    i = i + 1;
 		}
 		else if ( word.equals ( "ask" ) ) {
+		    boolean insideWith = false;
 		    String addLine = word + ";";
-		    while ( ! word.equals ( "]" ) ) {
+		    while ( ! word.equals ( "]" ) || insideWith ) {
+			if ( word.equals ( "with" ) )
+			    insideWith = true;
+			if ( insideWith && word.equals ( "]" ) )
+			    insideWith = false;
 			i = i + 1;
 			word = words.get ( i );
 			addLine = addLine + word + ";";
@@ -441,7 +446,7 @@ class myPanel extends JLayeredPane {
 	Turtle turtle = new Turtle ( patches.length / 2 , patches [ patches.length / 2 ].length / 2 );
 	turtles.add ( turtle );
 	try {
-	    Image image = ImageIO.read ( getClass().getResource ( "arrow.png" ) );
+	    Image image = ImageIO.read ( getClass().getResource ( "green_arrow.png" ) );
 	    turtle.setImage ( image );
 	    //patches [ patches.length / 2 ] [ patches [ patches.length / 2 ].length / 2 ].setImage ( turtle.getImage() );
 	    turtleSpace.add ( turtle );
@@ -463,20 +468,27 @@ class myPanel extends JLayeredPane {
 	for ( int i = 0 ; i < s1.length() ; i++ )
 	    s = s + s1.substring ( i , i + 1 );
 	boolean insideWith = false; //if there is "with" (turtles with who > 1, etc.)
+	System.out.println ( "s: " + s );
 	//add to agents when beginning of string is not "["
-	while ( s.indexOf ( "[" ) != 0 ) {
-	    agents.add ( s.substring ( 0 , s.indexOf ( ";" ) ) );
+	while ( s.indexOf ( "[" ) != 0 || insideWith ) {
+	    String word = s.substring ( 0 , s.indexOf ( ";" ) );
+	    System.out.println ( "word: " + word );
+	    if ( word.equals ( "with" ) )
+		insideWith = true;
+	    if ( insideWith && word.equals ( "]" ) )
+		insideWith = false;
+	    agents.add ( word );
 	    s = s.substring ( s.indexOf ( ";" ) + 1 );
 	    //if ( s.substring ( 0 , s.indexOf ( ";" ) ).equal
 	}
 	s = s.substring ( 2 );
-	System.out.println ( agents );
+	System.out.println ( "agents: " + agents );
 	//add to commands when beginning of string is not "]"
 	while ( s.indexOf ( "]" ) != 0 ) {
 	    commands.add ( s.substring ( 0 , s.indexOf ( ";" ) ) );
 	    s = s.substring ( s.indexOf ( ";" ) + 1 );
 	}
-	System.out.println ( commands );
+	System.out.println ( "commands: " + commands );
 	System.out.println ( agents.size() );
 	if ( agents.size() == 1 ) {
 		System.out.println ( "hi" );
@@ -517,14 +529,66 @@ class myPanel extends JLayeredPane {
 	}
 	else if ( agents.size() > 1 ) { //agents has properties, like "with" or "at"- not complete yet
 	    String agentType = agents.get ( 0 );
+	    if ( agentType.equals ( "turtles" ) ) {
 	    if ( agents.get ( 1 ).equals ( "with" ) ) {
-		String[] restrictions = new String [ agents.size() - 3 ];
-		for ( int i = 2 ; !agents.get ( i ).equals ( "]" ) ; i++ )
-		    restrictions [ i - 2 ] = agents.get ( i );
-		System.out.println ( Arrays.toString ( restrictions ) );
+		String[] restrictions = new String [ agents.size() - 4 ];
+		for ( int i = 3 ; !agents.get ( i ).equals ( "]" ) ; i++ )
+		    restrictions [ i - 3 ] = agents.get ( i );
+		System.out.println ( "restrictions: " + Arrays.toString ( restrictions ) );
+		ArrayList<Turtle> callTurtles = new ArrayList<Turtle>(); //turtles on which the methods are being called
+		if ( restrictions [ 0 ].equals ( "who" ) ) {
+		    int who = Integer.parseInt ( restrictions [ 2 ] );
+		    if ( restrictions [ 1 ].equals ( "=" ) ) {
+			System.out.println ( "turtles size: " + turtles.size() );
+			for ( int i = 0 ; i < turtles.size() ; i++ ) {
+			    if ( who == i )
+				callTurtles.add ( turtles.get ( i ) );
+			}
+		    }
+		    else if ( restrictions [ 1 ].equals ( "!=" ) ) {
+			System.out.println ( "not equals" );
+			for ( int i = 0 ; i < turtles.size() ; i++ ) {
+			    if ( who != i )
+				callTurtles.add ( turtles.get ( i ) );
+			}
+			//System.out.println ( "callturtles size: " + callTurtles.size() );
+		    }
+		}
+	    //call methods on selected turtles
+		for ( int i = 0 ; i < commands.size() ; i++ ) {
+		    //forward + back
+		    if ( commands.get ( i ).equals ( "fd" ) || commands.get ( i ).equals ( "bk" ) ) {
+			System.out.println ( "command: " + commands.get ( i ) );
+			System.out.println ( turtles );
+			for ( Turtle turtle : callTurtles ) {
+			    double xcor = turtle.getXcor();
+			    double ycor = turtle.getYcor();
+			    int dir = turtle.getDir();
+			    int steps = Integer.parseInt ( commands.get ( i + 1 ) ) * 10;
+			    //I DON'T KNOW WHY IT'S 10- CHANGE TO SIZE OF EACH PATCH LATER!!!
+			    if ( commands.get ( i ).equals ( "fd" ) ) {
+				xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( dir ) ) );
+				ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( dir ) ) );
+			    }
+			    else {
+				xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( dir ) ) );
+				ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( dir ) ) );
+			    }
+			    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
+			    turtle.setXcor ( xcor );
+			    turtle.setYcor ( ycor );
+			    turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+			    System.out.println ( "height: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\nwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
+			    turtleSpace.setBackground ( Color.BLACK );
+			    turtleSpace.add ( turtle );
+			}
+			i = i + 1;
+		    }
+		}
 	    }
 	    //if ( agent.get ( 1 ).equals ( "at" ) ) {
 	    //}
+	    }
 	}
 	//while ( 
     }
@@ -636,7 +700,7 @@ class Turtle extends JPanel {
 	if(color.equals(Color.RED)){
 
 	}
-	    
+    }  
     //image of turtle- currently only a green arrow
     public void setImage ( Image image ) {
 	//this.getContentPane().add ( image );
