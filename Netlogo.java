@@ -52,6 +52,15 @@ class NetlogoBoard implements Runnable {
 	    }
 	    if ( s.getSelectedIndex() != 0 )
 		alreadyDone = false;
+	    //for forever buttons- if on, call them
+	    //need: arraylist forever buttons, change background, call methods
+	    for ( ForeverButton b : s.getForeverButtons() ) {
+		if ( b.getBackground().equals ( Color.BLACK ) ) {
+		    System.out.println ( "call method here" );
+		    s.iface.callMethod ( b.getText() );
+		    //call method
+		}
+	    }
 	}
     }
 }
@@ -76,6 +85,9 @@ class Screen extends JTabbedPane implements ActionListener {
 	}
 	System.out.println ( "this place" );
     }
+    public ArrayList<ForeverButton> getForeverButtons() {
+	return iface.getForeverButtons();
+    }
 }
 
 class Code extends JTextArea {
@@ -84,12 +96,14 @@ class Code extends JTextArea {
 class IFace extends JPanel implements MouseListener , KeyListener , ActionListener {
     private JPanel space;
     protected myPanel f;
+    private ArrayList<ForeverButton> foreverButtons;
     //private boolean isNew;
     HashMap<String , ArrayList<String>> methods;
 
     public IFace() {
 	space = new JPanel();
 	f = new myPanel();
+	foreverButtons = new ArrayList<ForeverButton>();
 	//isNew = true;
 	//methods = new HashMap<String , ArrayList<String>>();
 	f.setPreferredSize ( new Dimension ( 300 , 300 ) );
@@ -104,6 +118,10 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	this.add ( f );
 	this.setPreferredSize ( new Dimension ( 400 , 400 ) );
 	addMouseListener ( this );
+    }
+
+    public ArrayList<ForeverButton> getForeverButtons() {
+	return foreverButtons;
     }
 
     public void javafy ( String s1 ) {
@@ -220,12 +238,24 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    //choose button, make button
 	    System.out.println("clicked jmenuitem; " + ((JMenuItem) e.getSource() ) .getText());
 	    if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
- 
-		String s = JOptionPane.showInputDialog ( null , "Type name of button" );
+ 		//String s = JOptionPane.showInputDialog ( null , "Type name of button" );
+		String[] options = { "option 1" , "option 2" };
+		JCheckBox forever = new JCheckBox ( "forever" );
+		Object[] params = { "Type name of button" , forever };
+		String s = JOptionPane.showInputDialog ( null , params );
+		System.out.println ( forever.isSelected() );
 		if ( s != null && !s.equals("") ) {
-		    JButton button = new JButton ( s );
-		    space.add ( button );
-		    button.addActionListener ( this );
+		    if ( !forever.isSelected() ) {
+			JButton button = new JButton ( s );
+			space.add ( button );
+			button.addActionListener ( this );
+		    }
+		    else {
+			ForeverButton button = new ForeverButton ( s );
+			space.add ( button );
+			button.addActionListener ( this );
+			foreverButtons.add ( button );
+		    }
 		}
 	    }
 
@@ -249,6 +279,14 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		//mthds is name of method that's being called by the button- like setup, move, etc.- 
 		//not built in methods, but ones that are created
 		String mthds = ( ( JButton ) e.getSource() ).getText();
+		System.out.println ( "e: " + e.getModifiers()/*.getSource() instanceof JButton*/ );
+		//try for if button is forever
+		if ( ( ( JButton ) e.getSource() ).getBackground().equals ( Color.WHITE ) ) {
+		    ( ( JButton ) e.getSource() ).setBackground ( Color.BLACK );
+		}
+		else if ( ( ( JButton ) e.getSource() ).getBackground().equals ( Color.BLACK ) ) {
+		    ( ( JButton ) e.getSource() ).setBackground ( Color.WHITE );
+		}
 		ArrayList<String> listOfMethods = methods.get ( mthds );
 		for ( String mthd : listOfMethods ) {
 		    //mthd has ; if it has parameters- call method with parameters
@@ -286,6 +324,36 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    }
 	}
     }
+    public void callMethod ( String s ) {
+	ArrayList<String> listOfMethods = methods.get ( s );
+	try {
+	for ( String mthd : listOfMethods ) {
+	    //mthd has ; if it has parameters- call method with parameters
+	    if ( mthd.contains ( ";" ) ) {
+		//System.out.println ( "mthd: " + mthd );
+		Method m = f.getClass().getMethod 
+		    (mthd.substring(0, mthd.indexOf( ";" )) , String.class );
+		m.invoke ( f , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
+	    }
+	    else {
+		//call method with no parameters
+		Method m = f.getClass().getMethod ( mthd , null );
+		m.invoke ( f , null );
+	    }
+	}
+	} catch ( Exception e ) {
+	    System.out.println ( "you messed up the call method call" );
+	}
+    }
+}
+class ForeverButton extends JButton {
+    private boolean selected;
+    public ForeverButton ( String s ) {
+	super ( s );
+	selected = false;
+	//this.setIcon ( new ImageIcon ( "forever" ) );
+	this.setBackground ( Color.WHITE );
+    }
 }
 
 class myPanel extends JLayeredPane {
@@ -293,7 +361,7 @@ class myPanel extends JLayeredPane {
     private JPanel patchSpace; //layer of patches in black screen
     private JPanel turtleSpace; //layer of turtles
     //private TurtleFrame;
-    private ArrayList<Turtle> turtles = new ArrayList<Turtle>();
+    private ArrayList<Turtle> turtles;
     private Color backgroundColor;
     //private int xcor = 13 , ycor = 13;
     public myPanel() {
@@ -305,6 +373,7 @@ class myPanel extends JLayeredPane {
 	patchSpace = new JPanel();
 	patchSpace.setLayout ( new GridLayout ( 25 , 25 ) );	
 	patchSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	turtles = new ArrayList<Turtle>();
 	turtleSpace = new JPanel();
 	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	//TurtleFrame = new TurtleFrame();
@@ -333,7 +402,10 @@ class myPanel extends JLayeredPane {
 	    }
 	}
 	//turtles.clear();
-	//turtleSpace = new JPanel();
+	/*turtleSpace = new JPanel();
+	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
+	this.add ( turtleSpace );*/
     }
     //create a new turtle in middle of grid, s is integer of how many turtle you want to create
     public void crt ( String s ) {
