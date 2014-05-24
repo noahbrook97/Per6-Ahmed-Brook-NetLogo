@@ -171,10 +171,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	ArrayList<String> ans = new ArrayList<String>();
 	
 	    //arraylist to compare user input to color options                                                        
-        ArrayList<String> colorArray = new ArrayList<String>();
-        colorArray.add("RED");
-        colorArray.add("GREEN");
-        colorArray.add("BLUE");
 
 	while ( s.length() > 0 ) {
 	    //make all newlines into spaces
@@ -228,6 +224,16 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			    insideWith = true;
 			if ( insideWith && word.equals ( "]" ) )
 			    insideWith = false;
+			
+			//~~~~~~~~~~~                                                                 
+			else if(word.equals("setColor")) {
+			    ans.add ( word + ";" + words.get ( i + 1 ) ); 
+ 			    for(int j = 0; j < colorArray.size(); j++) {
+				if (word.substring ( 8, word.length()).equals( colorArray.get(j) ) )
+				    ans.add( words.get(j + 1));
+			    }
+			}
+			//~~~~~~~~~~~
 			i = i + 1;
 			word = words.get ( i );
 			addLine = addLine + word + ";";
@@ -250,18 +256,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    }
 		    ans.add ( addLine );
 		}
-		 //~~~~~~~~~~~                                                                                     
-                //SOMETHING IS WRONG IT PRINTS YES EVERYTIME                                                      
-                else if(word.equals("setColor")) {
-                    ans.add ( word + ";" + words.get ( i + 1 ) ); //ask abrar about semicolon                     
 
-                    for(int j = 0; j < colorArray.size(); j++) {
-                        if (word.substring ( 8, word.length()).equals( colorArray.get(j) ) )
-                            ans.add( words.get(j + 1));
-                    }
-                }
-
-                //~~~~~~~~~~                             
 		else if ( word.equals ( "set" ) ) {
 		    System.out.println ( "globals: " + f.globals.entrySet() );
 		    String addThis = word + ";";
