@@ -169,6 +169,12 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	ArrayList<String> words = new ArrayList<String>();
 	boolean inMethod = false;
 	ArrayList<String> ans = new ArrayList<String>();
+	
+	    //arraylist to compare user input to color options                                                        
+        ArrayList<String> colorArray = new ArrayList<String>();
+        colorArray.add("RED");
+        colorArray.add("GREEN");
+        colorArray.add("BLUE");
 
 	while ( s.length() > 0 ) {
 	    //make all newlines into spaces
@@ -244,6 +250,18 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    }
 		    ans.add ( addLine );
 		}
+		 //~~~~~~~~~~~                                                                                     
+                //SOMETHING IS WRONG IT PRINTS YES EVERYTIME                                                      
+                else if(word.substring(0,7).equals("setColor")) {
+                    ans.add ( word + ";" + words.get ( i + 1 ) ); //ask abrar about semicolon                     
+
+                    for(int j = 0; j < colorArray.size(); j++) {
+                        if (word.substring ( 8, word.length()).equals( colorArray.get(j) ) )
+                            ans.add( words.get(j + 1));
+                    }
+                }
+
+                //~~~~~~~~~~                             
 		else if ( word.equals ( "set" ) ) {
 		    System.out.println ( "globals: " + f.globals.entrySet() );
 		    String addThis = word + ";";
@@ -866,11 +884,26 @@ class Turtle extends JPanel {
     public void setYcor ( double newY ) {
 	ycor = newY;
     }
-    public void setColor(Color color) {
-	if(color.equals(Color.RED)){
+    
+        public void setColor(Color color) {
+        try {
+            if(color.equals(Color.GREEN)) {
+                Image image = ImageIO.read (getClass().getResource("green_arrow.png"));
+                this.setImage( image );
+                System.out.println("setting color to green" + image);
+            }
+            else if (color.equals(Color.RED)) {
+                Image image = ImageIO.read (getClass().getResource("red_arrow.png"));
+                this.setImage( image );
+                System.out.println("setting color to red" + image);
+            }
+        }
+        catch (Exception e) {
+            System.out.println("not color");
+        }
+    }
+ 
 
-	}
-    }  
     //image of turtle- currently only a green arrow
     public void setImage ( Image image ) {
 	//this.getContentPane().add ( image );
