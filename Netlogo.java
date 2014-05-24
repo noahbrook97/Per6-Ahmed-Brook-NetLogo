@@ -61,6 +61,26 @@ class NetlogoBoard implements Runnable {
 		    //call method
 		}
 	    }
+	    //System.out.println ( "testing" );
+	    HashMap<String , Integer> globals = s.iface.getGlobals();
+	    for ( JLabel m : s.getMonitors() ) {
+	    //for ( monitors ) : if globals = different, monitors.setText globals
+		//System.out.println ( "monitors: " + m.getText() );
+		String key = m.getText().substring ( 0 , m.getText().indexOf ( ":" ) );
+		Integer value = Integer.parseInt ( m.getText().substring ( m.getText().indexOf ( ":" ) + 2 ) );
+		if ( ! globals.get ( key ).equals ( value ) ) {
+		    //System.out.println ( "changed" );
+		    //JOptionPane.showMessageDialog ( null , "changed" );
+		System.out.println ( "monitor should read: " + key + ": " + globals.get ( key ) );
+		String newValue = globals.get ( key ).toString();
+		//m.setText ( key + ": " + 0 );
+		//System.out.println ( "new value: " + value );
+		//m.setText ( m.getText().substring ( 0 , m.getText().length() - 1 ) + newValue );
+		m.setText ( key + ": " + newValue );
+		//m.setText ( key + ": " + globals.get ( key ) );
+		}
+		//else JOptionPane.showMessageDialog ( null , "unchanged" );
+	    }
 	}
     }
 }
@@ -72,7 +92,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ every 1 [ fd 1 ] fd 1 ] set a a + 1 end");
+	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 ] set a a + 1 end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -88,6 +108,12 @@ class Screen extends JTabbedPane implements ActionListener {
     public ArrayList<ForeverButton> getForeverButtons() {
 	return iface.getForeverButtons();
     }
+    public ArrayList<JLabel> getMonitors() {
+	return iface.getMonitors();
+    }
+    public HashMap<String , Integer> getGlobals() {
+	return iface.getGlobals();
+    }
 }
 
 class Code extends JTextArea {
@@ -97,13 +123,17 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     private JPanel space;
     protected myPanel f;
     private ArrayList<ForeverButton> foreverButtons;
+    private ArrayList<JLabel> monitors;
     //private boolean isNew;
     HashMap<String , ArrayList<String>> methods;
+    ArrayList<String> breeds;
 
     public IFace() {
 	space = new JPanel();
 	f = new myPanel();
 	foreverButtons = new ArrayList<ForeverButton>();
+	monitors = new ArrayList<JLabel>();
+	breeds = new ArrayList<String>();
 	//isNew = true;
 	//methods = new HashMap<String , ArrayList<String>>();
 	f.setPreferredSize ( new Dimension ( 300 , 300 ) );
@@ -122,6 +152,12 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 
     public ArrayList<ForeverButton> getForeverButtons() {
 	return foreverButtons;
+    }
+    public ArrayList<JLabel> getMonitors() {
+	return monitors;
+    }
+    public HashMap<String , Integer> getGlobals() {
+	return f.getGlobals();
     }
 
     public void javafy ( String s1 ) {
@@ -169,6 +205,9 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		if ( word.equals ( "crt" ) ) {
 		    ans.add ( word + ";" + words.get ( i + 1 ) );
 		    i = i + 1;
+		    if ( words.get ( i + 1 ).equals ( "[" ) ) {
+			System.out.println ( "crt with conditions" );
+		    }
 		}
 		else if ( word.equals ( "ask" ) ) {
 		    boolean insideWith = false;
@@ -225,7 +264,8 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		else ans.add ( word );
 	    }
 	    else if ( word.equals ( "breed" ) ) {
-		
+		breeds.add ( words.get ( i + 2 ) + "," + words.get ( i + 3 ) );
+		i = i + 4;
 	    }
 	    else if ( word.equals ( "globals" ) ) {
 		i = i + 2;
@@ -349,15 +389,17 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    //System.out.println ( ( (JMenuItem) e.getSource() ).getText() );
 	else if(((JMenuItem) e.getSource() ).getText().equals("Monitor")) {
 	    String s = JOptionPane.showInputDialog ( null , "Type monitor variable" );
-	    JPanel whole = new JPanel ( new GridLayout ( 1 , 2 ) );
-	    JButton top = new JButton ( s );
-	    JButton bottom = new JButton ( "" + f.globals.get ( s ) );
-	    whole.add ( top );
-	    whole.add ( bottom );
-	    space.add ( whole );
+	    //JPanel whole = new JPanel ( new GridLayout ( 1 , 2 ) );
+	    Integer value = f.globals.get ( s );
+	    JLabel m = new JLabel ( s + ": " + value );
+	    System.out.println ( "created monitor: " + m.getText() );
+	    //JButton bottom = new JButton ( "" + f.globals.get ( s ) );
+	    //whole.add ( top );
+	    //whole.add ( bottom );
+	    space.add ( m );
+	    monitors.add ( m );
 	}
 	}//end try
-	
 	catch ( ClassCastException ex ) {
 	    System.out.println("Catch");
 	    try {
@@ -478,6 +520,9 @@ class myPanel extends JLayeredPane {
 	this.add ( patchSpace );
 	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
 	this.add ( turtleSpace );
+    }
+    public HashMap<String , Integer> getGlobals() {
+	return globals;
     }
     //clear all
     public void ca() {
@@ -628,6 +673,7 @@ class myPanel extends JLayeredPane {
 			    int steps = Integer.parseInt ( commands.get ( i + 1 ) ) * 10;
 			    //I DON'T KNOW WHY IT'S 10- CHANGE TO SIZE OF EACH PATCH LATER!!!
 			    if ( commands.get ( i ).equals ( "fd" ) ) {
+				System.out.println ( "called fd" );
 				xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( dir ) ) );
 				ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( dir ) ) );
 			    }
@@ -635,11 +681,11 @@ class myPanel extends JLayeredPane {
 				xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( dir ) ) );
 				ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( dir ) ) );
 			    }
-			    //System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
+			    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
 			    turtle.setXcor ( xcor );
 			    turtle.setYcor ( ycor );
 			    turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
-			    System.out.println ( "height: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\nwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
+			    //System.out.println ( "height: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\nwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
 			    turtleSpace.setBackground ( Color.BLACK );
 			    turtleSpace.add ( turtle );
 			}
@@ -763,6 +809,9 @@ class myPanel extends JLayeredPane {
 	    }*/
 	    //globals.put ( change , 
 	}
+	if ( change.equals ( "breed" ) ) {
+	    //do things here
+	}
     }
     //round double to smaller double, bc double are slightly off
     public double round ( double x ) {
@@ -795,10 +844,12 @@ class Turtle extends JPanel {
     private double xcor , ycor;
     private int dir;
     private Image image;
+    private String breed;
     public Turtle ( double xcor , double ycor  ) {
 	this.xcor = xcor;
 	this.ycor = ycor;
 	dir = (int) ( Math.random() * 100 );
+	breed = new String();
     }
     /*public void paintComponent ( Graphics g ) {
 	
