@@ -716,6 +716,9 @@ class myPanel extends JLayeredPane {
 			    String color = commands.get ( i );
 			    System.out.println ( "color: " + color );
 			}
+			else 
+			    System.out.println("You are setting incorrectly");
+
 		    }
 		    /*		    else if ( commands.get ( i ).equals ( "every" ) ) {
 			System.out.println ( "commands in every: " + commands );
@@ -909,7 +912,19 @@ class Turtle extends JPanel {
                 this.setImage( image );
                 System.out.println("setting color to red" + image);
             }
-        }
+	    else if (color.equals(Color.RED)) {
+                Image image = ImageIO.read (getClass().getResource("blue_arrow.png"));
+                this.setImage( image );
+                System.out.println("setting color to blue" + image);
+            }
+	    else if (color.equals(Color.RED)) {
+                Image image = ImageIO.read (getClass().getResource("yellow_arrow.png"));
+                this.setImage( image );
+                System.out.println("setting color to yellow" + image);
+            }
+
+
+	}
         catch (Exception e) {
             System.out.println("not color");
         }
