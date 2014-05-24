@@ -92,7 +92,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 set color red ] set a a + 1 end");
+	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 set color green ] set a a + 1 end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -224,16 +224,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			    insideWith = true;
 			if ( insideWith && word.equals ( "]" ) )
 			    insideWith = false;
-			
-			//~~~~~~~~~~~                                                                 
-			else if(word.equals("setColor")) {
-			    ans.add ( word + ";" + words.get ( i + 1 ) ); 
- 			    for(int j = 0; j < colorArray.size(); j++) {
-				if (word.substring ( 8, word.length()).equals( colorArray.get(j) ) )
-				    ans.add( words.get(j + 1));
-			    }
-			}
-			//~~~~~~~~~~~
 			i = i + 1;
 			word = words.get ( i );
 			addLine = addLine + word + ";";
@@ -710,11 +700,37 @@ class myPanel extends JLayeredPane {
 			    i = i + 1;
 			    String color = commands.get ( i );
 			    System.out.println ( "color: " + color );
+			    //~~~~~~~~~~~~~~
+			    i += 1;
+			    if(commands.get(i).equals("red")) {
+				String colortype = commands.get( i );
+				this.setColor(Color.RED);
+				System.out.println("colortype: " + colortype);
+			    }
+			    else if(commands.get(i).equals("green")) {
+				String colortype = commands.get(i);
+				this.setColor(Color.GREEN);
+				System.out.println("colortype: " + colortype);
+			    }
+			    else if(commands.get(i).equals("blue")) {
+				String colortype = commands.get(i);
+				this.setColor(Color.BLUE);
+				System.out.println("colortype: " + colortype);
+			    }
+			    else if(commands.get(i).equals("yellow")) {
+				String colortype = commands.get(i);
+				this.setColor(Color.YELLOW);
+				System.out.println("colortype: " + colortype);
+			    }
+			    //ADD OTHER COLORS OF RAINBOW
 			}
+		    
+			    //~~~~~~~~~~~
+
 			else 
 			    System.out.println("You are setting incorrectly");
-
 		    }
+	    
 		    /*		    else if ( commands.get ( i ).equals ( "every" ) ) {
 			System.out.println ( "commands in every: " + commands );
 			String everyParam = new String();
