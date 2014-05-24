@@ -72,7 +72,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 ] end");
+	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ every 1 [ fd 1 ] fd 1 ] end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -97,6 +97,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     private JPanel space;
     protected myPanel f;
     private ArrayList<ForeverButton> foreverButtons;
+    HashMap<String , Integer> globals;
     //private boolean isNew;
     HashMap<String , ArrayList<String>> methods;
 
@@ -130,6 +131,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    s = s + s1.substring ( i , i + 1 );
 
 	methods = new HashMap<String , ArrayList<String>>();
+	globals = new HashMap<String , Integer>();
 	ArrayList<String> words = new ArrayList<String>();
 	boolean inMethod = false;
 	ArrayList<String> ans = new ArrayList<String>();
@@ -172,8 +174,13 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		}
 		else if ( word.equals ( "ask" ) ) {
 		    boolean insideWith = false;
+		    int inBrackets = -1;
 		    String addLine = word + ";";
-		    while ( ! word.equals ( "]" ) || insideWith ) {
+		    while ( ! word.equals ( "]" ) || insideWith || inBrackets != 0 ) {
+			if ( word.equals ( "[" ) )
+			    inBrackets++;
+			if ( word.equals ( "]" ) )
+			    inBrackets--;
 			if ( word.equals ( "with" ) )
 			    insideWith = true;
 			if ( insideWith && word.equals ( "]" ) )
@@ -182,6 +189,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			word = words.get ( i );
 			addLine = addLine + word + ";";
 		    }
+		    System.out.println ( "ask ans: " + addLine );
 		    ans.add ( addLine );
 		}
 		else if ( word.equals ( "every" ) ) {
@@ -204,10 +212,25 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    else if ( word.equals ( "breed" ) ) {
 		
 	    }
-	
-	    else 
-		JOptionPane.showMessageDialog(null, "That doesn't match any methods");
-	}    
+	    else if ( word.equals ( "globals" ) ) {
+		i = i + 2;
+		while ( ! words.get ( i ).equals ( "]" ) ) {
+		    System.out.println ( "add to globals: " + words.get ( i ) );
+		    globals.put ( words.get ( i ) , 0 );
+		    i = i + 1;
+		}
+		/*//System.out.println ( "globals" );
+		for ( i = i + 2 ; !word.equals ( "]" ) ; i++ ) {
+		    System.out.println ( "words.get ( i ): " + words.get ( i ) + "\nword: " + word );
+		    word = words.get ( i );
+		    //globals.put ( words.get ( i ) , 0 );
+		}
+		System.out.println ( "i: " + i );
+		//i = i + 3;*/
+	    }
+	    //else
+	    //JOptionPane.showMessageDialog(null, "That doesn't match any methods");
+	}
 	
 	System.out.println ( "methods: " + methods.entrySet() );
 	//System.out.println ( "method keys: " + methods.keySet() );
@@ -236,9 +259,11 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    JMenuItem button = new JMenuItem("Button" );
 	    JSlider slider = new JSlider();
 	    JMenuItem swtch = new JMenuItem("Switch");
+	    JMenuItem monitor = new JMenuItem ( "Monitor" );
 
 	    button.addActionListener ( this );
 	    swtch.addActionListener  ( this );
+	    monitor.addActionListener ( this );
 	    //slider.addActionListener ( this );
 
 	    menu.add ( button );
@@ -246,7 +271,8 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    menu.add ( swtch );
 	    menu.add ( "Chooser" );
 	    menu.add ( "Input" );
-	    menu.add ( "Moniter" );
+	    //menu.add ( "Moniter" );
+	    menu.add ( monitor );
 	    menu.add ( "Plot" );
 	    menu.add ( "Output" );
 	    menu.add ( "Note" );
@@ -303,6 +329,17 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		//	swtch.addActionListener ( this );
 		//	swtch.setBackground(Color.RED);
 	    }
+	}
+	//monitor
+	    //System.out.println ( ( (JMenuItem) e.getSource() ).getText() );
+	else if(((JMenuItem) e.getSource() ).getText().equals("Monitor")) {
+	    String s = JOptionPane.showInputDialog ( null , "Type monitor variable" );
+	    JPanel whole = new JPanel ( new GridLayout ( 1 , 2 ) );
+	    JButton top = new JButton ( s );
+	    JButton bottom = new JButton ( "" + globals.get ( s ) );
+	    whole.add ( top );
+	    whole.add ( bottom );
+	    space.add ( whole );
 	}
 	}//end try
 	
@@ -472,7 +509,7 @@ class myPanel extends JLayeredPane {
 	//add to agents when beginning of string is not "["
 	while ( s.indexOf ( "[" ) != 0 || insideWith ) {
 	    String word = s.substring ( 0 , s.indexOf ( ";" ) );
-	    System.out.println ( "word: " + word );
+	    //System.out.println ( "word: " + word );
 	    if ( word.equals ( "with" ) )
 		insideWith = true;
 	    if ( insideWith && word.equals ( "]" ) )
@@ -484,8 +521,14 @@ class myPanel extends JLayeredPane {
 	s = s.substring ( 2 );
 	System.out.println ( "agents: " + agents );
 	//add to commands when beginning of string is not "]"
-	while ( s.indexOf ( "]" ) != 0 ) {
-	    commands.add ( s.substring ( 0 , s.indexOf ( ";" ) ) );
+	int inBrackets = 0;
+	while ( s.indexOf ( "]" ) != 0 || inBrackets != 0 ) {
+	    String word = s.substring ( 0 , s.indexOf ( ";" ) );
+	    if ( word.equals ( "[" ) )
+		inBrackets++;
+	    if ( word.equals ( "]" ) )
+		inBrackets--;
+	    commands.add ( word );
 	    s = s.substring ( s.indexOf ( ";" ) + 1 );
 	}
 	System.out.println ( "commands: " + commands );
@@ -557,6 +600,7 @@ class myPanel extends JLayeredPane {
 	    //call methods on selected turtles
 		for ( int i = 0 ; i < commands.size() ; i++ ) {
 		    //forward + back
+		    System.out.println ( "commands.get: " + commands.get ( i ) );
 		    if ( commands.get ( i ).equals ( "fd" ) || commands.get ( i ).equals ( "bk" ) ) {
 			System.out.println ( "command: " + commands.get ( i ) );
 			System.out.println ( turtles );
@@ -584,6 +628,20 @@ class myPanel extends JLayeredPane {
 			}
 			i = i + 1;
 		    }
+		    /*		    else if ( commands.get ( i ).equals ( "every" ) ) {
+			System.out.println ( "commands in every: " + commands );
+			String everyParam = new String();
+			for ( String command : commands ) {
+			    if ( command.equals ( "every" ) ) {
+			    }
+			    else {
+			    everyParam = everyParam + command + ";";
+			    if ( command.equals ( "]" ) )
+				break;
+			    }
+			}
+			}*/
+		    else System.out.println ( "command not called: " + commands.get ( i ) );
 		}
 	    }
 	    //if ( agent.get ( 1 ).equals ( "at" ) ) {
@@ -593,7 +651,7 @@ class myPanel extends JLayeredPane {
 	//while ( 
     }
     public void every ( String s1 ) {
-	System.out.println ( s1 );
+	System.out.println ( "every called with parameter: " + s1 );
 	double waitTime = Double.parseDouble ( s1.substring ( 0 , s1.indexOf ( ";" ) ) );
 	System.out.println ( "wait: " + waitTime );
 	String mthd = new String();
