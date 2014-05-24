@@ -92,7 +92,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 set color green ] set a a + 1 end");
+	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 set color red ] set a a + 1 end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -696,34 +696,38 @@ class myPanel extends JLayeredPane {
 		    }
 		    if ( commands.get ( i ).equals ( "set" ) ) {
 			i = i + 1;
+			Color newColor;
 			if ( commands.get ( i ).equals ( "color" ) ) {
 			    i = i + 1;
 			    String color = commands.get ( i );
 			    System.out.println ( "color: " + color );
 			    //~~~~~~~~~~~~~~
-			    i += 1;
-			    if(commands.get(i).equals("red")) {
-				String colortype = commands.get( i );
-				this.setColor(Color.RED);
-				System.out.println("colortype: " + colortype);
+			    //i += 1;
+			    if( color.equals("red")) {
+				//turtle.setColor(Color.RED);
+				newColor = Color.RED;
 			    }
-			    else if(commands.get(i).equals("green")) {
-				String colortype = commands.get(i);
-				this.setColor(Color.GREEN);
-				System.out.println("colortype: " + colortype);
+			    else if( color.equals("green")) {
+				//turtle.setColor(Color.GREEN);
+				newColor = Color.GREEN;
 			    }
-			    else if(commands.get(i).equals("blue")) {
-				String colortype = commands.get(i);
-				this.setColor(Color.BLUE);
-				System.out.println("colortype: " + colortype);
+			    else if( color.equals("blue")) {
+				//turtle.setColor(Color.BLUE);
+				newColor = Color.BLUE;
 			    }
-			    else if(commands.get(i).equals("yellow")) {
-				String colortype = commands.get(i);
-				this.setColor(Color.YELLOW);
-				System.out.println("colortype: " + colortype);
+			    else if( color.equals("yellow")) {
+				//turtle.setColor(Color.YELLOW);
+				newColor = Color.YELLOW;
+			    }
+			    else {
+				newColor = null;
+				System.out.println ( "invalid color" );
+			    }
+			    for ( Turtle turtle : callTurtles ) {
+				turtle.setColor ( newColor );
 			    }
 			    //ADD OTHER COLORS OF RAINBOW
-			}
+			}	      
 		    
 			    //~~~~~~~~~~~
 
@@ -923,12 +927,12 @@ class Turtle extends JPanel {
                 this.setImage( image );
                 System.out.println("setting color to red" + image);
             }
-	    else if (color.equals(Color.RED)) {
+	    else if (color.equals(Color.BLUE)) {
                 Image image = ImageIO.read (getClass().getResource("blue_arrow.png"));
                 this.setImage( image );
                 System.out.println("setting color to blue" + image);
             }
-	    else if (color.equals(Color.RED)) {
+	    else if (color.equals(Color.YELLOW)) {
                 Image image = ImageIO.read (getClass().getResource("yellow_arrow.png"));
                 this.setImage( image );
                 System.out.println("setting color to yellow" + image);
@@ -938,6 +942,7 @@ class Turtle extends JPanel {
 	}
         catch (Exception e) {
             System.out.println("not color");
+	    System.out.println ( color.equals ( Color.RED ) );
         }
     }
  
