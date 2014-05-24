@@ -92,7 +92,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 ] set a a + 1 end");
+	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ fd 1 set color red ] set a a + 1 end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -252,7 +252,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		}
 		 //~~~~~~~~~~~                                                                                     
                 //SOMETHING IS WRONG IT PRINTS YES EVERYTIME                                                      
-                else if(word.substring(0,7).equals("setColor")) {
+                else if(word.equals("setColor")) {
                     ans.add ( word + ";" + words.get ( i + 1 ) ); //ask abrar about semicolon                     
 
                     for(int j = 0; j < colorArray.size(); j++) {
@@ -709,6 +709,14 @@ class myPanel extends JLayeredPane {
 			}
 			i = i + 1;
 		    }
+		    if ( commands.get ( i ).equals ( "set" ) ) {
+			i = i + 1;
+			if ( commands.get ( i ).equals ( "color" ) ) {
+			    i = i + 1;
+			    String color = commands.get ( i );
+			    System.out.println ( "color: " + color );
+			}
+		    }
 		    /*		    else if ( commands.get ( i ).equals ( "every" ) ) {
 			System.out.println ( "commands in every: " + commands );
 			String everyParam = new String();
@@ -830,6 +838,10 @@ class myPanel extends JLayeredPane {
 	if ( change.equals ( "breed" ) ) {
 	    //do things here
 	}
+	if ( change.equals ( "color" ) ) {
+	    String color = s.substring ( s.indexOf ( ";" ) + 1 );
+	    System.out.println ( "color: " + color );
+	}
     }
     //round double to smaller double, bc double are slightly off
     public double round ( double x ) {
@@ -885,7 +897,7 @@ class Turtle extends JPanel {
 	ycor = newY;
     }
     
-        public void setColor(Color color) {
+    public void setColor(Color color) {
         try {
             if(color.equals(Color.GREEN)) {
                 Image image = ImageIO.read (getClass().getResource("green_arrow.png"));
