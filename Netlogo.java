@@ -72,7 +72,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ every 1 [ fd 1 ] fd 1 ] end");
+	code = new JTextArea("globals [ a ] to setup ca crt 1 end to move ask turtles with [ who = 0 ] [ every 1 [ fd 1 ] fd 1 ] set a a + 1 end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -97,7 +97,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     private JPanel space;
     protected myPanel f;
     private ArrayList<ForeverButton> foreverButtons;
-    HashMap<String , Integer> globals;
     //private boolean isNew;
     HashMap<String , ArrayList<String>> methods;
 
@@ -131,7 +130,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    s = s + s1.substring ( i , i + 1 );
 
 	methods = new HashMap<String , ArrayList<String>>();
-	globals = new HashMap<String , Integer>();
 	ArrayList<String> words = new ArrayList<String>();
 	boolean inMethod = false;
 	ArrayList<String> ans = new ArrayList<String>();
@@ -207,6 +205,23 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    }
 		    ans.add ( addLine );
 		}
+		else if ( word.equals ( "set" ) ) {
+		    System.out.println ( "globals: " + f.globals.entrySet() );
+		    String addThis = word + ";";
+		    i = i + 1;
+		    word = words.get ( i );
+		    //System.out.println ( "word in set: " + word );
+		    //System.out.println ( "aaa " + "123456789/*-+".contains ( word ) );
+		    
+		    while ( "123456789+-*/".contains ( word )  || f.globals.containsKey ( word ) ) {
+			addThis = addThis + word + ";";
+			i = i + 1;
+			word = words.get ( i );
+		    }
+		    i = i - 1;
+		    System.out.println ( "addThis: " + addThis );
+		    ans.add ( addThis );
+		}
 		else ans.add ( word );
 	    }
 	    else if ( word.equals ( "breed" ) ) {
@@ -216,7 +231,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		i = i + 2;
 		while ( ! words.get ( i ).equals ( "]" ) ) {
 		    System.out.println ( "add to globals: " + words.get ( i ) );
-		    globals.put ( words.get ( i ) , 0 );
+		    f.globals.put ( words.get ( i ) , 0 );
 		    i = i + 1;
 		}
 		/*//System.out.println ( "globals" );
@@ -336,7 +351,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    String s = JOptionPane.showInputDialog ( null , "Type monitor variable" );
 	    JPanel whole = new JPanel ( new GridLayout ( 1 , 2 ) );
 	    JButton top = new JButton ( s );
-	    JButton bottom = new JButton ( "" + globals.get ( s ) );
+	    JButton bottom = new JButton ( "" + f.globals.get ( s ) );
 	    whole.add ( top );
 	    whole.add ( bottom );
 	    space.add ( whole );
@@ -432,6 +447,7 @@ class myPanel extends JLayeredPane {
     private JPanel turtleSpace; //layer of turtles
     //private TurtleFrame;
     private ArrayList<Turtle> turtles;
+    HashMap<String , Integer> globals;
     private Color backgroundColor;
     //private int xcor = 13 , ycor = 13;
     public myPanel() {
@@ -444,6 +460,7 @@ class myPanel extends JLayeredPane {
 	patchSpace.setLayout ( new GridLayout ( 25 , 25 ) );	
 	patchSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	turtles = new ArrayList<Turtle>();
+	globals = new HashMap<String , Integer>();
 	turtleSpace = new JPanel();
 	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	//TurtleFrame = new TurtleFrame();
@@ -557,11 +574,11 @@ class myPanel extends JLayeredPane {
 				xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( dir ) ) );
 				ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( dir ) ) );
 			    }
-			    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
+			    //System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
 			    turtle.setXcor ( xcor );
 			    turtle.setYcor ( ycor );
 			    turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
-			    System.out.println ( "height: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\nwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
+			    //System.out.println ( "height: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\nwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
 			    turtleSpace.setBackground ( Color.BLACK );
 			    turtleSpace.add ( turtle );
 			}
@@ -577,19 +594,19 @@ class myPanel extends JLayeredPane {
 		String[] restrictions = new String [ agents.size() - 4 ];
 		for ( int i = 3 ; !agents.get ( i ).equals ( "]" ) ; i++ )
 		    restrictions [ i - 3 ] = agents.get ( i );
-		System.out.println ( "restrictions: " + Arrays.toString ( restrictions ) );
+		//System.out.println ( "restrictions: " + Arrays.toString ( restrictions ) );
 		ArrayList<Turtle> callTurtles = new ArrayList<Turtle>(); //turtles on which the methods are being called
 		if ( restrictions [ 0 ].equals ( "who" ) ) {
 		    int who = Integer.parseInt ( restrictions [ 2 ] );
 		    if ( restrictions [ 1 ].equals ( "=" ) ) {
-			System.out.println ( "turtles size: " + turtles.size() );
+			//System.out.println ( "turtles size: " + turtles.size() );
 			for ( int i = 0 ; i < turtles.size() ; i++ ) {
 			    if ( who == i )
 				callTurtles.add ( turtles.get ( i ) );
 			}
 		    }
 		    else if ( restrictions [ 1 ].equals ( "!=" ) ) {
-			System.out.println ( "not equals" );
+			//System.out.println ( "not equals" );
 			for ( int i = 0 ; i < turtles.size() ; i++ ) {
 			    if ( who != i )
 				callTurtles.add ( turtles.get ( i ) );
@@ -600,10 +617,10 @@ class myPanel extends JLayeredPane {
 	    //call methods on selected turtles
 		for ( int i = 0 ; i < commands.size() ; i++ ) {
 		    //forward + back
-		    System.out.println ( "commands.get: " + commands.get ( i ) );
+		    //System.out.println ( "commands.get: " + commands.get ( i ) );
 		    if ( commands.get ( i ).equals ( "fd" ) || commands.get ( i ).equals ( "bk" ) ) {
-			System.out.println ( "command: " + commands.get ( i ) );
-			System.out.println ( turtles );
+			//System.out.println ( "command: " + commands.get ( i ) );
+			//System.out.println ( turtles );
 			for ( Turtle turtle : callTurtles ) {
 			    double xcor = turtle.getXcor();
 			    double ycor = turtle.getYcor();
@@ -618,7 +635,7 @@ class myPanel extends JLayeredPane {
 				xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( dir ) ) );
 				ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( dir ) ) );
 			    }
-			    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
+			    //System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
 			    turtle.setXcor ( xcor );
 			    turtle.setYcor ( ycor );
 			    turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
@@ -701,6 +718,50 @@ class myPanel extends JLayeredPane {
 	} catch ( Exception e ) {
 	    System.out.println ( "method call failed in every" );
 	    System.out.println ( mthd );
+	}
+    }
+    public void set ( String s ) {
+	System.out.println ( "set: " + s );
+	String change = s.substring ( 0 , s.indexOf ( ";" ) );
+	if ( globals.containsKey ( change ) ) {
+	    System.out.println ( "get globals: " + globals.get ( change ) );
+	    String operations = s.substring ( s.indexOf ( ";" ) + 1 );
+	    System.out.println ( "do this to global: " + operations );
+	    String[] ops = new String [ 3 ];
+	    for ( int i = 0 ; i < 3 ; i++ ) {
+		ops [ i ] = operations.substring ( 0 , operations.indexOf ( ";" ) );
+		operations = operations.substring ( operations.indexOf ( ";" ) + 1 );
+	    }
+	    System.out.println ( "ops: " + Arrays.toString ( ops ) );
+	    int first , second;
+	    try { 
+		first = Integer.parseInt ( ops [ 0 ] );
+	    } catch ( Exception e ) {
+		first = globals.get ( ops [ 0 ] );
+	    }
+	    try {
+		second = Integer.parseInt ( ops [ 2 ] );
+	    } catch ( Exception e ) {
+		second = globals.get ( ops [ 2 ] );
+		//System.out.println ( e );
+	    }
+	    if ( ops [ 1 ].equals ( "+" ) )
+		globals.put ( change , first + second );
+	    //System.out.println ( "changed global: " + globals.get ( change ) );
+	    else if ( ops [ 1 ].equals ( "-" ) )
+		globals.put ( change , first - second );
+	    else if ( ops [ 1 ].equals ( "*" ) )
+		globals.put ( change , first * second );
+	    else if ( ops [ 1 ].equals ( "/" ) )
+		globals.put ( change , first / second );
+	    /*while ( operations.length() > 0 ) {
+		if ( operations.substring ( 2 , 3 ).equals ( "+" ) ) {
+		    System.out.println ( "addition" );
+		    //change = change + operations.substring ( 
+		}
+		operations = operations.substring ( 1 );
+	    }*/
+	    //globals.put ( change , 
 	}
     }
     //round double to smaller double, bc double are slightly off
