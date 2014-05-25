@@ -92,7 +92,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to setup ca crt 1 ask turtles [ set color green ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end");
+	code = new JTextArea("globals [ a ] to change ask turtles with [ color = green ] [ set color blue ] end to setup ca crt 1 ask turtles [ set color green ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 ask turtles [ set color green ] end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -144,6 +144,12 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	JButton move = new JButton ( "move" );
 	move.addActionListener ( this );
 	space.add ( move );
+	JButton change = new JButton ( "change" );
+	change.addActionListener ( this );
+	space.add ( change );
+	JButton create = new JButton ( "create" );
+	create.addActionListener ( this );
+	space.add ( create );
 	this.add ( space );
 	this.add ( f );
 	this.setPreferredSize ( new Dimension ( 400 , 400 ) );
@@ -229,7 +235,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			addLine = addLine + word + ";";
 		    }
 		    System.out.println ( "ask ans: " + addLine );
-		    ans.add ( addLine );
+		    ans.add ( addLine.substring ( 0 , addLine.length() - 2 ) + "fd;1;bk;1;];" );
 		}
 		else if ( word.equals ( "every" ) ) {
 		    String addLine = word + ";";
@@ -404,7 +410,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	}
 	}//end try
 	catch ( ClassCastException ex ) {
-	    System.out.println("Catch");
+	    System.out.println("clicked JButton: " + ( (JButton) e.getSource() ).getText() );
 	    try {
 		//mthds is name of method that's being called by the button- like setup, move, etc.- 
 		//not built in methods, but ones that are created
@@ -536,11 +542,11 @@ class myPanel extends JLayeredPane {
 		//patch.setImage ( null );
 	    }
 	}
-	//turtles.clear();
-	/*turtleSpace = new JPanel();
+	turtles.clear();
+	turtleSpace = new JPanel();
 	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
-	this.add ( turtleSpace );*/
+	this.add ( turtleSpace );
     }
     //create a new turtle in middle of grid, s is integer of how many turtle you want to create
     public void crt ( String s ) {
@@ -642,10 +648,11 @@ class myPanel extends JLayeredPane {
 			    if ( restrictions [ 1 ].equals ( "=" ) ) {
 				if ( turtle.getColor().equals ( color ) )
 				    callTurtles.add  ( turtle );
+				else System.out.println ( "not added: " + turtle.getColor() );
 			    }
 			    else if ( restrictions [ 1 ].equals ( "!=" ) ) {
 				if ( !turtle.getColor().equals ( color ) )
-				    callTurtles.add  ( turtle );
+				    callTurtles.add ( turtle );
 			    }
 			}
 		    } catch ( Exception e ) {
@@ -675,6 +682,7 @@ class myPanel extends JLayeredPane {
     }
 
     public void callCommands ( ArrayList<Turtle> turtles , ArrayList<String> commands ) {
+	System.out.println ( "methods called on turtles: " + turtles );
 	for ( int i = 0 ; i < commands.size() ; i++ ) {
 	    //forward + back
 	    //System.out.println ( "commands.get: " + commands.get ( i ) );
@@ -706,13 +714,14 @@ class myPanel extends JLayeredPane {
 		}
 		i = i + 1;
 	    }
-	    if ( commands.get ( i ).equals ( "set" ) ) {
+	    else if ( commands.get ( i ).equals ( "set" ) ) {
+		System.out.println ( "set called" );
 		i = i + 1;
 		Color newColor;
 		if ( commands.get ( i ).equals ( "color" ) ) {
 		    i = i + 1;
 		    String color = commands.get ( i );
-		    System.out.println ( "color: " + color );
+		    System.out.println ( "color changing to: " + color );
 		    //~~~~~~~~~~~~~~
 		    //i += 1;
 		    if( color.equals("red")) {
@@ -737,6 +746,9 @@ class myPanel extends JLayeredPane {
 		    }
 		    for ( Turtle turtle : turtles ) {
 			turtle.setColor ( newColor );
+			turtle.setBounds ( (int) turtle.getXcor() + 124 , (int) turtle.getYcor() + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+			turtleSpace.setBackground ( Color.BLACK );
+			turtleSpace.add ( turtle );
 		    }
 		    //ADD OTHER COLORS OF RAINBOW
 		}	      
@@ -899,6 +911,9 @@ class Turtle extends JPanel {
     /*public void paintComponent ( Graphics g ) {
 	
       }*/
+    public String toString() {
+	return "Turtle at: " + xcor + ", " + ycor + " facing: " + dir + "Color: " + color;
+    }
     public double getXcor() {
 	return xcor;
     }
@@ -920,7 +935,7 @@ class Turtle extends JPanel {
                 //this.setImage( image );
 		this.image = rotate ( resizeImage ( image , 13 , 13 ) , -1 * dir );
 		//this.image = resizeImage ( image , 13 , 13 );
-                System.out.println("setting color to green" + image);
+                System.out.println("setting color to green" );
             }
             else if (color.equals(Color.RED)) {
 		this.color = color;
@@ -928,7 +943,7 @@ class Turtle extends JPanel {
                 //this.setImage( image );
 		this.image = rotate ( resizeImage ( image , 13 , 13 ) , -1 * dir );
 		//this.image = resizeImage ( image , 13 , 13 );
-                System.out.println("setting color to red" + image);
+                System.out.println("setting color to red" );
             }
 	    else if (color.equals(Color.BLUE)) {
 		this.color = color;
@@ -936,14 +951,14 @@ class Turtle extends JPanel {
                 //this.setImage( image );
 		this.image = rotate ( resizeImage ( image , 13 , 13 ) , -1 * dir );
 		//this.image = resizeImage ( image , 13 , 13 );
-                System.out.println("setting color to blue" + image);
+                System.out.println("setting color to blue" );
             }
 	    else if (color.equals(Color.YELLOW)) {
 		this.color = color;
                 Image image = ImageIO.read (getClass().getResource("yellow_arrow.png"));
                 //this.setImage( image );
 		this.image = rotate ( resizeImage ( image , 13 , 13 ) , -1 * dir );
-                System.out.println("setting color to yellow" + image);
+                System.out.println("setting color to yellow" );
             }
 
 
