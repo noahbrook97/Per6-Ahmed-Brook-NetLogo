@@ -818,9 +818,16 @@ class myPanel extends JLayeredPane {
 		    }
 		    i = i + 1;
 		}
-		    
-		//~~~~~~~~~~~
-
+		
+		else if( commands.get( i ).equals( "heading" ) ) {
+		    for( Turtle turtle : turtles ) {
+			System.out.println("changed heading");
+			turtle.setDir ( Integer.parseInt( commands.get( i + 1 ) ));
+			//			System.out.println("COMMAND I + 1" + commands.get(i + 1));
+		    }			
+		    i+= 1;
+		}    
+		
 		else 
 		    System.out.println("You are setting incorrectly");
 	    }
