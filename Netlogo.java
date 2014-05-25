@@ -655,10 +655,12 @@ class myPanel extends JLayeredPane {
 				    callTurtles.add ( turtle );
 			    }
 			}
-		    } catch ( Exception e ) {
+		    }
+		    catch ( Exception e ) {
 			System.out.println ( e );
 		    }
 		}
+		/*
 		if ( restrictions [ 0 ].equals ( "breed" ) ) {
 
 		}
@@ -669,8 +671,37 @@ class myPanel extends JLayeredPane {
 
 		}
 		if ( restrictions [ 0 ].equals ( "heading" ) ) {
-
+		    System.out.println ( "restrict based on heading" );
+		    for(Turtle turtle : turtles) {
+			if(restrictions[1].equals( "=" ) ) {
+			    if(turtle.getDir() == Integer.parseInt(restrictions[2] )) 
+				callTurtles.add ( turtle );
+			}
+			else if(restrictions[1].equals( "!=" )) {
+			    if(turtle.getDir() != Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else if(restrictions[1].equals( "<")) {
+			    if(turtle.getDir() < Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else if(restrictions[1].equals( ">" )) {
+			    if(turtle.getDir() > Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else if(restrictions[1].equals( "<=" )) {
+			    if(turtle.getDir() <= Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else if(restrictions[1].equals( ">=" )) {
+			    if(turtle.getDir() >= Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else
+			    System.out.println("not a valid operator");
+		    }
 		}
+		*/
 	    //call methods on selected turtles
 		callCommands ( callTurtles , commands );
 	    }
@@ -678,8 +709,7 @@ class myPanel extends JLayeredPane {
 	    //}
 	    }
 	}
-	//while ( 
-    }
+    }//end ask
 
     public void callCommands ( ArrayList<Turtle> turtles , ArrayList<String> commands ) {
 	System.out.println ( "methods called on turtles: " + turtles );
