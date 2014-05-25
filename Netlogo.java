@@ -56,7 +56,7 @@ class NetlogoBoard implements Runnable {
 	    //need: arraylist forever buttons, change background, call methods
 	    for ( ForeverButton b : s.getForeverButtons() ) {
 		if ( b.getBackground().equals ( Color.BLACK ) ) {
-		    System.out.println ( "call method here" );
+		    //System.out.println ( "call method here" );
 		    s.iface.callMethod ( b.getText() );
 		    //call method
 		}
@@ -71,7 +71,7 @@ class NetlogoBoard implements Runnable {
 		if ( ! globals.get ( key ).equals ( value ) ) {
 		    //System.out.println ( "changed" );
 		    //JOptionPane.showMessageDialog ( null , "changed" );
-		System.out.println ( "monitor should read: " + key + ": " + globals.get ( key ) );
+		    //System.out.println ( "monitor should read: " + key + ": " + globals.get ( key ) );
 		String newValue = globals.get ( key ).toString();
 		//m.setText ( key + ": " + 0 );
 		//System.out.println ( "new value: " + value );
@@ -92,7 +92,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to change ask turtles with [ heading < 90 ] [ set color blue ] end to setup ca crt 5 ask turtles with [ who = 0 ] [ set color green set ycor 5 ] ask turtles with [ who = 1 ] [ set ycor -5 ] ask turtles with [ who = 2 ] [ set xcor 5 ] ask turtles with [ who = 3 ] [ set xcor -5 ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 ask turtles with [ color = red ] [ set color green ] end");
+	code = new JTextArea(/*"globals [ a ] to change ask turtles with [ xcor > 0 ] [ set color blue ] ask turtles with [ xcor < 0 ] [ set color yellow ] end to setup ca crt 5 ask patches [ set pcolor red ] ] ask turtles with [ who = 0 ] [ set color green set ycor 5 ] ask turtles with [ who = 1 ] [ set ycor -5 ] ask turtles with [ who = 2 ] [ set xcor 5 ] ask turtles with [ who = 3 ] [ set xcor -5 ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 ask turtles with [ color = red ] [ set color green ] end"*/"to setup ca crt 5 ask patches with [ pxcor > ( 5 + 1 ) or pycor < 0 ] [ set pcolor red ] end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -103,7 +103,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	} catch ( Exception ex ) {
 	    ex.printStackTrace();
 	}
-	System.out.println ( "this place" );
+	//System.out.println ( "this place" );
     }
     public ArrayList<ForeverButton> getForeverButtons() {
 	return iface.getForeverButtons();
@@ -209,7 +209,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		ans = new ArrayList<String>();
 	    }
 	    else if ( inMethod ) {
-		System.out.println ( "word: " + word );
+		//System.out.println ( "word: " + word );
 		if ( word.equals ( "crt" ) ) {
 		    ans.add ( word + ";" + words.get ( i + 1 ) );
 		    i = i + 1;
@@ -234,7 +234,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			word = words.get ( i );
 			addLine = addLine + word + ";";
 		    }
-		    System.out.println ( "ask ans: " + addLine );
+		    //System.out.println ( "ask ans: " + addLine );
 		    ans.add ( addLine.substring ( 0 , addLine.length() - 2 ) + "fd;1;bk;1;];" );
 		}
 		else if ( word.equals ( "every" ) ) {
@@ -248,7 +248,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			i = i + 1;
 			word = words.get ( i );
 			addLine = addLine + word + ";";
-			System.out.println ( "addLine: " + addLine );
+			//System.out.println ( "addLine: " + addLine );
 		    }
 		    ans.add ( addLine );
 		}
@@ -267,7 +267,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			word = words.get ( i );
 		    }
 		    i = i - 1;
-		    System.out.println ( "addThis: " + addThis );
+		    //System.out.println ( "addThis: " + addThis );
 		    ans.add ( addThis );
 		}
 		else ans.add ( word );
@@ -302,21 +302,21 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     }
 
     public void mouseExited ( MouseEvent e ) {
-	System.out.println ( "mouseExited" );
+	//System.out.println ( "mouseExited" );
     }
     public void mouseEntered ( MouseEvent e ) {
-	System.out.println ( "mouseEntered" );
+	//System.out.println ( "mouseEntered" );
     }
     public void mouseReleased ( MouseEvent e ) {
-	System.out.println ( "mouseReleased" );
+	//System.out.println ( "mouseReleased" );
     }
     public void mousePressed ( MouseEvent e ) {
-	System.out.println ( "mousePressed" );
+	//System.out.println ( "mousePressed" );
     }
     public void mouseClicked ( MouseEvent e ) {
-	System.out.println ( "mouseClicked" );
+	//System.out.println ( "mouseClicked" );
 	if ( SwingUtilities.isRightMouseButton ( e ) ) {
-	    System.out.println ( "right clicked" );
+	    //System.out.println ( "right clicked" );
 
 	    //create options menu with their buttons and stuff
 	    JPopupMenu menu = new JPopupMenu();
@@ -352,7 +352,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     public void actionPerformed ( ActionEvent e ) {
 	try {
 	    //choose button, make button
-	    System.out.println("clicked jmenuitem; " + ((JMenuItem) e.getSource() ) .getText());
+	    //System.out.println("clicked jmenuitem; " + ((JMenuItem) e.getSource() ) .getText());
 	    if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
  		//String s = JOptionPane.showInputDialog ( null , "Type name of button" );
 		String[] options = { "option 1" , "option 2" };
@@ -361,7 +361,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		String s = JOptionPane.showInputDialog ( null , params );
 
 		
-		System.out.println ( forever.isSelected() );
+		//System.out.println ( forever.isSelected() );
 		//if user types something
 		if ( s != null && !s.equals("") ) {
 		    //if statement here saying if s does not equal a known method name in code
@@ -401,7 +401,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    //JPanel whole = new JPanel ( new GridLayout ( 1 , 2 ) );
 	    Integer value = f.globals.get ( s );
 	    JLabel m = new JLabel ( s + ": " + value );
-	    System.out.println ( "created monitor: " + m.getText() );
+	    //System.out.println ( "created monitor: " + m.getText() );
 	    //JButton bottom = new JButton ( "" + f.globals.get ( s ) );
 	    //whole.add ( top );
 	    //whole.add ( bottom );
@@ -410,12 +410,11 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	}
 	}//end try
 	catch ( ClassCastException ex ) {
-	    System.out.println("clicked JButton: " + ( (JButton) e.getSource() ).getText() );
+	    //System.out.println("clicked JButton: " + ( (JButton) e.getSource() ).getText() );
 	    try {
 		//mthds is name of method that's being called by the button- like setup, move, etc.- 
 		//not built in methods, but ones that are created
 		String mthds = ( ( JButton ) e.getSource() ).getText();
-		System.out.println ( "e: " + e.getModifiers()/*.getSource() instanceof JButton*/ );
 		//try for if button is forever
 		if ( ( ( JButton ) e.getSource() ).getBackground().equals ( Color.WHITE ) ) {
 		    ( ( JButton ) e.getSource() ).setBackground ( Color.BLACK );
@@ -492,7 +491,7 @@ class ForeverButton extends JButton {
     }
 }
 
-class myPanel extends JLayeredPane {
+class myPanel extends JLayeredPane implements MouseListener {
     private Patch[][] patches;
     private JPanel patchSpace; //layer of patches in black screen
     private JPanel turtleSpace; //layer of turtles
@@ -529,6 +528,22 @@ class myPanel extends JLayeredPane {
 	this.add ( patchSpace );
 	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
 	this.add ( turtleSpace );
+	addMouseListener ( this );
+    }
+    public void mouseExited ( MouseEvent e ) {
+	//System.out.println ( "mouseExited" );
+    }
+    public void mouseEntered ( MouseEvent e ) {
+	//System.out.println ( "mouseEntered" );
+	//System.out.println ( MouseInfo.getPointerInfo().getLocation() );
+    }
+    public void mouseReleased ( MouseEvent e ) {
+	//System.out.println ( "mouseReleased" );
+    }
+    public void mousePressed ( MouseEvent e ) {
+	//System.out.println ( "mousePressed" );
+    }
+    public void mouseClicked ( MouseEvent e ) {
     }
     public HashMap<String , Integer> getGlobals() {
 	return globals;
@@ -536,17 +551,18 @@ class myPanel extends JLayeredPane {
     //clear all
     public void ca() {
 	backgroundColor = Color.BLACK;
+	turtles.clear();
+	//turtleSpace = new JPanel();
+	turtleSpace.removeAll();
+	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
+	//this.add ( turtleSpace );
 	for ( Patch[] patchRows : patches ) {
 	    for ( Patch patch : patchRows ) {
 		patch.setBackground ( Color.BLACK );
 		//patch.setImage ( null );
 	    }
 	}
-	turtles.clear();
-	turtleSpace = new JPanel();
-	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
-	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
-	this.add ( turtleSpace );
     }
     //create a new turtle in middle of grid, s is integer of how many turtle you want to create
     public void crt ( String s ) {
@@ -562,7 +578,7 @@ class myPanel extends JLayeredPane {
 	    //I HAVE NO IDEA WHY 135 SETS THE TURTLE AT THE RIGHT SPOT- FIX THIS LATER!!! DON'T BE LAZY/FORGET TO DO THIS!!!
 	    turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
 	    //System.out.println ( "adasheight: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\niwfwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
-	    System.out.println ( "turtle at : " + patches.length / 2 );
+	    //System.out.println ( "turtle at : " + patches.length / 2 );
 	} catch ( Exception e ) {
 	    System.out.println ( "come on man" );
 	}
@@ -578,7 +594,7 @@ class myPanel extends JLayeredPane {
 	for ( int i = 0 ; i < s1.length() ; i++ )
 	    s = s + s1.substring ( i , i + 1 );
 	boolean insideWith = false; //if there is "with" (turtles with who > 1, etc.)
-	System.out.println ( "s: " + s );
+	//System.out.println ( "s: " + s );
 	//add to agents when beginning of string is not "["
 	while ( s.indexOf ( "[" ) != 0 || insideWith ) {
 	    String word = s.substring ( 0 , s.indexOf ( ";" ) );
@@ -607,9 +623,20 @@ class myPanel extends JLayeredPane {
 	System.out.println ( "commands: " + commands );
 	System.out.println ( agents.size() );
 	if ( agents.size() == 1 ) {
-		System.out.println ( "hi" );
-		if ( agents.equals ( "patches" ) ) //ask patches to do things
-		System.out.println ( "here" );
+	    //System.out.println ( "hi" );
+		if ( agents.get ( 0 ).equals ( "patches" ) ) { //ask patches to do things 
+		    //System.out.println ( "here" );
+		    
+		    //JOptionPane.showMessageDialog ( null , "patches" );
+		    ArrayList<int[]> patchesList = new ArrayList<int[]>();
+		    for ( int r = 0 ; r < patches.length ; r++ ) {
+			for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+			    int[] a = { r , c };
+			    patchesList.add ( a );
+			}
+		    }
+		    patchCommands ( patchesList , commands );
+		}
 		if ( agents.get ( 0 ).equals ( "turtles" ) ) { //ask turtles to do things
 		    callCommands ( turtles , commands );
 	    }
@@ -650,7 +677,7 @@ class myPanel extends JLayeredPane {
 			    if ( restrictions [ 1 ].equals ( "=" ) ) {
 				if ( turtle.getColor().equals ( color ) )
 				    callTurtles.add  ( turtle );
-				else System.out.println ( "not added: " + turtle.getColor() );
+				//else System.out.println ( "not added: " + turtle.getColor() );
 			    }
 			    else if ( restrictions [ 1 ].equals ( "!=" ) ) {
 				if ( !turtle.getColor().equals ( color ) )
@@ -668,29 +695,49 @@ class myPanel extends JLayeredPane {
 		}
 		if ( restrictions [ 0 ].equals ( "xcor" ) ) {
 		    for ( Turtle turtle : turtles ) {
+		    if ( restrictions [ 1 ].equals ( "=" ) ) {
+			if ( turtle.getXcor() == Double.parseDouble ( restrictions [ 2 ] ) )
+			    callTurtles.add ( turtle );
+		    }
+		    else if ( restrictions [ 1 ].equals ( "!=" ) ) {
+			if ( turtle.getXcor() != Double.parseDouble ( restrictions [ 2 ] ) )
+			    callTurtles.add ( turtle );
+			}
+		    else if ( restrictions [ 1 ].equals ( ">" ) ) {
+			if ( turtle.getXcor() > ( Double.parseDouble ( restrictions [ 2 ] ) ) )
+			    callTurtles.add ( turtle );
+		    }
+		    else if ( restrictions [ 1 ].equals ( "<" ) ) {
+			//System.out.println ( "< called, turtle's xcor is: " + turtle.getXcor() );
+			if ( turtle.getXcor() < ( Double.parseDouble ( restrictions [ 2 ] ) ) )
+			    callTurtles.add ( turtle );
+		    }		
+		    }
+		}
+		
+		else if ( restrictions [ 0 ].equals ( "ycor" ) ) {
+		    for ( Turtle turtle : turtles ) {
 			if ( restrictions [ 1 ].equals ( "=" ) ) {
-			    if ( turtle.getXcor() == Double.parseDouble ( restrictions [ 2 ] ) )
+			    if ( turtle.getYcor() == Double.parseDouble ( restrictions [ 2 ] ) )
 				callTurtles.add ( turtle );
 			}
 			else if ( restrictions [ 1 ].equals ( "!=" ) ) {
-			    if ( turtle.getXcor() != Double.parseDouble ( restrictions [ 2 ] ) )
+			    if ( turtle.getYcor() != Double.parseDouble ( restrictions [ 2 ] ) )
 				callTurtles.add ( turtle );
 			}
 			else if ( restrictions [ 1 ].equals ( ">" ) ) {
-			    if ( turtle.getXcor() > ( Double.parseDouble ( restrictions [ 2 ] ) ) )
+			    if ( turtle.getYcor() > ( Double.parseDouble ( restrictions [ 2 ] ) ) )
 				callTurtles.add ( turtle );
 			}
 			else if ( restrictions [ 1 ].equals ( "<" ) ) {
-			    System.out.println ( "< called, turtle's xcor is: " + turtle.getXcor() );
-			    if ( turtle.getXcor() < ( Double.parseDouble ( restrictions [ 2 ] ) ) )
+			    //System.out.println ( "< called, turtle's xcor is: " + turtle.getYcor() );
+			    if ( turtle.getYcor() < ( Double.parseDouble ( restrictions [ 2 ] ) ) )
 				callTurtles.add ( turtle );
 			}		
 		    }
 		}
-		if ( restrictions [ 0 ].equals ( "ycor" ) ) {
 
-		}
-		if ( restrictions [ 0 ].equals ( "heading" ) ) {
+		else if ( restrictions [ 0 ].equals ( "heading" ) ) {
 		    System.out.println ( "restrict based on heading" );
 		    for(Turtle turtle : turtles) {
 			System.out.println ( "turtle heading: " + turtle.getDir() );
@@ -728,9 +775,238 @@ class myPanel extends JLayeredPane {
 	    //if ( agent.get ( 1 ).equals ( "at" ) ) {
 	    //}
 	    }
+	    //else System.out.println ( "not doing anything" );
+	    else if ( agentType.equals ( "patches" ) ) {
+		//do things
+		if ( agents.get ( 1 ).equals ( "with" ) ) {
+		    String[] restrictions1 = new String [ agents.size() - 4 ];
+		    for ( int i = 3 ; !agents.get ( i ).equals ( "]" ) ; i++ )
+			restrictions1 [ i - 3 ] = agents.get ( i );
+		    ArrayList<String> restrictions = new ArrayList<String>();
+		    //ArrayList<String> combineRestrictions = new ArrayList<String>(); // combines booleans, as in- patches with [ pycor > 5 and pxcor > 5 ] becomes [ pycor->5 , and , pxcor->-5 ] 
+		    //makes things within parentheses one item in restrictions, for example= patches with [ xcor > ( 5 + 1 ) ] becomes [ xcor , > , 5;+;1; ]
+		    for ( int i = 0 ; i < restrictions1.length ; i++ ) {
+			if ( !restrictions1 [ i ].equals ( "(" ) ) {
+			    restrictions.add ( restrictions1 [ i ] );
+			}
+			else {
+			    String parentheses = new String();
+			    i = i + 1;
+			    while ( ! restrictions1 [ i ].equals ( ")" ) ) {
+				parentheses = parentheses + restrictions1 [ i ] + ";";
+				i = i + 1;
+			    }
+			    restrictions.add ( parentheses );
+			}
+		    }
+		    //System.out.println ( "restrictions for patches: " + Arrays.toString ( restrictions ) );
+		    System.out.println ( "restrictions for patches: " + restrictions );
+		    ArrayList<int[]> callPatches = new ArrayList<int[]>(); //turtles on which the methods are being called
+		    ArrayList<String> operators = new ArrayList<String>(); //ands and ors are added here
+		    for ( int i = 0 ; i < restrictions.size() ; i = i + 4 ) {
+			/*if ( restrictions.get ( i ).equals ( "pxcor" ) ) {
+			}
+			else if ( restrictions.get ( i ).equals ( "pycor" ) ) {
+			}
+			else if ( restrictions.get ( i ).equals ( "pcolor" ) ) {
+			}*/
+			if ( i + 3 < restrictions.size() ) {
+			    if ( restrictions.get ( i + 3 ).equals ( "and" ) ) {
+				System.out.println ( "and" );
+				operators.add ( "and" );
+			    }
+			    else if ( restrictions.get ( i + 3 ).equals ( "or" ) ) {
+				operators.add ( "or" );
+			    }
+			    else System.out.println ( "failed- restrictions: " + restrictions );
+			}
+			//if ( operators.get ( 0 ).equals ( "and" ) ) {
+			/*for ( int r = 0 ; r < patches.length - 5 ; r++ ) {
+			    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+				int[] ptch = { r , c };
+				if ( satisfiesCondition ( ptch , restrictions.get ( 0 ) + "-" + restrictions.get ( 1 ) + "-" + restrictions.get ( 2 ) ) ) {
+				    //patches [ r ] [ c ].setBackground ( Color.RED );
+				    int[] add = { r , c };
+				    System.out.println ( "added patch " + r + ", " + c );
+				    callPatches.add ( add );
+				}
+			    }
+			    }*/
+			//}
+		    }
+		    if ( operators.size() == 0 ) {
+			for ( int r = 0 ; r < patches.length ; r++ ) {
+			    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+				int[] patch = { r , c };
+				if ( satisfiesCondition ( patch , restrictions.get ( 0 ) + "-" + restrictions.get ( 1 ) + "-" + restrictions.get ( 2 ) ) )
+				    callPatches.add ( patch );
+			    }
+			}
+		    }
+		    for ( int j = 0 ; j < operators.size() ; j++ ) {
+			System.out.println ( "restrictions: " + restrictions );
+			System.out.println ( "operators: " + operators.get ( j ) );
+			if ( operators.get ( j ).equals ( "and" ) ) {
+			    for ( int r = 0 ; r < patches.length ; r++ ) {
+			    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+				int[] patch = { r , c };
+				if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) && satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
+				    System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
+				    int[] add = { r , c };
+				    callPatches.add ( add );
+				}
+			    }
+			    }
+			}
+			else if ( operators.get ( j ).equals ( "or" ) ) {			
+			    for ( int r = 0 ; r < patches.length ; r++ ) {
+				for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+				    int[] patch = { r , c };
+				    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) || satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
+					System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
+					int[] add = { r , c };
+					callPatches.add ( add );
+				    }
+				}
+			    }
+			    }
+		    }
+		    //System.out.println ( "callPatches: " + callPatches );
+		    for ( int i = 0 ; i < callPatches.size() ; i++ ) {
+			//System.out.println ( "callPatches: " + Arrays.toString ( callPatches.get ( i ) ) );
+		    }
+		    patchCommands ( callPatches , commands );
+		}
+	    }
 	}
     }//end ask
-
+    public boolean satisfiesCondition ( int[] coors , String conditions1 ) {
+	//System.out.println ( "conditions in satisfiesCondition: "+ conditions1 );
+	//System.out.println ( "coors in satisfiesCondition: " + Arrays.toString ( coors ) );
+	String conditions = new String();
+	conditions = conditions1.toString();
+	String a = conditions.substring ( 0 , conditions.indexOf ( "-" ) );
+	conditions = conditions.substring ( conditions.indexOf ( "-" ) + 1 );
+	//System.out.println ( "after a: " + conditions );
+	String b = conditions.substring ( 0 , conditions.indexOf ( "-" ) );
+	conditions = conditions.substring ( conditions.indexOf ( "-" ) + 1 );
+	//System.out.println ( "after b: " + conditions );
+	String c = conditions;
+	int first , second , newC;
+	if ( c.contains ( ";" ) ) {
+	String[] ops = new String [ 3 ];
+	for ( int i = 0 ; i < 3 ; i++ ) {
+	    ops [ i ] = c.substring ( 0 , c.indexOf ( ";" ) );
+	    c = c.substring ( c.indexOf ( ";" ) + 1 );
+	}
+	try {
+	    first = Integer.parseInt ( ops [ 0 ] );
+	} catch ( Exception e ) {
+	    first = globals.get ( ops [ 0 ] );
+	}
+	try {
+	    second = Integer.parseInt ( ops [ 2 ] );
+	} catch ( Exception e ) {
+	    second = globals.get ( ops [ 2 ] );
+	    //System.out.println ( e );
+	}
+	if ( ops [ 1 ].equals ( "+" ) )
+	    newC =  first + second;
+	//System.out.println ( "changed global: " + globals.get ( change ) );
+	else if ( ops [ 1 ].equals ( "-" ) )
+	    newC = first - second;
+	else if ( ops [ 1 ].equals ( "*" ) )
+	    newC = first * second;
+	else if ( ops [ 1 ].equals ( "/" ) )
+	    newC = first / second;
+	else throw new UnsupportedOperationException();
+	} else newC = Integer.parseInt ( c );
+	//System.out.println ( "newC: " + newC );
+	//System.out.println ( "c made" );
+	//conditions = conditions.substring ( conditions.indexOf ( "-" ) + 1 );
+	//System.out.println ( "a: " + a + "\nb: " + b + "\nc: " + c );
+	if ( a.equals ( "pxcor" ) ) {
+	    if ( b.equals ( ">" ) ) {
+		if ( coors [ 1 ] > newC + patches.length / 2 ) {
+		    //System.out.println ( "true" );
+		    return true;
+		}
+		int aa = newC + patches.length / 2;
+		System.out.println ( "returned false with x: " + coors [ 1 ] + "\npatches.length/2: " + patches.length / 2 + "\nnewC: " + newC );
+		return false;
+	    }
+	    else if ( b.equals ( "<" ) ) {
+		if ( coors [ 1 ] < newC + patches.length / 2 ) {
+		    //System.out.println ( "true" );
+		    return true;
+		}
+		return false;
+	    }
+	}
+	//return true;
+	else if ( a.equals ( "pycor" ) ) {
+	    System.out.println ( "pycor called" );
+	    if ( b.equals ( ">" ) ) {
+		if ( coors [ 0 ] < patches.length / 2 - newC ) {
+		    //System.out.println ( "true" );
+		    return true;
+		}
+		return false;
+	    }
+	    else if ( b.equals ( "<" ) ) {
+		if ( coors [ 0 ] > patches.length / 2 - newC ) {
+		    System.out.println ( "true " + coors [ 0 ] );
+		    return true;
+		}
+		System.out.println ( "returned false with y: " + coors [ 0 ] );
+		return false;
+	    }
+	}
+	return false;
+    }
+    public void patchCommands ( ArrayList<int[]> patches , ArrayList<String> commands ) {
+	for ( int i = 0 ; i < commands.size() ; i++ ) {
+	    if ( commands.get ( i ).equals ( "set" ) ) {
+		i = i + 1;
+		if ( commands.get ( i ).equals ( "pcolor" ) ) {
+		    i = i + 1;
+		    Color newColor;
+		    String color = commands.get ( i );
+		    System.out.println ( "color changing to: " + color );
+		    //~~~~~~~~~~~~~~
+		    //i += 1;
+		    if( color.equals("red")) {
+			//JOptionPane.showMessageDialog ( null , "red" );
+			//System.out.println ( "patches are red" );
+			//turtle.setColor(Color.RED);
+			newColor = Color.RED;
+		    }
+		    else if( color.equals("green")) {
+			//turtle.setColor(Color.GREEN);
+			newColor = Color.GREEN;
+		    }
+		    else if( color.equals("blue")) {
+			//turtle.setColor(Color.BLUE);
+			newColor = Color.BLUE;
+		    }
+		    else if( color.equals("yellow")) {
+			//turtle.setColor(Color.YELLOW);
+			newColor = Color.YELLOW;
+		    }
+		    else {
+			newColor = null;
+			System.out.println ( "invalid color" );
+		    }
+		    for ( int[] coors : patches ) {
+			this.patches [ coors [ 0 ] ] [ coors [ 1 ] ].setBackground ( newColor );
+		    }
+		    //patchSpace.setBackground ( newColor );
+		    this.update ( this.getGraphics() );
+		    //try { Thread.sleep ( 60 ); } catch ( Exception e ) {}
+		}
+	    }
+	}
+    }
     public void callCommands ( ArrayList<Turtle> turtles , ArrayList<String> commands ) {
 	System.out.println ( "methods called on turtles: " + turtles );
 	for ( int i = 0 ; i < commands.size() ; i++ ) {
@@ -893,7 +1169,7 @@ class myPanel extends JLayeredPane {
 	    }
 	    System.out.println ( "ops: " + Arrays.toString ( ops ) );
 	    int first , second;
-	    try { 
+	    try {
 		first = Integer.parseInt ( ops [ 0 ] );
 	    } catch ( Exception e ) {
 		first = globals.get ( ops [ 0 ] );
@@ -1059,7 +1335,7 @@ class Turtle extends JPanel {
 	//this.getContentPane().add ( image );
 	int rotation = (int) ( Math.random() * 360 );
 	this.dir = rotation;
-	System.out.println ( "rotate " + rotation + " degrees" );
+	//System.out.println ( "rotate " + rotation + " degrees" );
 	this.image = rotate ( (BufferedImage) image , ( rotation ) );
 	update ( this.getGraphics() );
 	//System.out.println ( "update here" );
@@ -1091,7 +1367,7 @@ class Turtle extends JPanel {
     }
     //rotate image
     public BufferedImage rotate ( BufferedImage image , int rotation ) {
-	System.out.println ( "rotate" + rotation );
+	//System.out.println ( "rotate" + rotation );
 	int w = image.getWidth();
 	int h = image.getHeight();
 	BufferedImage buffImage = new BufferedImage ( w , h , image.getType() );
