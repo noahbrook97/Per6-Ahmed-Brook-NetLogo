@@ -92,7 +92,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to change ask turtles with [ xcor < 15 ] [ set color blue ] end to setup ca crt 5 ask turtles with [ who = 0 ] [ set color green set ycor 5 ] ask turtles with [ who = 1 ] [ set ycor -5 ] ask turtles with [ who = 2 ] [ set xcor 5 ] ask turtles with [ who = 3 ] [ set xcor -5 ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 ask turtles with [ color = red ] [ set color green ] end");
+	code = new JTextArea("globals [ a ] to change ask turtles with [ heading < 90 ] [ set color blue ] end to setup ca crt 5 ask turtles with [ who = 0 ] [ set color green set ycor 5 ] ask turtles with [ who = 1 ] [ set ycor -5 ] ask turtles with [ who = 2 ] [ set xcor 5 ] ask turtles with [ who = 3 ] [ set xcor -5 ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 ask turtles with [ color = red ] [ set color green ] end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -657,10 +657,12 @@ class myPanel extends JLayeredPane {
 				    callTurtles.add ( turtle );
 			    }
 			}
-		    } catch ( Exception e ) {
+		    }
+		    catch ( Exception e ) {
 			System.out.println ( e );
 		    }
 		}
+		
 		if ( restrictions [ 0 ].equals ( "breed" ) ) {
 		    
 		}
@@ -689,7 +691,36 @@ class myPanel extends JLayeredPane {
 
 		}
 		if ( restrictions [ 0 ].equals ( "heading" ) ) {
-
+		    System.out.println ( "restrict based on heading" );
+		    for(Turtle turtle : turtles) {
+			System.out.println ( "turtle heading: " + turtle.getDir() );
+			if(restrictions[1].equals( "=" ) ) {
+			    if(turtle.getDir() == Integer.parseInt(restrictions[2] )) 
+				callTurtles.add ( turtle );
+			}
+			else if(restrictions[1].equals( "!=" )) {
+			    if(turtle.getDir() != Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else if(restrictions[1].equals( "<")) {
+			    if(turtle.getDir() < Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else if(restrictions[1].equals( ">" )) {
+			    if(turtle.getDir() > Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else if(restrictions[1].equals( "<=" )) {
+			    if(turtle.getDir() <= Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else if(restrictions[1].equals( ">=" )) {
+			    if(turtle.getDir() >= Integer.parseInt(restrictions[2] ))
+				callTurtles.add( turtle );
+			}
+			else
+			    System.out.println("not a valid operator");
+		    }
 		}
 	    //call methods on selected turtles
 		callCommands ( callTurtles , commands );
@@ -698,8 +729,7 @@ class myPanel extends JLayeredPane {
 	    //}
 	    }
 	}
-	//while ( 
-    }
+    }//end ask
 
     public void callCommands ( ArrayList<Turtle> turtles , ArrayList<String> commands ) {
 	System.out.println ( "methods called on turtles: " + turtles );
@@ -717,14 +747,14 @@ class myPanel extends JLayeredPane {
 		    //I DON'T KNOW WHY IT'S 10- CHANGE TO SIZE OF EACH PATCH LATER!!!
 		    if ( commands.get ( i ).equals ( "fd" ) ) {
 			System.out.println ( "called fd" );
-			xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( dir ) ) );
-			ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( dir ) ) );
+			xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( -1 * dir ) ) );
+			ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( -1 * dir ) ) );
 		    }
 		    else {
-			xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( dir ) ) );
-			ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( dir ) ) );
+			xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( -1 * dir ) ) );
+			ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( -1 * dir ) ) );
 		    }
-		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( dir ) + "\ncos dir: " + Math.cos ( dir ) );
+		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( -1 * dir ) + "\ncos dir: " + Math.cos ( -1 * dir ) );
 		    turtle.setXcor ( xcor );
 		    turtle.setYcor ( ycor );
 		    turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
@@ -940,6 +970,17 @@ class Turtle extends JPanel {
 	breed = new String();
 	
 	//color = Color.RED;
+	/*
+	int colorprob = (int) (Math.random() * 4);
+	if(colorprob < 1)
+	    color = Color.RED;
+	else if(1 < colorprob && colorprob < 2)
+	    color = Color.GREEN;
+	else if(2 < colorprob && colorprob < 3)
+	    color = Color.BLUE;
+	else
+	color = Color.YELLOW; */
+	color = Color.RED;
 	try {
 	    Image image = ImageIO.read (getClass().getResource("red_arrow.png"));
 	    setImage ( image );
@@ -972,7 +1013,7 @@ class Turtle extends JPanel {
 		this.color = color;
                 Image image = ImageIO.read (getClass().getResource("green_arrow.png"));
                 //this.setImage( image );
-		this.image = rotate ( resizeImage ( image , 13 , 13 ) , -1 * dir );
+		this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
 		//this.image = resizeImage ( image , 13 , 13 );
                 System.out.println("setting color to green" );
             }
@@ -980,7 +1021,7 @@ class Turtle extends JPanel {
 		this.color = color;
                 Image image = ImageIO.read (getClass().getResource("red_arrow.png"));
                 //this.setImage( image );
-		this.image = rotate ( resizeImage ( image , 13 , 13 ) , -1 * dir );
+		this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
 		//this.image = resizeImage ( image , 13 , 13 );
                 System.out.println("setting color to red" );
             }
@@ -988,7 +1029,7 @@ class Turtle extends JPanel {
 		this.color = color;
                 Image image = ImageIO.read (getClass().getResource("blue_arrow.png"));
                 //this.setImage( image );
-		this.image = rotate ( resizeImage ( image , 13 , 13 ) , -1 * dir );
+		this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
 		//this.image = resizeImage ( image , 13 , 13 );
                 System.out.println("setting color to blue" );
             }
@@ -996,7 +1037,7 @@ class Turtle extends JPanel {
 		this.color = color;
                 Image image = ImageIO.read (getClass().getResource("yellow_arrow.png"));
                 //this.setImage( image );
-		this.image = rotate ( resizeImage ( image , 13 , 13 ) , -1 * dir );
+		this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
                 System.out.println("setting color to yellow" );
             }
 
@@ -1017,7 +1058,7 @@ class Turtle extends JPanel {
 	Image image = resizeImage ( image1 , 13 , 13 );
 	//this.getContentPane().add ( image );
 	int rotation = (int) ( Math.random() * 360 );
-	this.dir = -1 * rotation;
+	this.dir = rotation;
 	System.out.println ( "rotate " + rotation + " degrees" );
 	this.image = rotate ( (BufferedImage) image , ( rotation ) );
 	update ( this.getGraphics() );
