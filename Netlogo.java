@@ -92,7 +92,7 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea("globals [ a ] to change ask turtles with [ color = green ] [ set color blue ] end to setup ca crt 1 ask turtles [ set color green ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 ask turtles [ set color green ] end");
+	code = new JTextArea("globals [ a ] to change ask turtles with [ xcor < 15 ] [ set color blue ] end to setup ca crt 5 ask turtles with [ who = 0 ] [ set color green set ycor 5 ] ask turtles with [ who = 1 ] [ set ycor -5 ] ask turtles with [ who = 2 ] [ set xcor 5 ] ask turtles with [ who = 3 ] [ set xcor -5 ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 ask turtles with [ color = red ] [ set color green ] end");
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -551,6 +551,7 @@ class myPanel extends JLayeredPane {
     //create a new turtle in middle of grid, s is integer of how many turtle you want to create
     public void crt ( String s ) {
 	int nums = Integer.parseInt ( s );
+	for ( int i = 0 ; i < nums ; i++ ) {
 	Turtle turtle = new Turtle ( patches.length / 2 , patches [ patches.length / 2 ].length / 2 );
 	turtles.add ( turtle );
 	try {
@@ -564,6 +565,7 @@ class myPanel extends JLayeredPane {
 	    System.out.println ( "turtle at : " + patches.length / 2 );
 	} catch ( Exception e ) {
 	    System.out.println ( "come on man" );
+	}
 	}
 	//panels [ panels.length / 2 ] [ panels [ panels.length / 2 ].length / 2 ].setBackground ( Color.GREEN );
     }
@@ -660,10 +662,28 @@ class myPanel extends JLayeredPane {
 		    }
 		}
 		if ( restrictions [ 0 ].equals ( "breed" ) ) {
-
+		    
 		}
 		if ( restrictions [ 0 ].equals ( "xcor" ) ) {
-
+		    for ( Turtle turtle : turtles ) {
+			if ( restrictions [ 1 ].equals ( "=" ) ) {
+			    if ( turtle.getXcor() == Double.parseDouble ( restrictions [ 2 ] ) )
+				callTurtles.add ( turtle );
+			}
+			else if ( restrictions [ 1 ].equals ( "!=" ) ) {
+			    if ( turtle.getXcor() != Double.parseDouble ( restrictions [ 2 ] ) )
+				callTurtles.add ( turtle );
+			}
+			else if ( restrictions [ 1 ].equals ( ">" ) ) {
+			    if ( turtle.getXcor() > ( Double.parseDouble ( restrictions [ 2 ] ) ) )
+				callTurtles.add ( turtle );
+			}
+			else if ( restrictions [ 1 ].equals ( "<" ) ) {
+			    System.out.println ( "< called, turtle's xcor is: " + turtle.getXcor() );
+			    if ( turtle.getXcor() < ( Double.parseDouble ( restrictions [ 2 ] ) ) )
+				callTurtles.add ( turtle );
+			}		
+		    }
 		}
 		if ( restrictions [ 0 ].equals ( "ycor" ) ) {
 
@@ -751,7 +771,23 @@ class myPanel extends JLayeredPane {
 			turtleSpace.add ( turtle );
 		    }
 		    //ADD OTHER COLORS OF RAINBOW
-		}	      
+		}
+		else if ( commands.get ( i ).equals ( "xcor" ) ) {
+		    for ( Turtle turtle : turtles ) {
+			System.out.println ( "changed xcor" );
+			turtle.setXcor ( Double.parseDouble ( commands.get ( i + 1 ) ) * 10 );
+			turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 + (int)turtle.getXcor() , /*25 + patches [ patches.length / 2 ].length / 2*/135 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+		    }
+		    i = i + 1;
+		}
+		else if ( commands.get ( i ).equals ( "ycor" ) ) {
+		    for ( Turtle turtle : turtles ) {
+			System.out.println ( "changed ycor" );
+			turtle.setYcor ( Double.parseDouble ( commands.get ( i + 1 ) ) * -10 );
+			turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 + (int)turtle.getYcor() , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+		    }
+		    i = i + 1;
+		}
 		    
 		//~~~~~~~~~~~
 
@@ -902,7 +938,8 @@ class Turtle extends JPanel {
 	this.ycor = ycor;
 	//dir = (int) ( Math.random() * 360 );
 	breed = new String();
-	color = Color.RED;
+	
+	//color = Color.RED;
 	try {
 	    Image image = ImageIO.read (getClass().getResource("red_arrow.png"));
 	    setImage ( image );
@@ -922,6 +959,8 @@ class Turtle extends JPanel {
     }
     public void setXcor ( double newX ) {
 	xcor = newX;
+	//setColor ( getColor() );
+	//this.setBounds ( /*25 + 12 * patches.length / 2*/135 + (int)newX , /*25 + patches [ patches.length / 2 ].length / 2*/135 , ( (BufferedImage) this.getImage() ).getWidth() , ( (BufferedImage) this.getImage() ).getHeight() );
     }
     public void setYcor ( double newY ) {
 	ycor = newY;
