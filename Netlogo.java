@@ -902,6 +902,16 @@ class Turtle extends JPanel {
 	this.ycor = ycor;
 	//dir = (int) ( Math.random() * 360 );
 	breed = new String();
+	/*
+	int colorprob = (int) (Math.random() * 4);
+	if(colorprob < 1)
+	    color = Color.RED;
+	else if(1 < colorprob && colorprob < 2)
+	    color = Color.GREEN;
+	else if(2 < colorprob && colorprob < 3)
+	    color = Color.BLUE;
+	else
+	color = Color.YELLOW; */
 	color = Color.RED;
 	try {
 	    Image image = ImageIO.read (getClass().getResource("red_arrow.png"));
