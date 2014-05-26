@@ -37,6 +37,7 @@ class NetlogoBoard implements Runnable {
 
     public void run() {
 	boolean alreadyDone = false;
+	int count = 0;
 	while ( true ) {
 	    String txt = s.code.getText();
 	    if ( s.getSelectedIndex() == 0 ) {
@@ -57,22 +58,33 @@ class NetlogoBoard implements Runnable {
 		}
 	    }
 	    HashMap<String , Integer> globals = s.iface.getGlobals();
+	    ArrayList<JLabel> addLabels = new ArrayList<JLabel>();
 	    for ( JLabel m : s.getMonitors() ) {
 	    //for ( monitors ) : if globals = different, monitors.setText globals
 		//System.out.println ( "monitors: " + m.getText() );
 		String key = m.getText().substring ( 0 , m.getText().indexOf ( ":" ) );
 		Integer value = Integer.parseInt ( m.getText().substring ( m.getText().indexOf ( ":" ) + 2 ) );
 		if ( ! globals.get ( key ).equals ( value ) ) {
+		    count--;
 		    //System.out.println ( "changed" );
+		    //JOptionPane.showMessageDialog ( null , "changed" );
 		    //System.out.println ( "monitor should read: " + key + ": " + globals.get ( key ) );
-		String newValue = globals.get ( key ).toString();
+		    String newValue = key + ": " + globals.get ( key ).toString();
 		//m.setText ( key + ": " + 0 );
 		//System.out.println ( "new value: " + value );
 		//m.setText ( m.getText().substring ( 0 , m.getText().length() - 1 ) + newValue );
-		m.setText ( key + ": " + newValue );
-		//m.setText ( key + ": " + globals.get ( key ) );
+		    //m.setText ( newValue );
+		    //m.setText ( "a: " + count );
+		    //s.remMonitor ( m );
+		    //addLabels.add ( m );
+		    m.setText ( key + ": " + globals.get ( key ) );
 		}
+		//else System.out.println ( "text and global are same:\nvalue: " + globals.get ( key ) + "text: " + value );
 	    }
+	    /*for ( JLabel m : addLabels )
+		s.addMonitor ( m );
+	    for ( JLabel m : addLabels )
+		s.remMonitor ( m );*/
 	}
     }
 }
@@ -84,7 +96,7 @@ class Screen extends JTabbedPane {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea ( "to setup ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end" );
+	code = new JTextArea ( "globals [ a ] to setup ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -94,6 +106,12 @@ class Screen extends JTabbedPane {
     public ArrayList<JLabel> getMonitors() {
 	return iface.getMonitors();
     }
+    /*public void remMonitor ( JLabel m ) {
+	iface.remMonitor ( m );
+    }
+    public void addMonitor ( JLabel m ) {
+	iface.addMonitor ( m );
+	}*/
     public HashMap<String , Integer> getGlobals() {
 	return iface.getGlobals();
     }
@@ -141,6 +159,12 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     public ArrayList<JLabel> getMonitors() {
 	return monitors;
     }
+    /*public void remMonitor ( JLabel m ) {
+	monitors.remove ( m );
+    }
+    public void addMonitor ( JLabel m ) {
+	monitors.add ( m );
+	}*/
     public HashMap<String , Integer> getGlobals() {
 	return f.getGlobals();
     }
@@ -278,7 +302,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     public void mouseClicked ( MouseEvent e ) {
 	//System.out.println ( "mouseClicked" );
 	if ( SwingUtilities.isRightMouseButton ( e ) ) {
-	    //System.out.println ( "right clicked" );
+	    System.out.println ( "right clicked" );
 
 	    //create options menu with their buttons and stuff
 	    JPopupMenu menu = new JPopupMenu();
@@ -384,18 +408,33 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		ArrayList<String> listOfMethods = methods.get ( mthds );
 		for ( String mthd : listOfMethods ) {
 		    //mthd has ; if it has parameters- call method with parameters
+		    try {
 		    if ( mthd.contains ( ";" ) ) {
 			//System.out.println ( "mthd: " + mthd );
 			Method m = f.getClass().getMethod 
 			                        (mthd.substring(0, mthd.indexOf( ";" )) , String.class );
 			m.invoke ( f , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
+		    }
+		    else {
+			//call method with no parameters
+			Method m = f.getClass().getMethod ( mthd , null );
+			m.invoke ( f , null );
+		    }
+		    } catch ( NoSuchMethodException excep ) {
+			System.out.println ( "call method: " + mthd );
+			ArrayList<String> listMethods = methods.get ( mthd );
+			for ( String mtd : listMethods ) {
+			    if ( mtd.contains ( ";" ) ) {
+				Method m = f.getClass().getMethod ( mtd.substring ( 0 , mtd.indexOf ( ";" ) ) , String.class );
+				m.invoke ( f , mtd.substring ( mtd.indexOf ( ";" ) + 1 ) );
+			    }
+			    else {
+				Method m = f.getClass().getMethod ( mtd , null );
+				m.invoke ( f , null );
+			    }
+			}
+		    }
 		}
-		else {
-		    //call method with no parameters
-		    Method m = f.getClass().getMethod ( mthd , null );
-		    m.invoke ( f , null );
-		}
-	    }
 	    } catch ( Exception exc ) {
 	    System.out.println ( "nahh bro" );
 	    System.out.println ( methods );
@@ -619,6 +658,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			}
 		    }
 		    catch ( Exception e ) {
+			System.out.println ( "messed up here" );
 			System.out.println ( e );
 		    }
 		}
@@ -995,6 +1035,24 @@ class myPanel extends JLayeredPane implements MouseListener {
 		
 		else 
 		    System.out.println("You are setting incorrectly");
+		/*Turtle[] moveTurtles = new Turtle [ turtles.size() ];
+		Turtle[] removeTurtles = new Turtle [ turtles.size() ];
+		int index = 0;
+		for ( Turtle turtle : turtles ) {
+		    removeTurtles [ index ] = turtle;
+		    Turtle t = new Turtle ( turtle.getXcor() , turtle.getYcor() , turtle.getDir() , turtle.getColor() , turtle.getBreed() );
+		    moveTurtles [ index ] = t;
+		    index++;
+		    turtles.add ( t );
+		    turtleSpace.add ( t );
+		    t.setBounds ( (int) t.getXcor() + 124 , (int) t.getYcor() + 124 , turtle.getIcon().getIconHeight(),  turtle.getIcon().getIconHeight() );
+		}
+		for ( Turtle turtle : removeTurtles ) {
+		    turtleSpace.remove ( turtle );
+		    turtles.remove ( turtle );
+		}
+		*/
+		this.update ( this.getGraphics() );
 	    }
 	}
     }
@@ -1055,6 +1113,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		second = globals.get ( ops [ 2 ] );
 		//System.out.println ( e );
 	    }
+	    //globals.remove ( change );
 	    if ( ops [ 1 ].equals ( "+" ) )
 		globals.put ( change , first + second );
 	    else if ( ops [ 1 ].equals ( "-" ) )
@@ -1063,6 +1122,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		globals.put ( change , first * second );
 	    else if ( ops [ 1 ].equals ( "/" ) )
 		globals.put ( change , first / second );
+	    //ask ( "turtles;[;fd;1;bk;1;];" );
 	}
 	if ( change.equals ( "breed" ) ) {
 	    //do things here
