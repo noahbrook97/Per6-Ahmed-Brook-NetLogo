@@ -92,7 +92,8 @@ class Screen extends JTabbedPane implements ActionListener {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
 	this.add ( "Info" , new JPanel() );
-	code = new JTextArea(/*"globals [ a ] to change ask turtles with [ xcor > 0 ] [ set color blue ] ask turtles with [ xcor < 0 ] [ set color yellow ] end to setup ca crt 5 ask patches [ set pcolor red ] ] ask turtles with [ who = 0 ] [ set color green set ycor 5 ] ask turtles with [ who = 1 ] [ set ycor -5 ] ask turtles with [ who = 2 ] [ set xcor 5 ] ask turtles with [ who = 3 ] [ set xcor -5 ] end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 ask turtles with [ color = red ] [ set color green ] end"*/"to setup ca crt 5 ask patches with [ pxcor > ( 5 + 1 ) or pycor < 0 ] [ set pcolor red ] end" );
+	//code = new JTextArea("globals [ a ] to change ask turtles with [ xcor > 0 ] [ set color blue ] ask turtles with [ xcor < 0 ] [ set color yellow ] end to setup ca ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] " /*crt 5 ask turtles with [ who = 0 ] [ set color green set ycor 5 ] ask turtles with [ who = 1 ] [ set ycor -5 ] ask turtles with [ who = 2 ] [ set xcor 5 ] ask turtles with [ who = 3 ] [ set xcor -5 ] */ + "end to move ask turtles with [ color = green ] [ fd 1 ] set a a + 1 end to create crt 1 end" );//ask turtles with [ color = red ] [ set color green ] end"/*"to setup ca crt 5 ask patches with [ pxcor > ( 5 + 1 ) or pycor < 0 ] [ set pcolor red ] end"*/ );
+	code = new JTextArea ( "to setup ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -305,7 +306,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	//System.out.println ( "mouseExited" );
     }
     public void mouseEntered ( MouseEvent e ) {
-	//System.out.println ( "mouseEntered" );
+	System.out.println ( "mouseEntered" );
     }
     public void mouseReleased ( MouseEvent e ) {
 	//System.out.println ( "mouseReleased" );
@@ -529,12 +530,13 @@ class myPanel extends JLayeredPane implements MouseListener {
 	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
 	this.add ( turtleSpace );
 	addMouseListener ( this );
+	turtleSpace.addMouseListener ( this );
     }
     public void mouseExited ( MouseEvent e ) {
-	//System.out.println ( "mouseExited" );
+	System.out.println ( "mouseExited" );
     }
     public void mouseEntered ( MouseEvent e ) {
-	//System.out.println ( "mouseEntered" );
+	System.out.println ( "mouseEntered" );
 	//System.out.println ( MouseInfo.getPointerInfo().getLocation() );
     }
     public void mouseReleased ( MouseEvent e ) {
@@ -566,9 +568,11 @@ class myPanel extends JLayeredPane implements MouseListener {
     }
     //create a new turtle in middle of grid, s is integer of how many turtle you want to create
     public void crt ( String s ) {
+	//JOptionPane.showMessageDialog ( null , "turtle created" );
 	int nums = Integer.parseInt ( s );
 	for ( int i = 0 ; i < nums ; i++ ) {
-	Turtle turtle = new Turtle ( patches.length / 2 , patches [ patches.length / 2 ].length / 2 );
+	    Turtle turtle = new Turtle ( patches.length / 2, patches [ patches.length / 2 ].length / 2 );
+	    //Turtle turtle = new Turtle();
 	turtles.add ( turtle );
 	try {
 	    //Image image = ImageIO.read ( getClass().getResource ( "green_arrow.png" ) );
@@ -576,7 +580,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    //patches [ patches.length / 2 ] [ patches [ patches.length / 2 ].length / 2 ].setImage ( turtle.getImage() );
 	    turtleSpace.add ( turtle );
 	    //I HAVE NO IDEA WHY 135 SETS THE TURTLE AT THE RIGHT SPOT- FIX THIS LATER!!! DON'T BE LAZY/FORGET TO DO THIS!!!
-	    turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+	    turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 , /*( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight()*/turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 	    //System.out.println ( "adasheight: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\niwfwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
 	    //System.out.println ( "turtle at : " + patches.length / 2 );
 	} catch ( Exception e ) {
@@ -1015,7 +1019,16 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    if ( commands.get ( i ).equals ( "fd" ) || commands.get ( i ).equals ( "bk" ) ) {
 		//System.out.println ( "command: " + commands.get ( i ) );
 		//System.out.println ( turtles );
-		for ( Turtle turtle : turtles ) {
+		//for ( Turtle turtle : turtles ) {
+		//for ( int j = 0 ; j < turtles.size() ; j++ ) {
+		int j = 0;
+		ArrayList<Turtle> removeTurtles = new ArrayList<Turtle>();
+		ArrayList<Turtle> turtles1 = new ArrayList<Turtle>();
+		for ( Turtle turtle : turtles )
+		    turtles1.add ( turtle );
+		while ( j < turtles1.size() ) {
+		    Turtle turtle = turtles1.get ( j );
+		    j = j + 1;
 		    double xcor = turtle.getXcor();
 		    double ycor = turtle.getYcor();
 		    int dir = turtle.getDir();
@@ -1031,14 +1044,35 @@ class myPanel extends JLayeredPane implements MouseListener {
 			ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( -1 * dir ) ) );
 		    }
 		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( -1 * dir ) + "\ncos dir: " + Math.cos ( -1 * dir ) );
-		    turtle.setXcor ( xcor );
-		    turtle.setYcor ( ycor );
-		    turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+		    removeTurtles.add ( turtle );
+		    //turtleSpace.remove ( turtle );
+		    //turtleSpace.validate();
+		    //turtleSpace.repaint();
+		    //this.update ( this.getGraphics() );
+		    //patches.repaint();
+		    //turtles.remove ( turtle );
+		    Turtle t = new Turtle ( xcor , ycor , turtle.getDir() , turtle.getColor() , turtle.getBreed() );
+		    System.out.println ( "array of turtles: " + turtles );
+		    //turtle.setXcor ( xcor );
+		    //turtle.setYcor ( ycor );
+		    //crt ( turtle , x , y );
+		    //turtle.setBounds ( (int)xcor + 124 , (int)ycor + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+		    // ImageIcon imgIcon = (ImageIcon) turtle.getIcon();
+		    // Image img = imgIcon.getImage();
+		    // BufferedImage buffImg = (BufferedImage) img;
+		    turtles.add ( t );
+		    turtleSpace.add ( t );
+		    t.setBounds ( (int) xcor + 124 , (int) ycor + 124 , turtle.getIcon().getIconHeight(),  turtle.getIcon().getIconHeight() );
 		    //System.out.println ( "height: " + ( (BufferedImage) turtle.getImage() ).getHeight() + "\nwidth: " + ( (BufferedImage) turtle.getImage() ).getHeight() );
-		    turtleSpace.setBackground ( Color.BLACK );
-		    turtleSpace.add ( turtle );
+		    //turtleSpace.setBackground ( Color.BLACK );
+		    //turtle.setBackground ( Color.BLACK );
+		}
+		for ( Turtle turtle : removeTurtles ) {
+		    turtleSpace.remove ( turtle );
+		    turtles.remove ( turtle );
 		}
 		i = i + 1;
+		this.update ( this.getGraphics() );
 	    }
 	    else if ( commands.get ( i ).equals ( "set" ) ) {
 		System.out.println ( "set called" );
@@ -1072,8 +1106,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 		    for ( Turtle turtle : turtles ) {
 			turtle.setColor ( newColor );
-			turtle.setBounds ( (int) turtle.getXcor() + 124 , (int) turtle.getYcor() + 124 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
-			turtleSpace.setBackground ( Color.BLACK );
+			turtle.setBounds ( (int) turtle.getXcor() + 124 , (int) turtle.getYcor() + 124 , /*( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight()*/turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+			//turtleSpace.setBackground ( Color.BLACK );
+			//turtle.setBackground ( Color.BLACK );
 			turtleSpace.add ( turtle );
 		    }
 		    //ADD OTHER COLORS OF RAINBOW
@@ -1082,7 +1117,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    for ( Turtle turtle : turtles ) {
 			System.out.println ( "changed xcor" );
 			turtle.setXcor ( Double.parseDouble ( commands.get ( i + 1 ) ) * 10 );
-			turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 + (int)turtle.getXcor() , /*25 + patches [ patches.length / 2 ].length / 2*/135 , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+			turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 + (int)turtle.getXcor() , /*25 + patches [ patches.length / 2 ].length / 2*/135 , /*( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight()*/turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 		    }
 		    i = i + 1;
 		}
@@ -1090,7 +1125,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    for ( Turtle turtle : turtles ) {
 			System.out.println ( "changed ycor" );
 			turtle.setYcor ( Double.parseDouble ( commands.get ( i + 1 ) ) * -10 );
-			turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 + (int)turtle.getYcor() , ( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight() );
+			turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 + (int)turtle.getYcor() , /*( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight()*/turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 		    }
 		    i = i + 1;
 		}
@@ -1240,10 +1275,10 @@ class Patch extends JPanel {
     }
 }
 
-class Turtle extends JPanel {
+class Turtle extends /*JPanel*/JLabel {
     private double xcor , ycor;
     private int dir;
-    private Image image;
+    //private Image image;
     private String breed;
     private Color color;
     public Turtle ( double xcor , double ycor  ) {
@@ -1251,7 +1286,10 @@ class Turtle extends JPanel {
 	this.ycor = ycor;
 	//dir = (int) ( Math.random() * 360 );
 	breed = new String();
-	
+	//setBackground ( new Color ( 0 , 0 , 0 , 0 ) );
+	//setOpaque ( true );
+	setPreferredSize ( new Dimension ( 13 , 13 ) );
+	//System.out.println ( "PREFERRED SIZE: " + getSize() );
 	//color = Color.RED;
 	/*
 	int colorprob = (int) (Math.random() * 4);
@@ -1264,14 +1302,63 @@ class Turtle extends JPanel {
 	else
 	color = Color.YELLOW; */
 	color = Color.RED;
-	try {
+	setIcon ( new ImageIcon ( "red_arrow.png" ) );
+	//this.addMouseListener ( this );
+	/*try {
 	    Image image = ImageIO.read (getClass().getResource("red_arrow.png"));
-	    setImage ( image );
-	} catch ( Exception e ) {}
+	    //this.image = image;
+	    setImage ( image );*/
+	//} catch ( Exception e ) {}
+    }
+    public Turtle ( double xcor , double ycor , int dir , Color color , String breed ) {
+	System.out.println ( "turtle created at " + xcor + ", " + ycor );
+	this.xcor = xcor;
+	this.ycor = ycor;
+	this.dir = dir;
+	setColor ( color );
+	this.breed = breed;
     }
     /*public void paintComponent ( Graphics g ) {
 	
       }*/
+    /*public void mouseExited ( MouseEvent e ) {
+	System.out.println ( "mouseExited" );
+    }
+    public void mouseEntered ( MouseEvent e ) {
+	System.out.println ( "mouseEntered" );
+	//System.out.println ( MouseInfo.getPointerInfo().getLocation() );
+    }
+    public void mouseReleased ( MouseEvent e ) {
+	//System.out.println ( "mouseReleased" );
+    }
+    public void mousePressed ( MouseEvent e ) {
+	//System.out.println ( "mousePressed" );
+    }
+    public void mouseClicked ( MouseEvent e ) {
+    }*/
+
+    public void setIcon ( ImageIcon imgIcon ) {
+	setIcon ( imgIcon , (int) ( Math.random() * 360 ) );
+    }
+    public void setIcon ( ImageIcon imgIcon , int rotation ) {
+	Image img = imgIcon.getImage(); //image of parameter
+	try {
+	    //Image image = getIcon().getImage();//ImageIO.read ( getClass().getResource ( "red_arrow.png" ) ); //image of turtle's image
+	    //System.out.println ( "buffimage: " + image );
+	//int width = ( (BufferedImage) image ).getWidth();
+	//int height = ( (BufferedImage) image ).getHeight();
+	    //int rotation = (int) ( Math.random() * 360 );
+	    Image newImg = rotate ( resizeImage ( img , 13 , 13 ) , rotation );
+	//System.out.println ( "width: " + width + "\nheight: " + height );
+	super.setIcon ( new ImageIcon ( newImg ) );
+	} catch ( Exception e ) {System.out.println ( "AAAAAHHHHH" );}
+	//System.out.println ( "null pointer not here" + java.awt.Image.SCALE_DEFAULT );
+	//Image newImg = img.getScaledInstance ( ( (BufferedImage) this.image ).getWidth() , ( (BufferedImage) this.image ).getHeight() , java.awt.Image.SCALE_DEFAULT );
+	// BufferedImage buffImage = new BufferedImage ( img.getWidth ( null ) , img.getHeight ( null ) , BufferedImage.TYPE_INT_ARGB );
+	// Graphics g = buffImage.createGraphics();
+	// g.drawImage ( img , 0 , 0 , WIDTH , HEIGHT , null );
+	//ImageIcon newIcon = new ImageIcon ( newImg );
+    }
     public String toString() {
 	return "Turtle at: " + xcor + ", " + ycor + " facing: " + dir + "Color: " + color;
     }
@@ -1280,6 +1367,9 @@ class Turtle extends JPanel {
     }
     public double getYcor() {
 	return ycor;
+    }
+    public String getBreed() {
+	return breed;
     }
     public void setXcor ( double newX ) {
 	xcor = newX;
@@ -1291,36 +1381,51 @@ class Turtle extends JPanel {
     }
     
     public void setColor(Color color) {
+	this.color = color;
+	if ( color.equals ( Color.RED ) )
+	    setIcon ( new ImageIcon ( "red_arrow.png" ) , dir );
+	else if ( color.equals ( Color.BLUE ) )
+	    setIcon ( new ImageIcon ( "blue_arrow.png" ) , dir );
+	else if ( color.equals ( Color.GREEN ) )
+	    setIcon ( new ImageIcon ( "green_arrow.png" ) , dir );
+	else if ( color.equals ( Color.YELLOW ) )
+	    setIcon ( new ImageIcon ( "yellow_arrow.png" ) , dir );
+	else System.out.println ( "not color" );
+	/*
         try {
             if(color.equals(Color.GREEN)) {
 		this.color = color;
-                Image image = ImageIO.read (getClass().getResource("green_arrow.png"));
+                //Image image = ImageIO.read (getClass().getResource("green_arrow.png"));
                 //this.setImage( image );
-		this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
+		//this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
+		//setIcon ( new ImageIcon ( this.image ) );
 		//this.image = resizeImage ( image , 13 , 13 );
                 System.out.println("setting color to green" );
             }
             else if (color.equals(Color.RED)) {
 		this.color = color;
-                Image image = ImageIO.read (getClass().getResource("red_arrow.png"));
+                //Image image = ImageIO.read (getClass().getResource("red_arrow.png"));
                 //this.setImage( image );
-		this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
+		//this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
+		//setIcon ( new ImageIcon ( this.image ) );
 		//this.image = resizeImage ( image , 13 , 13 );
                 System.out.println("setting color to red" );
             }
 	    else if (color.equals(Color.BLUE)) {
 		this.color = color;
-                Image image = ImageIO.read (getClass().getResource("blue_arrow.png"));
+                //Image image = ImageIO.read (getClass().getResource("blue_arrow.png"));
                 //this.setImage( image );
-		this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
+		//this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
+		//setIcon ( new ImageIcon ( this.image ) );
 		//this.image = resizeImage ( image , 13 , 13 );
                 System.out.println("setting color to blue" );
             }
 	    else if (color.equals(Color.YELLOW)) {
 		this.color = color;
-                Image image = ImageIO.read (getClass().getResource("yellow_arrow.png"));
+                //Image image = ImageIO.read (getClass().getResource("yellow_arrow.png"));
                 //this.setImage( image );
-		this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
+		//this.image = rotate ( resizeImage ( image , 13 , 13 ) , dir );
+		//setIcon ( new ImageIcon ( this.image ) );
                 System.out.println("setting color to yellow" );
             }
 
@@ -1329,7 +1434,7 @@ class Turtle extends JPanel {
         catch (Exception e) {
             System.out.println("not color");
 	    System.out.println ( color.equals ( Color.RED ) );
-        }
+	    }*/
     }
     public Color getColor() {
 	return color;
@@ -1337,16 +1442,17 @@ class Turtle extends JPanel {
  
 
     //image of turtle- currently only a green arrow
-    public void setImage ( Image image1 ) {
+/*public void setImage ( Image image1 ) {
 	Image image = resizeImage ( image1 , 13 , 13 );
 	//this.getContentPane().add ( image );
 	int rotation = (int) ( Math.random() * 360 );
 	this.dir = rotation;
 	//System.out.println ( "rotate " + rotation + " degrees" );
 	this.image = rotate ( (BufferedImage) image , ( rotation ) );
-	update ( this.getGraphics() );
+	//setIcon ( this.image );
+	//update ( this.getGraphics() );
 	//System.out.println ( "update here" );
-    }
+	}*/
     public BufferedImage resizeImage ( Image image , int width , int height ) {
 	//return (BufferedImage) image;
 	BufferedImage buffImage = new BufferedImage ( width , height , BufferedImage.TYPE_INT_RGB );
@@ -1356,24 +1462,25 @@ class Turtle extends JPanel {
 	gr.dispose();
 	return buffImage;
     }
-    public Image getImage() {
+/*public Image getImage() {
 	return image;
-    }
+	}*/
     public void setDir ( int dir ) {
 	this.dir = dir;
     }
     public int getDir() {
 	return dir;
     }
-    public void paintComponent ( Graphics g ) {
+    /*public void paintComponent ( Graphics g ) {
 	/*BufferedImage image = (BufferedImage) this.image;
 	int rotation = (int) Math.random() * 100;
-	this.image = rotate ( image , rotation );*/
+	this.image = rotate ( image , rotation );--close comment here
 	super.paintComponent ( g );
-	g.drawImage ( image , 0 , 0 , null );
-    }
+	//g.drawImage ( image , 0 , 0 , null );
+    }*/
     //rotate image
     public BufferedImage rotate ( BufferedImage image , int rotation ) {
+	dir = rotation;
 	//System.out.println ( "rotate" + rotation );
 	int w = image.getWidth();
 	int h = image.getHeight();
