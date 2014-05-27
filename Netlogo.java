@@ -92,7 +92,10 @@ class Screen extends JTabbedPane {
     public Screen() {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
-	this.add ( "Info" , new JPanel() );
+	//ADD TXT ABOUT METHODS OR FIGURE OUT HOW TO CALL A DOCUMENT	
+	JTextArea info = new JTextArea("info");
+	this.add ( "Info" , info );
+
 	code = new JTextArea ( "globals [ a ] to setup ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
@@ -1038,7 +1041,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 		this.update ( this.getGraphics() );
 	    }
 	}
+	}
     }
+
     public void every ( String s1 ) {
 	System.out.println ( "every called with parameter: " + s1 );
 	double waitTime = Double.parseDouble ( s1.substring ( 0 , s1.indexOf ( ";" ) ) );
