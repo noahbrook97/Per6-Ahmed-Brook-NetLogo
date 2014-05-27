@@ -92,8 +92,37 @@ class Screen extends JTabbedPane {
     public Screen() {
 	iface = new IFace();
 	this.add ( "Interface" , iface );
-	//ADD TXT ABOUT METHODS OR FIGURE OUT HOW TO CALL A DOCUMENT	
-	JTextArea info = new JTextArea("info");
+
+	String txt = "Methods Tutorial \n \n" +                                                                                               
+                      "All methods must start with to and end with end \n" +                                                             
+	              "ask: used to call on the type of object you wish to command, whether it be a patch, turtle, or breed \n" +
+	              "set: used to change the attributes of an object \n" +          
+	              "with: keyword used after ask or set to specify restrictions object must have to be acted on \n" +
+                      "every: \n" +
+                      "crt: creates a turtle \n" +
+                      "die: DEATH TO TURTLE!!! \n" +
+                      "fd/bk: moves turtle forward and back respectively \n \n" +
+                      "random: \n" +
+                      "wait: \n" +
+                      "user-message \n" +
+                      "Attributes Tutorial \n \n" +
+                      "xcor/ycor: Display a turtles (x, y) coordinates \n" +
+                      "pxcor/pycor: Display a patches (x, y) coordinates \n" +
+                      "color: Displays turtles color \n" +
+                      "pcolor: Displays patches color \n" +
+                      "heading: Displays the direction a turtle is facing [0-360] \n \n" +
+                      "Other Stuff \n \n" +
+                      "count: \n" +
+	              "breed: \n" +
+                      "globals: \n \n" +
+                      "Operators: \n \n" +
+                      "Standard = , != , > , < , >= , <= \n" +
+                      " \t and , or \n" +
+                      "if , ifelse , else \n" +
+	              "If you master this syntax, son someday all this will be yours";                                       
+
+	JTextArea info = new JTextArea(txt);
+
 	this.add ( "Info" , info );
 
 	code = new JTextArea ( "globals [ a ] to setup ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
