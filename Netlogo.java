@@ -14,9 +14,6 @@ import java.lang.reflect.*;
 public class Netlogo {
     public static void main ( String[] args ) {
 	NetlogoBoard n = new NetlogoBoard();
-	/*if ( n.s.getSelectedIndex() == 0 ) {	    
-	    JOptionPane.showMessageDialog ( null , "test" );
-	    }*/
     }
 }
 
@@ -178,8 +175,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	ArrayList<String> words = new ArrayList<String>();
 	boolean inMethod = false;
 	ArrayList<String> ans = new ArrayList<String>();
-	
-	    //arraylist to compare user input to color options                                                        
 
 	while ( s.length() > 0 ) {
 	    //make all newlines into spaces
@@ -210,7 +205,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		ans = new ArrayList<String>();
 	    }
 	    else if ( inMethod ) {
-		//System.out.println ( "word: " + word );
 		if ( word.equals ( "crt" ) ) {
 		    ans.add ( word + ";" + words.get ( i + 1 ) );
 		    i = i + 1;
@@ -248,7 +242,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			i = i + 1;
 			word = words.get ( i );
 			addLine = addLine + word + ";";
-			//System.out.println ( "addLine: " + addLine );
 		    }
 		    ans.add ( addLine );
 		}
@@ -281,7 +274,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		}
 	    }
 	}
-	
 	System.out.println ( "methods: " + methods.entrySet() );
 	//System.out.println ( "method keys: " + methods.keySet() );
 	//System.out.println ( "method values: " + methods.values() );
@@ -337,14 +329,11 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     public void actionPerformed ( ActionEvent e ) {
 	try {
 	    //choose button, make button
-	    //System.out.println("clicked jmenuitem; " + ((JMenuItem) e.getSource() ) .getText());
 	    if ( ( ( JMenuItem ) e.getSource() ).getText().equals ( "Button" ) ) {
 		String[] options = { "option 1" , "option 2" };
 		JCheckBox forever = new JCheckBox ( "forever" );
 		Object[] params = { "Type name of button" , forever };
 		String s = JOptionPane.showInputDialog ( null , params );
-
-		
 		//if user types something
 		if ( s != null && !s.equals("") ) {
 		    //if statement here saying if s does not equal a known method name in code
@@ -366,13 +355,11 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    }
 
 	//make switch
-	
-	else if(((JMenuItem) e.getSource() ).getText().equals("Switch")) {
+	    else if(((JMenuItem) e.getSource() ).getText().equals("Switch")) {
 	    String s = JOptionPane.showInputDialog(null, "Type name of switch");
 	    if(s != null && !s.equals("") ) {
 		JButton button = new JButton( s );
 		space.add( button );
-		//Says swtch can't be found??
 		//	swtch.addActionListener ( this );
 		//	swtch.setBackground(Color.RED);
 	    }
@@ -603,7 +590,6 @@ class myPanel extends JLayeredPane implements MouseListener {
 	System.out.println ( agents.size() );
 	if ( agents.size() == 1 ) {
 		if ( agents.get ( 0 ).equals ( "patches" ) ) { //ask patches to do things 
-		    //System.out.println ( "here" );
 		    ArrayList<int[]> patchesList = new ArrayList<int[]>();
 		    for ( int r = 0 ; r < patches.length ; r++ ) {
 			for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
@@ -624,7 +610,6 @@ class myPanel extends JLayeredPane implements MouseListener {
 		String[] restrictions = new String [ agents.size() - 4 ];
 		for ( int i = 3 ; !agents.get ( i ).equals ( "]" ) ; i++ )
 		    restrictions [ i - 3 ] = agents.get ( i );
-		//System.out.println ( "restrictions: " + Arrays.toString ( restrictions ) );
 		ArrayList<Turtle> callTurtles = new ArrayList<Turtle>(); //turtles on which the methods are being called
 		if ( restrictions [ 0 ].equals ( "who" ) ) {
 		    int who = Integer.parseInt ( restrictions [ 2 ] );
@@ -662,10 +647,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 			System.out.println ( e );
 		    }
 		}
-		
 		if ( restrictions [ 0 ].equals ( "breed" ) ) {
-		    
 		}
+		
 		if ( restrictions [ 0 ].equals ( "xcor" ) ) {
 		    for ( Turtle turtle : turtles ) {
 		    if ( restrictions [ 1 ].equals ( "=" ) ) {
@@ -1032,8 +1016,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }			
 		    i+= 1;
 		}    
-		
-		else 
+		else {
 		    System.out.println("You are setting incorrectly");
 		/*Turtle[] moveTurtles = new Turtle [ turtles.size() ];
 		Turtle[] removeTurtles = new Turtle [ turtles.size() ];
@@ -1064,7 +1047,6 @@ class myPanel extends JLayeredPane implements MouseListener {
 	mthd = s1.substring ( s1.indexOf ( ";" ) + 1 );
 	mthd = mthd.substring ( mthd.indexOf ( ";" ) + 1 , mthd.length() - 2 );
 	//split up different methods within every- only works with one method right now
-
 
 	try {
 	    if ( mthd.contains ( ";" ) ) {
