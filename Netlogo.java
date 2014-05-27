@@ -96,7 +96,7 @@ class Screen extends JTabbedPane {
 	JTextArea info = new JTextArea("info");
 	this.add ( "Info" , info );
 
-	code = new JTextArea ( "globals [ a ] to setup ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
+	code = new JTextArea ( "globals [ a ] to setup user-message ( \"hi\" ) ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -261,6 +261,21 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    }
 		    i = i - 1;
 		    ans.add ( addThis );
+		}
+		else if ( word.equals ( "wait" ) ) {
+		    ans.add ( word + ";" + words.get ( i + 1 ) );
+		    i = i + 1;
+		}
+		else if ( word.equals ( "user-message" ) ) {
+		    String addThis = "userMessage" + ";";
+		    i = i + 1;
+		    word = words.get ( i );
+		    while ( ! word.equals ( ")" ) ) {
+			addThis = addThis + word + ";";
+			i = i + 1;
+			word = words.get ( i );
+		    }
+		    ans.add ( addThis + word + ";" );
 		}
 		else ans.add ( word );
 	    }
@@ -788,7 +803,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
 				int[] patch = { r , c };
 				if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) && satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
-				    System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
+				    //System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
 				    int[] add = { r , c };
 				    callPatches.add ( add );
 				}
@@ -800,7 +815,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 				for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
 				    int[] patch = { r , c };
 				    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) || satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
-					System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
+					//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
 					int[] add = { r , c };
 					callPatches.add ( add );
 				    }
@@ -858,7 +873,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    return true;
 		}
 		int aa = newC + patches.length / 2;
-		System.out.println ( "returned false with x: " + coors [ 1 ] + "\npatches.length/2: " + patches.length / 2 + "\nnewC: " + newC );
+		//System.out.println ( "returned false with x: " + coors [ 1 ] + "\npatches.length/2: " + patches.length / 2 + "\nnewC: " + newC );
 		return false;
 	    }
 	    else if ( b.equals ( "<" ) ) {
@@ -869,7 +884,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    }
 	}
 	else if ( a.equals ( "pycor" ) ) {
-	    System.out.println ( "pycor called" );
+	    //System.out.println ( "pycor called" );
 	    if ( b.equals ( ">" ) ) {
 		if ( coors [ 0 ] < patches.length / 2 - newC ) {
 		    return true;
@@ -881,7 +896,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    System.out.println ( "true " + coors [ 0 ] );
 		    return true;
 		}
-		System.out.println ( "returned false with y: " + coors [ 0 ] );
+		//System.out.println ( "returned false with y: " + coors [ 0 ] );
 		return false;
 	    }
 	}
@@ -1073,6 +1088,37 @@ class myPanel extends JLayeredPane implements MouseListener {
 	} catch ( Exception e ) {
 	    System.out.println ( "method call failed in every" );
 	    System.out.println ( mthd );
+	}
+    }
+    public void wait ( String s ) {
+	double waitTime = Double.parseDouble ( s );
+	try {
+	    Thread.sleep ( (int) ( waitTime * 1000 ) );
+	} catch ( Exception e ) {
+	    System.out.println ( "wait failed, waitTime is: " + waitTime );
+	}
+    }
+    public void userMessage ( String s1 ) {
+	String s = new String();
+	s = s1;
+	//int size = 0;
+	ArrayList<String> words = new ArrayList<String>();
+	while ( s.length() > 0 ) {
+	    words.add ( s.substring ( 0 , s.indexOf ( ";" ) ) );
+	    s = s.substring ( s.indexOf ( ";" ) + 1 );
+	}
+	System.out.println ( "userMessage words: " + words );
+	System.out.println ( words.get ( words.size() - 1 ) );
+	if ( ( ! words.get ( 0 ).equals ( "(" ) ) || ( ! words.get ( words.size() - 1 ).equals (  ")" ) ) )
+	    throw new IllegalStateException();
+	words.remove ( 0 );
+	words.remove ( words.size() - 1 );
+	System.out.println ( "after remove words: " + words );
+	if ( words.size() == 1 ) {
+	    String word = words.get ( 0 );
+	    if ( word.substring ( 0 , 1 ).equals ( "\"" ) && word.substring ( word.length() - 1 , word.length() ).equals ( "\"" ) )
+		JOptionPane.showMessageDialog ( null, word.substring ( 1 , word.length() - 1 ) );
+	    else throw new IllegalStateException();
 	}
     }
     public void set ( String s ) {
