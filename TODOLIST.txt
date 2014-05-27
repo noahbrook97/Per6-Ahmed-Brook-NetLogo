@@ -1,0 +1,11 @@
+make option for grid to bounded/ looped
+create sliders and switches
+create object-own [attribute]
+
+if / ifelse / else 
+count
+create die method
+create random
+wait
+
+user message word
