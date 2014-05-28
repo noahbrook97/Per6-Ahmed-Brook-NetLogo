@@ -125,7 +125,7 @@ class Screen extends JTabbedPane {
 
 	this.add ( "Info" , info );
 
-	code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count patches ) ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
+	code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count patches with [ pxcor >= 1 ] ) ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -923,6 +923,24 @@ class myPanel extends JLayeredPane implements MouseListener {
 		}
 		return false;
 	    }
+	    else if ( b.equals ( "=" ) ) {
+		if ( coors [ 1 ] == newC + patches.length / 2 ) {
+		    return true;
+		}
+		return false;
+	    }
+	    else if ( b.equals ( "<=" ) ) {
+		if ( coors [ 1 ] <= newC + patches.length / 2 ) {
+		    return true;
+		}
+		return false;
+	    }
+	    else if ( b.equals ( ">=" ) ) {
+		if ( coors [ 1 ] >= newC + patches.length / 2 ) {
+		    return true;
+		}
+		return false;
+	    }
 	}
 	else if ( a.equals ( "pycor" ) ) {
 	    //System.out.println ( "pycor called" );
@@ -935,6 +953,25 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    else if ( b.equals ( "<" ) ) {
 		if ( coors [ 0 ] > patches.length / 2 - newC ) {
 		    System.out.println ( "true " + coors [ 0 ] );
+		    return true;
+		}
+		//System.out.println ( "returned false with y: " + coors [ 0 ] );
+		return false;
+	    }
+	    else if ( b.equals ( "=" ) ) {
+		if ( coors [ 0 ] == patches.length / 2 - newC ) {
+		    return true;
+		}
+		return false;
+	    }
+	    else if ( b.equals ( ">=" ) ) {
+		if ( coors [ 0 ] <= patches.length / 2 - newC ) {
+		    return true;
+		}
+		return false;
+	    }
+	    else if ( b.equals ( "<=" ) ) {
+		if ( coors [ 0 ] >= patches.length / 2 - newC ) {
 		    return true;
 		}
 		//System.out.println ( "returned false with y: " + coors [ 0 ] );
@@ -1194,7 +1231,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 				int j = 0;
 				while ( ! word.equals ( "]" ) ) {
 				    word = words.get ( i + j + 1 );
-				    //System.out.println ( "WORD CAPS TO STAND OUT: " + word );
+				    System.out.println ( "WORD CAPS TO STAND OUT: " + word );
 				    addLine = addLine + word + ";";
 				    j = j + 1;
 				}
@@ -1205,6 +1242,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 			    }
 			} catch ( Exception e ) {
 			    i = i + 1;
+			    System.out.println ( "words: " + words );
+			    e.printStackTrace();
+			    System.out.println ( "exception: " + e );
 			    message = message + count ( words.get ( i ) );
 			    //call method count without with
 			}
@@ -1227,20 +1267,35 @@ class myPanel extends JLayeredPane implements MouseListener {
 	else {
 	    String s1 = new String();
 	    s1 = s;
-	    String agent = s1.substring ( s1.indexOf ( ";" ) );
+	    String agent = s1.substring ( 0 , s1.indexOf ( ";" ) );
+	    /*s1 = s1.substring ( s1.indexOf ( ";" ) + 1 );
+	    String first = s1.substring ( 0 , s1.indexOf ( ";" ) );
 	    s1 = s1.substring ( s1.indexOf ( ";" ) + 1 );
-	    String first = s1.substring ( s1.indexOf ( ";" ) );
+	    String second = s1.substring ( 0 , s1.indexOf ( ";" ) );
 	    s1 = s1.substring ( s1.indexOf ( ";" ) + 1 );
-	    String second = s1.substring ( s1.indexOf ( ";" ) );
-	    s1 = s1.substring ( s1.indexOf ( ";" ) + 1 );
-	    String third = s1.substring ( s1.indexOf ( ";" ) );
+	    String third = s1.substring ( 0 , s1.indexOf ( ";" ) );*/
+	    //System.out.println ( "agent: " + agent + "\nfirst: " + first + "\nsecond: " + second + "\nthird: " + third );
 	    if ( agent.equals ( "patches" ) ) {
-		for ( int r = 0 ; r < patches.length ; r++ ) {
+		int countPatches = 0;
+		/*for ( int r = 0 ; r < patches.length ; r++ ) {
 		    for ( int c = 0 ; c < patches.length ; c++ ) {
 			int[] patch = { r , c };
-			//if ( satisfiedConditions ( patch , first
+			//if ( satisfiesCondition ( patch , first + "-" + second + "-" + third ) )
+			//countPatches++;
 		    }
+		    }
+		//return countPatches;
+		restrictions.add ( agent );
+		//restrictions.add ( "with" );
+		restrictions.add ( first );
+		restrictions.add ( second );
+		restrictions.add ( third );*/
+		ArrayList<String> restrictions = new ArrayList<String>();
+		while ( s1.contains ( ";" ) ) {
+		    restrictions.add ( s1.substring ( 0 , s1.indexOf ( ";" ) ) );
+		    s1 = s1.substring ( s1.indexOf ( ";" ) + 1 );
 		}
+		return with ( "patches" , restrictions ).size();
 	    }
 	    else if ( agent.equals ( "turtles" ) ) {
 
