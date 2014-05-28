@@ -570,61 +570,10 @@ class myPanel extends JLayeredPane implements MouseListener {
 	}
 	}
     }
-    //ask commands
-    public void ask ( String s1 ) {
-	ArrayList<String> agents = new ArrayList<String>();
-	ArrayList<String> commands = new ArrayList<String>();
-	String s = new String();
-	
-	for ( int i = 0 ; i < s1.length() ; i++ )
-	    s = s + s1.substring ( i , i + 1 );
-	boolean insideWith = false; //if there is "with" (turtles with who > 1, etc.)
-	//System.out.println ( "s: " + s );
-	//add to agents when beginning of string is not "["
-	while ( s.indexOf ( "[" ) != 0 || insideWith ) {
-	    String word = s.substring ( 0 , s.indexOf ( ";" ) );
-	    //System.out.println ( "word: " + word );
-	    if ( word.equals ( "with" ) )
-		insideWith = true;
-	    if ( insideWith && word.equals ( "]" ) )
-		insideWith = false;
-	    agents.add ( word );
-	    s = s.substring ( s.indexOf ( ";" ) + 1 );
-	}
-	s = s.substring ( 2 );
-	System.out.println ( "agents: " + agents );
-	//add to commands when beginning of string is not "]"
-	int inBrackets = 0;
-	while ( s.indexOf ( "]" ) != 0 || inBrackets != 0 ) {
-	    String word = s.substring ( 0 , s.indexOf ( ";" ) );
-	    if ( word.equals ( "[" ) )
-		inBrackets++;
-	    if ( word.equals ( "]" ) )
-		inBrackets--;
-	    commands.add ( word );
-	    s = s.substring ( s.indexOf ( ";" ) + 1 );
-	}
-	System.out.println ( "commands: " + commands );
-	System.out.println ( agents.size() );
-	if ( agents.size() == 1 ) {
-		if ( agents.get ( 0 ).equals ( "patches" ) ) { //ask patches to do things 
-		    ArrayList<int[]> patchesList = new ArrayList<int[]>();
-		    for ( int r = 0 ; r < patches.length ; r++ ) {
-			for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
-			    int[] a = { r , c };
-			    patchesList.add ( a );
-			}
-		    }
-		    patchCommands ( patchesList , commands );
-		}
-		if ( agents.get ( 0 ).equals ( "turtles" ) ) { //ask turtles to do things
-		    callCommands ( turtles , commands );
-	    }
-	}
-	else if ( agents.size() > 1 ) { //agents has properties, like "with" or "at"- not complete yet
-	    String agentType = agents.get ( 0 );
-	    if ( agentType.equals ( "turtles" ) ) {
-	    if ( agents.get ( 1 ).equals ( "with" ) ) {
+    private ArrayList with ( String agentType , ArrayList<String> agents ) {
+	//String agentType = agents.get ( 0 );
+	if ( agentType.equals ( "turtles" ) ) {
+	//if ( agents.get ( 1 ).equals ( "with" ) ) {
 		String[] restrictions = new String [ agents.size() - 4 ];
 		for ( int i = 3 ; !agents.get ( i ).equals ( "]" ) ; i++ )
 		    restrictions [ i - 3 ] = agents.get ( i );
@@ -670,22 +619,22 @@ class myPanel extends JLayeredPane implements MouseListener {
 		
 		if ( restrictions [ 0 ].equals ( "xcor" ) ) {
 		    for ( Turtle turtle : turtles ) {
-		    if ( restrictions [ 1 ].equals ( "=" ) ) {
-			if ( turtle.getXcor() == Double.parseDouble ( restrictions [ 2 ] ) )
-			    callTurtles.add ( turtle );
-		    }
-		    else if ( restrictions [ 1 ].equals ( "!=" ) ) {
-			if ( turtle.getXcor() != Double.parseDouble ( restrictions [ 2 ] ) )
-			    callTurtles.add ( turtle );
+			if ( restrictions [ 1 ].equals ( "=" ) ) {
+			    if ( turtle.getXcor() == Double.parseDouble ( restrictions [ 2 ] ) )
+				callTurtles.add ( turtle );
 			}
-		    else if ( restrictions [ 1 ].equals ( ">" ) ) {
-			if ( turtle.getXcor() > ( Double.parseDouble ( restrictions [ 2 ] ) ) )
-			    callTurtles.add ( turtle );
-		    }
-		    else if ( restrictions [ 1 ].equals ( "<" ) ) {
-			if ( turtle.getXcor() < ( Double.parseDouble ( restrictions [ 2 ] ) ) )
-			    callTurtles.add ( turtle );
-		    }		
+			else if ( restrictions [ 1 ].equals ( "!=" ) ) {
+			    if ( turtle.getXcor() != Double.parseDouble ( restrictions [ 2 ] ) )
+				callTurtles.add ( turtle );
+			}
+			else if ( restrictions [ 1 ].equals ( ">" ) ) {
+			    if ( turtle.getXcor() > ( Double.parseDouble ( restrictions [ 2 ] ) ) )
+				callTurtles.add ( turtle );
+			}
+			else if ( restrictions [ 1 ].equals ( "<" ) ) {
+			    if ( turtle.getXcor() < ( Double.parseDouble ( restrictions [ 2 ] ) ) )
+				callTurtles.add ( turtle );
+			}		
 		    }
 		}
 		
@@ -742,88 +691,151 @@ class myPanel extends JLayeredPane implements MouseListener {
 			    System.out.println("not a valid operator");
 		    }
 		}
-	    //call methods on selected turtles
-	    callCommands ( callTurtles , commands );
+	    return callTurtles;
+	}
+	else if ( agentType.equals ( "patches" ) ) {
+	    String[] restrictions1 = new String [ agents.size() - 4 ];
+	    for ( int i = 3 ; !agents.get ( i ).equals ( "]" ) ; i++ )
+		restrictions1 [ i - 3 ] = agents.get ( i );
+	    ArrayList<String> restrictions = new ArrayList<String>();
+	    //makes things within parentheses one item in restrictions, for example= patches with [ xcor > ( 5 + 1 ) ] becomes [ xcor , > , 5;+;1; ]
+	    for ( int i = 0 ; i < restrictions1.length ; i++ ) {
+		if ( !restrictions1 [ i ].equals ( "(" ) ) {
+		    restrictions.add ( restrictions1 [ i ] );
+		}
+		else {
+		    String parentheses = new String();
+		    i = i + 1;
+		    while ( ! restrictions1 [ i ].equals ( ")" ) ) {
+			parentheses = parentheses + restrictions1 [ i ] + ";";
+			i = i + 1;
+		    }
+		    restrictions.add ( parentheses );
+		}
+	    }
+	    //System.out.println ( "restrictions for patches: " + Arrays.toString ( restrictions ) );
+	    System.out.println ( "restrictions for patches: " + restrictions );
+	    ArrayList<int[]> callPatches = new ArrayList<int[]>(); //turtles on which the methods are being called
+	    ArrayList<String> operators = new ArrayList<String>(); //ands and ors are added here
+	    for ( int i = 0 ; i < restrictions.size() ; i = i + 4 ) {
+		if ( i + 3 < restrictions.size() ) {
+		    if ( restrictions.get ( i + 3 ).equals ( "and" ) ) {
+			System.out.println ( "and" );
+			operators.add ( "and" );
+		    }
+		    else if ( restrictions.get ( i + 3 ).equals ( "or" ) ) {
+			operators.add ( "or" );
+		    }
+		    else System.out.println ( "failed- restrictions: " + restrictions );
+		}
+	    }
+	    if ( operators.size() == 0 ) {
+		for ( int r = 0 ; r < patches.length ; r++ ) {
+		    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+			int[] patch = { r , c };
+			if ( satisfiesCondition ( patch , restrictions.get ( 0 ) + "-" + restrictions.get ( 1 ) + "-" + restrictions.get ( 2 ) ) )
+			    callPatches.add ( patch );
+		    }
+		}
+	    }
+	    for ( int j = 0 ; j < operators.size() ; j++ ) {
+		System.out.println ( "restrictions: " + restrictions );
+		System.out.println ( "operators: " + operators.get ( j ) );
+		if ( operators.get ( j ).equals ( "and" ) ) {
+		    for ( int r = 0 ; r < patches.length ; r++ ) {
+			for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+			    int[] patch = { r , c };
+			    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) && satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
+				//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
+				int[] add = { r , c };
+				callPatches.add ( add );
+			    }
+			}
+		    }
+		}
+		else if ( operators.get ( j ).equals ( "or" ) ) {			
+		    for ( int r = 0 ; r < patches.length ; r++ ) {
+			for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+			    int[] patch = { r , c };
+			    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) || satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
+				//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
+				int[] add = { r , c };
+				callPatches.add ( add );
+			    }
+			}
+		    }
+		}
+	    }
+	    //}
+	    return callPatches;
+	}
+	return null;
+    }
+    //ask commands
+    public void ask ( String s1 ) {
+	ArrayList<String> agents = new ArrayList<String>();
+	ArrayList<String> commands = new ArrayList<String>();
+	String s = new String();
+	for ( int i = 0 ; i < s1.length() ; i++ )
+	    s = s + s1.substring ( i , i + 1 );
+	boolean insideWith = false; //if there is "with" (turtles with who > 1, etc.)
+	//System.out.println ( "s: " + s );
+	//add to agents when beginning of string is not "["
+	while ( s.indexOf ( "[" ) != 0 || insideWith ) {
+	    String word = s.substring ( 0 , s.indexOf ( ";" ) );
+	    //System.out.println ( "word: " + word );
+	    if ( word.equals ( "with" ) )
+		insideWith = true;
+	    if ( insideWith && word.equals ( "]" ) )
+		insideWith = false;
+	    agents.add ( word );
+	    s = s.substring ( s.indexOf ( ";" ) + 1 );
+	}
+	s = s.substring ( 2 );
+	System.out.println ( "agents: " + agents );
+	//add to commands when beginning of string is not "]"
+	int inBrackets = 0;
+	while ( s.indexOf ( "]" ) != 0 || inBrackets != 0 ) {
+	    String word = s.substring ( 0 , s.indexOf ( ";" ) );
+	    if ( word.equals ( "[" ) )
+		inBrackets++;
+	    if ( word.equals ( "]" ) )
+		inBrackets--;
+	    commands.add ( word );
+	    s = s.substring ( s.indexOf ( ";" ) + 1 );
+	}
+	System.out.println ( "commands: " + commands );
+	System.out.println ( agents.size() );
+	if ( agents.size() == 1 ) {
+		if ( agents.get ( 0 ).equals ( "patches" ) ) { //ask patches to do things 
+		    ArrayList<int[]> patchesList = new ArrayList<int[]>();
+		    for ( int r = 0 ; r < patches.length ; r++ ) {
+			for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
+			    int[] a = { r , c };
+			    patchesList.add ( a );
+			}
+		    }
+		    patchCommands ( patchesList , commands );
+		}
+		if ( agents.get ( 0 ).equals ( "turtles" ) ) { //ask turtles to do things
+		    callCommands ( turtles , commands );
+	    }
+	}
+	else if ( agents.size() > 1 ) { //agents has properties, like "with" or "at"- not complete yet
+	    String agentType = agents.get ( 0 );
+	    if ( agentType.equals ( "turtles" ) ) {
+		if ( agents.get ( 1 ).equals ( "with" ) ) {
+		    //call methods on selected turtles
+		    callCommands ( with ( "turtles" , agents ) , commands );
+		}
 	    }
 	    //if ( agent.get ( 1 ).equals ( "at" ) ) {
 	    //}
-	    }
+	    //}
 	    else if ( agentType.equals ( "patches" ) ) {
 		//do things
 		if ( agents.get ( 1 ).equals ( "with" ) ) {
-		    String[] restrictions1 = new String [ agents.size() - 4 ];
-		    for ( int i = 3 ; !agents.get ( i ).equals ( "]" ) ; i++ )
-			restrictions1 [ i - 3 ] = agents.get ( i );
-		    ArrayList<String> restrictions = new ArrayList<String>();
-		    //makes things within parentheses one item in restrictions, for example= patches with [ xcor > ( 5 + 1 ) ] becomes [ xcor , > , 5;+;1; ]
-		    for ( int i = 0 ; i < restrictions1.length ; i++ ) {
-			if ( !restrictions1 [ i ].equals ( "(" ) ) {
-			    restrictions.add ( restrictions1 [ i ] );
-			}
-			else {
-			    String parentheses = new String();
-			    i = i + 1;
-			    while ( ! restrictions1 [ i ].equals ( ")" ) ) {
-				parentheses = parentheses + restrictions1 [ i ] + ";";
-				i = i + 1;
-			    }
-			    restrictions.add ( parentheses );
-			}
-		    }
-		    //System.out.println ( "restrictions for patches: " + Arrays.toString ( restrictions ) );
-		    System.out.println ( "restrictions for patches: " + restrictions );
-		    ArrayList<int[]> callPatches = new ArrayList<int[]>(); //turtles on which the methods are being called
-		    ArrayList<String> operators = new ArrayList<String>(); //ands and ors are added here
-		    for ( int i = 0 ; i < restrictions.size() ; i = i + 4 ) {
-			if ( i + 3 < restrictions.size() ) {
-			    if ( restrictions.get ( i + 3 ).equals ( "and" ) ) {
-				System.out.println ( "and" );
-				operators.add ( "and" );
-			    }
-			    else if ( restrictions.get ( i + 3 ).equals ( "or" ) ) {
-				operators.add ( "or" );
-			    }
-			    else System.out.println ( "failed- restrictions: " + restrictions );
-			}
-		    }
-		    if ( operators.size() == 0 ) {
-			for ( int r = 0 ; r < patches.length ; r++ ) {
-			    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
-				int[] patch = { r , c };
-				if ( satisfiesCondition ( patch , restrictions.get ( 0 ) + "-" + restrictions.get ( 1 ) + "-" + restrictions.get ( 2 ) ) )
-				    callPatches.add ( patch );
-			    }
-			}
-		    }
-		    for ( int j = 0 ; j < operators.size() ; j++ ) {
-			System.out.println ( "restrictions: " + restrictions );
-			System.out.println ( "operators: " + operators.get ( j ) );
-			if ( operators.get ( j ).equals ( "and" ) ) {
-			    for ( int r = 0 ; r < patches.length ; r++ ) {
-			    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
-				int[] patch = { r , c };
-				if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) && satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
-				    //System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
-				    int[] add = { r , c };
-				    callPatches.add ( add );
-				}
-			    }
-			    }
-			}
-			else if ( operators.get ( j ).equals ( "or" ) ) {			
-			    for ( int r = 0 ; r < patches.length ; r++ ) {
-				for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
-				    int[] patch = { r , c };
-				    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) || satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
-					//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
-					int[] add = { r , c };
-					callPatches.add ( add );
-				    }
-				}
-			    }
-			    }
-		    }
-		    patchCommands ( callPatches , commands );
+		    patchCommands ( with ( "patches" , agents ) , commands );
 		}
 	    }
 	}
