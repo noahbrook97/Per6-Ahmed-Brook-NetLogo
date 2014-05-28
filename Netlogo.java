@@ -96,7 +96,7 @@ class Screen extends JTabbedPane {
 	JTextArea info = new JTextArea("info");
 	this.add ( "Info" , info );
 
-	code = new JTextArea ( "globals [ a ] to setup user-message ( \"hi\" ) ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
+	code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count patches ) ask patches with [ pxcor > 0 and pycor > 0 ] [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -1132,6 +1132,92 @@ class myPanel extends JLayeredPane implements MouseListener {
 		JOptionPane.showMessageDialog ( null, word.substring ( 1 , word.length() - 1 ) );
 	    else throw new IllegalStateException();
 	}
+	else {
+	    boolean inQuotes = false;
+	    String message = new String();
+	    //for ( String word : words ) {
+	    for ( int i = 0 ; i < words.size() ; i++ ) {
+		String word = words.get ( i );
+		System.out.println ( "words in loop in userMessage: " + word );
+		if ( word.contains ( "\"" ) && word.indexOf ( "\"" ) == word.lastIndexOf ( "\"" ) ) {
+		    if ( inQuotes )
+			message = message + word.substring ( 0 , word.length() - 1 );
+		    else message = message + word.substring ( 1 )+ " ";
+		    inQuotes = !inQuotes;
+		}
+		if ( inQuotes ) {
+		    //System.out.println ( "in quotes: " + word );
+		    if ( ! word.contains ( "\"" ) )
+			message = message + word + " ";
+		}
+		else {
+		    System.out.println ( word );
+		    i = i + 1;
+		    word = words.get ( i );
+		    if ( ! globals.containsKey ( message ) && ! word.equals ( "count" ) ) {
+			System.out.println ( "throw exception for word: " + word );
+			throw new IllegalStateException();
+		    }
+		    else if ( word.equals ( "count" ) ) {
+			try {
+			    if ( words.get ( i + 2 ).equals ( "with" ) ) {
+				String addLine = new String();
+				int j = 0;
+				while ( ! word.equals ( "]" ) ) {
+				    word = words.get ( i + j + 1 );
+				    //System.out.println ( "WORD CAPS TO STAND OUT: " + word );
+				    addLine = addLine + word + ";";
+				    j = j + 1;
+				}
+				i = i + j;
+				//System.out.println ( "i is now: " + i );
+				//call method count with with
+				message = message + count ( addLine );
+			    }
+			} catch ( Exception e ) {
+			    i = i + 1;
+			    message = message + count ( words.get ( i ) );
+			    //call method count without with
+			}
+		    }
+		}
+		//else System.out.println ( "out of quotes: " + word );
+	    }
+	    System.out.println ( "message: " + message );
+	    JOptionPane.showMessageDialog ( null , message );
+	}
+    }
+    public int count ( String s ) {
+	System.out.println ( "count called with string: " + s );
+	if ( ! s.contains ( ";" ) ) {
+	    if ( s.equals ( "patches" ) )
+		return patches.length * patches [ 0 ].length;
+	    else if ( s.equals ( "turtles" ) )
+		return turtles.size();
+	}
+	else {
+	    String s1 = new String();
+	    s1 = s;
+	    String agent = s1.substring ( s1.indexOf ( ";" ) );
+	    s1 = s1.substring ( s1.indexOf ( ";" ) + 1 );
+	    String first = s1.substring ( s1.indexOf ( ";" ) );
+	    s1 = s1.substring ( s1.indexOf ( ";" ) + 1 );
+	    String second = s1.substring ( s1.indexOf ( ";" ) );
+	    s1 = s1.substring ( s1.indexOf ( ";" ) + 1 );
+	    String third = s1.substring ( s1.indexOf ( ";" ) );
+	    if ( agent.equals ( "patches" ) ) {
+		for ( int r = 0 ; r < patches.length ; r++ ) {
+		    for ( int c = 0 ; c < patches.length ; c++ ) {
+			int[] patch = { r , c };
+			//if ( satisfiedConditions ( patch , first
+		    }
+		}
+	    }
+	    else if ( agent.equals ( "turtles" ) ) {
+
+	    }
+	}
+	return 0;
     }
     public void set ( String s ) {
 	System.out.println ( "set: " + s );
