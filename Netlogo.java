@@ -810,7 +810,7 @@ class myPanel extends JLayeredPane implements MouseListener {
         int val = (int) (Math.random() * num);
         return val;
     }
-
+    /*
     public void IF(String s1) {
         System.out.println("if: " + s);
 	String s = new String();
@@ -818,9 +818,13 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    s = s + s1.substring(i, i + 1);
 	
 	boolean isokay = false;
-	
+	String condition = s.substring(s.indexOf( ";") , s.length());
+	if (condition.equals("random") {
+		if whatever after random matches 
+				isokay = true;
+	    
 
-    }
+    }*/
 
     public void IFELSE(String s) {
         System.out.println("ifelse: " + s);
