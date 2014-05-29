@@ -599,6 +599,13 @@ class myPanel extends JLayeredPane implements MouseListener {
 	}
 	}
     }
+    //~~~~~~RANDOM~~~~~~~~NEEDS TESTING
+    public int random(String s) {
+	int num = Integer.parseInt(s);
+	int val = (int) (Math.random() * num);
+	return val;
+    }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private ArrayList with ( String agentType , ArrayList<String> agents ) {
 	//String agentType = agents.get ( 0 );
 	if ( agentType.equals ( "turtles" ) ) {
