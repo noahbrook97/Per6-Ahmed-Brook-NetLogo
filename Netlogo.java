@@ -599,12 +599,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 	}
 	}
     }
-    //~~~~~~RANDOM~~~~~~~~NEEDS TESTING
-    public int random(String s) {
-	int num = Integer.parseInt(s);
-	int val = (int) (Math.random() * num);
-	return val;
-    }
+	
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private ArrayList with ( String agentType , ArrayList<String> agents ) {
 	//String agentType = agents.get ( 0 );
@@ -806,7 +802,36 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    return callPatches;
 	}
 	return null;
+    } 
+
+    //~~~~~NEEDS TESTING~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                                                       
+    public int random(String s) {
+        int num = Integer.parseInt(s);
+        int val = (int) (Math.random() * num);
+        return val;
     }
+
+    public void IF(String s1) {
+        System.out.println("if: " + s);
+	String s = new String();
+	for(int i = 0; i < s1.length(); i++) 
+	    s = s + s1.substring(i, i + 1);
+	
+	boolean isokay = false;
+	
+
+    }
+
+    public void IFELSE(String s) {
+        System.out.println("ifelse: " + s);
+    }
+
+    public void ELSE(String s) {
+        System.out.println("else: " + s);
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~         
+
     //ask commands
     public void ask ( String s1 ) {
 	System.out.println ( "ask: " + s1 );
