@@ -13,6 +13,7 @@ import java.lang.reflect.*;
 
 public class Netlogo {
     public static void main ( String[] args ) {
+	System.setProperty ( "java.util.Arrays.useLegacyMergeSort" , "true" );
 	NetlogoBoard n = new NetlogoBoard();
     }
 }
@@ -125,7 +126,14 @@ class Screen extends JTabbedPane {
 
 	this.add ( "Info" , info );
 
-	code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count turtles with [ color = red ] ) ask patches [ set pcolor red ] end to move setup set a a + 1 ask turtles [ fd 1 ] end to change ask turtles [ set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
+	//code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count turtles with [ color = red ] ) ask patches [ set pcolor red ] end to move ask turtles [ fd 1 ] end to change ask turtles [ set size 5 set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
+	code = new JTextArea ( "globals [ lives sbutton ] " +
+			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
+			       "to setup ca ask patches with [ pycor < -5 or pycor > 10 ] [ set pcolor blue ] " +
+			       "set lives 3 set sbutton 0 end " +
+			       "to change ask turtles [ set size 2 ] end " +
+			       "to create crt 1 end " +
+			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	this.add ( "Code" , code );
     }
@@ -261,7 +269,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			word = words.get ( i );
 			addLine = addLine + word + ";";
 		    }
-		    ans.add ( addLine.substring ( 0 , addLine.length() - 2 ) + "fd;1;bk;1;];" );
+		    ans.add ( addLine.substring ( 0 , addLine.length() - 2 ) + "]" );//+ "fd;1;bk;1;];" );
 		}
 		else if ( word.equals ( "every" ) ) {
 		    String addLine = word + ";";
@@ -283,12 +291,14 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    String addThis = word + ";";
 		    i = i + 1;
 		    word = words.get ( i );
-		    while ( "123456789+-*/".contains ( word )  || f.globals.containsKey ( word ) ) {
+		    while ( "1234567890+-*/".contains ( word )  || f.globals.containsKey ( word ) ) {
 			addThis = addThis + word + ";";
+			//System.out.println ( "addthis: " + addThis );
 			i = i + 1;
 			word = words.get ( i );
 		    }
 		    i = i - 1;
+		    //System.out.println ( "addThis in set: " + addThis );
 		    ans.add ( addThis );
 		}
 		else if ( word.equals ( "wait" ) ) {
@@ -525,18 +535,18 @@ class myPanel extends JLayeredPane implements MouseListener {
     private Color backgroundColor;
     public myPanel() {
 	this.setPreferredSize ( new Dimension ( 300 , 300 ) );
-	patches = new Patch [ 25 ] [ 25 ];
+	patches = new Patch [ 70 ] [ 70 ];
 	patchSpace = new JPanel();
-	patchSpace.setLayout ( new GridLayout ( 25 , 25 ) );	
+	patchSpace.setLayout ( new GridLayout ( 70 , 70 ) );	
 	patchSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	turtles = new ArrayList<Turtle>();
 	globals = new HashMap<String , Integer>();
 	turtleSpace = new JPanel();
 	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
-	backgroundColor = Color.BLACK;
+	//backgroundColor = Color.BLACK;
 	//array of patches, 25x25
-	for ( int r = 0 ; r < 25 ; r++ ) {
-	    for ( int c = 0 ; c < 25 ; c++ ) {
+	for ( int r = 0 ; r < patches.length ; r++ ) {
+	    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
 		Patch p = new Patch();
 		p.setBackground ( Color.BLACK ); 
 		patchSpace.add ( p );
@@ -589,14 +599,14 @@ class myPanel extends JLayeredPane implements MouseListener {
 	for ( int i = 0 ; i < nums ; i++ ) {
 	    Turtle turtle = new Turtle ( patches.length / 2, patches [ patches.length / 2 ].length / 2 );
 	    turtles.add ( turtle );
-	try {
+	    //try {
 	    turtleSpace.add ( turtle );
 	    //I HAVE NO IDEA WHY 135 SETS THE TURTLE AT THE RIGHT SPOT- FIX THIS LATER!!! DON'T BE LAZY/FORGET TO DO THIS!!!
 	    turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 	    //System.out.println ( "turtle at : " + patches.length / 2 );
-	} catch ( Exception e ) {
-	    System.out.println ( "come on man" );
-	}
+	    //} catch ( Exception e ) {
+	    //System.out.println ( "come on man" );
+	    //}
 	}
     }
     private ArrayList with ( String agentType , ArrayList<String> agents ) {
@@ -777,6 +787,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) && satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
 				//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
 				int[] add = { r , c };
+				System.out.println ( "adding patch: " + r  + ", " + c );
 				callPatches.add ( add );
 			    }
 			}
@@ -789,6 +800,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) || satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
 				//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
 				int[] add = { r , c };
+				System.out.println ( "adding patch: " + r  + ", " + c );
 				callPatches.add ( add );
 			    }
 			}
@@ -802,7 +814,7 @@ class myPanel extends JLayeredPane implements MouseListener {
     }
     //ask commands
     public void ask ( String s1 ) {
-	System.out.println ( "ask: " + s1 );
+	//System.out.println ( "ask: " + s1 );
 	ArrayList<String> agents = new ArrayList<String>();
 	ArrayList<String> commands = new ArrayList<String>();
 	String s = new String();
@@ -822,7 +834,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    s = s.substring ( s.indexOf ( ";" ) + 1 );
 	}
 	s = s.substring ( 2 );
-	System.out.println ( "agents: " + agents );
+	//System.out.println ( "agents: " + agents );
 	//add to commands when beginning of string is not "]"
 	int inBrackets = 0;
 	while ( s.indexOf ( "]" ) != 0 || inBrackets != 0 ) {
@@ -834,8 +846,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    commands.add ( word );
 	    s = s.substring ( s.indexOf ( ";" ) + 1 );
 	}
-	System.out.println ( "commands: " + commands );
-	System.out.println ( agents.size() );
+	//System.out.println ( "commands: " + commands );
+	//System.out.println ( agents.size() );
 	if ( agents.size() == 1 ) {
 		if ( agents.get ( 0 ).equals ( "patches" ) ) { //ask patches to do things 
 		    ArrayList<int[]> patchesList = new ArrayList<int[]>();
@@ -853,9 +865,11 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    fdbk.add ( "bk" );
 		    fdbk.add ( "1" );
 		    callCommands ( turtles , fdbk );
+		    ask ( "turtles;[;fd1;bk1;];" );
 		}
 		if ( agents.get ( 0 ).equals ( "turtles" ) ) { //ask turtles to do things
 		    callCommands ( turtles , commands );
+		    //ask ( "turtles;[;fd1;bk1;];" );
 	    }
 	}
 	else if ( agents.size() > 1 ) { //agents has properties, like "with" or "at"- not complete yet
@@ -864,6 +878,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		if ( agents.get ( 1 ).equals ( "with" ) ) {
 		    //call methods on selected turtles
 		    callCommands ( with ( "turtles" , agents ) , commands );
+		    ask ( "turtles;[;fd1;bk1;];" );
 		}
 	    }
 	    //if ( agent.get ( 1 ).equals ( "at" ) ) {
@@ -964,7 +979,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    System.out.println ( "true " + coors [ 0 ] );
 		    return true;
 		}
-		//System.out.println ( "returned false with y: " + coors [ 0 ] );
+		System.out.println ( "returned false with y: " + coors [ 0 ] + " , newC=" + newC );
 		return false;
 	    }
 	    else if ( b.equals ( "=" ) ) {
@@ -1016,6 +1031,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 		    for ( int[] coors : patches ) {
 			this.patches [ coors [ 0 ] ] [ coors [ 1 ] ].setBackground ( newColor );
+			System.out.println ( "made patch " + coors [ 0 ] + ", " + coors [ 1 ] + " into newcolor" );
 		    }
 		    this.update ( this.getGraphics() );
 		}
@@ -1023,8 +1039,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 	}
     }
     public void callCommands ( ArrayList<Turtle> turtles , ArrayList<String> commands ) {
-	System.out.println ( "methods called on turtles: " + turtles );
-	System.out.println ( "commands in callCommands: " + commands );
+	//System.out.println ( "methods called on turtles: " + turtles );
+	//System.out.println ( "commands in callCommands: " + commands );
 	for ( int i = 0 ; i < commands.size() ; i++ ) {
 	    //forward + back
 	    //System.out.println ( "commands.get: " + commands.get ( i ) );
@@ -1054,7 +1070,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( -1 * dir ) + "\ncos dir: " + Math.cos ( -1 * dir ) );
 		    removeTurtles.add ( turtle );
-		    Turtle t = new Turtle ( xcor , ycor , turtle.getDir() , turtle.getColor() , turtle.getBreed() );
+		    Turtle t = new Turtle ( xcor , ycor , turtle.getDir() , turtle.getColor() , turtle.getBreed() , turtle.getTurtleSize() );
 		    System.out.println ( "array of turtles: " + turtles );
 		    turtles.add ( t );
 		    turtleSpace.add ( t );
@@ -1070,10 +1086,10 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    else if ( commands.get ( i ).equals ( "set" ) ) {
 		System.out.println ( "set called" );
 		i = i + 1;
-		Color newColor;
 		if ( commands.get ( i ).equals ( "color" ) ) {
 		    i = i + 1;
 		    String color = commands.get ( i );
+		    Color newColor;
 		    System.out.println ( "color changing to: " + color );
 		    if( color.equals("red")) {
 			newColor = Color.RED;
@@ -1087,6 +1103,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    else if( color.equals("yellow")) {
 			newColor = Color.YELLOW;
 		    }
+		    // else if ( color.equals ( "gray" ) ) {
+		    // 	newColor = Color.BROWN;
+		    // }
 		    else {
 			newColor = null;
 			System.out.println ( "invalid color" );
@@ -1123,6 +1142,14 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }			
 		    i+= 1;
 		}    
+		else if ( commands.get ( i ).equals ( "size" ) ) {
+		    i = i + 1;
+		    int size = Integer.parseInt ( commands.get ( i ) );
+		    for ( Turtle turtle : turtles ) {
+			System.out.println ( "set size to " + size );
+			turtle.setSize ( size );
+		    }
+		}
 		else {
 		    System.out.println("You are setting incorrectly");
 		/*Turtle[] moveTurtles = new Turtle [ turtles.size() ];
@@ -1142,9 +1169,17 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    turtles.remove ( turtle );
 		}
 		*/
+		}
+		ArrayList<String> fdbk = new ArrayList<String>();
+		fdbk.add ( "fd" );
+		fdbk.add ( "1" );
+		fdbk.add ( "bk" );
+		fdbk.add ( "1" );
+		//callCommands ( turtles , fdbk );
+		/*ask ( "turtles;[;fd;1;bk;1;];" );
+		  ask ( "patches;[;set;pcolor;red;];" );*/
 		this.update ( this.getGraphics() );
 	    }
-	}
 	}
     }
 
@@ -1303,6 +1338,18 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    String operations = s.substring ( s.indexOf ( ";" ) + 1 );
 	    System.out.println ( "do this to global: " + operations );
 	    String[] ops = new String [ 3 ];
+	    if ( operations.indexOf ( ";" ) == operations.length() - 1 ) {
+		int first;
+		try {
+		    first = Integer.parseInt ( operations.substring ( 0 , 1 ) );
+		} catch ( Exception e ) {
+		    first = globals.get ( operations.substring ( 0 , 1 ) );
+		}
+		globals.put ( change , first );
+	    }
+	    else {
+	    // if ( operations.indexOf ( ";" ) < operations.length() - 1 ) {
+	    // 	System.out.println ( "operations index: " + operations.indexOf ( ";" ) + "\noperations.length: " + operations.length() );
 	    for ( int i = 0 ; i < 3 ; i++ ) {
 		ops [ i ] = operations.substring ( 0 , operations.indexOf ( ";" ) );
 		operations = operations.substring ( operations.indexOf ( ";" ) + 1 );
@@ -1330,6 +1377,16 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    else if ( ops [ 1 ].equals ( "/" ) )
 		globals.put ( change , first / second );
 	    //ask ( "turtles;[;fd;1;bk;1;];" );
+	    }
+	    // else {
+	    // 	int first;
+	    // 	try {
+	    // 	    first = Integer.parseInt ( ops [ 0 ] );
+	    // 	} catch ( Exception e ) {
+	    // 	    first = globals.get ( ops [ 0 ] );
+	    // 	}
+	    // 	globals.put ( change , first );
+	    // }
 	}
 	if ( change.equals ( "breed" ) ) {
 	    //do things here
@@ -1357,10 +1414,11 @@ class Patch extends JPanel {
 
 class Turtle extends JLabel {
     private double xcor , ycor;
-    private int dir;
+    private int dir , size;
     private String breed;
     private Color color;
     public Turtle ( double xcor , double ycor  ) {
+	this.setOpaque ( true );
 	this.xcor = xcor;
 	this.ycor = ycor;
 	breed = new String();
@@ -1377,14 +1435,32 @@ class Turtle extends JLabel {
 	color = Color.YELLOW; */
 	color = Color.RED;
 	setIcon ( new ImageIcon ( "red_arrow.png" ) );
+	size = 1;
+	//setIcon ( null );
+	//this.setBackground ( null );
+	this.repaint();
     }
-    public Turtle ( double xcor , double ycor , int dir , Color color , String breed ) {
+    public Turtle ( double xcor , double ycor , int dir , Color color , String breed , int size ) {
 	System.out.println ( "turtle created at " + xcor + ", " + ycor );
 	this.xcor = xcor;
 	this.ycor = ycor;
 	this.dir = dir;
 	setColor ( color );
 	this.breed = breed;
+	setSize ( size );
+    }
+    public void setSize ( int size ) {
+	//this.setPreferredSize ( new Dimension ( size , size ) );
+	//Image img = mgIcon.getImage();
+	Image img = ( (ImageIcon) getIcon() ).getImage();
+	Image newImg = rotate ( resizeImage ( img , 13 * size , 13 * size ) , dir );
+	super.setIcon ( new ImageIcon ( newImg ) );
+	this.setPreferredSize ( new Dimension ( 13 * size , 13 * size ) );
+	this.size = size;
+	//this.repaint();
+	}
+    public int getTurtleSize() {
+	return size;
     }
     public void setIcon ( ImageIcon imgIcon ) {
 	setIcon ( imgIcon , (int) ( Math.random() * 360 ) );
