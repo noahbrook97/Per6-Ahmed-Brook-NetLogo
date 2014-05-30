@@ -501,7 +501,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	for ( String mthd : listOfMethods ) {
 	    //mthd has ; if it has parameters- call method with parameters
 	    if ( mthd.contains ( ";" ) ) {
-		//System.out.println ( "mthd: " + mthd );
 		Method m = f.getClass().getMethod 
 		    (mthd.substring(0, mthd.indexOf( ";" )) , String.class );
 		m.invoke ( f , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
@@ -609,6 +608,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    //}
 	}
     }
+	
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private ArrayList with ( String agentType , ArrayList<String> agents ) {
 	//String agentType = agents.get ( 0 );
 	if ( agentType.equals ( "turtles" ) ) {
@@ -811,7 +813,95 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    return callPatches;
 	}
 	return null;
+    } 
+
+    //~~~~~NEEDS TESTING~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                                                       
+    public int random(String s) {
+        int num = Integer.parseInt(s);
+        int val = (int) (Math.random() * num);
+        return val;
     }
+    
+    //if condition true run command
+    public void IF(String s1) {
+        System.out.println("if: " + s1);
+	String s = new String();
+	for(int i = 0; i < s1.length(); i++) 
+	    s = s + s1.substring(i, i + 1);
+	
+	boolean isokay = false;
+	String condition = s.substring(0, s.indexOf( ";") );
+	s = s.substring(s.indexOf(";") + 1);
+
+	if (condition.equals("random")) {
+	    //THIS MAY NEED TO BE A CALL TO RANDOM NOT JUST THE NUMBER
+	    int firstval = Integer.parseInt(s.substring(0, s.indexOf(";")));
+	    s = s.substring(s.indexOf(";") + 1);
+	    
+	    String operator = s.substring(0, s.indexOf(";"));
+	    s = s.substring(s.indexOf(";") + 1);
+	    int secondval = Integer.parseInt(s.substring(0, s.indexOf(";")));
+	    if(operator.equals("=")) {
+		if (firstval == secondval)
+		    isokay = true;
+	    }
+	    else if(operator.equals("!=")) {
+		if (firstval != secondval)
+		    isokay = true;
+	    }
+	    else if(operator.equals("<")) {
+		if(firstval < secondval)
+		    isokay = true;
+	    }
+	    else if(operator.equals(">")) {
+		if(firstval > secondval)
+		    isokay = true;
+	    }
+	    else if(operator.equals("<=")) {
+		if(firstval <= secondval)
+		    isokay = true;
+	    }
+	    else if(operator.equals(">=")) {
+		if(firstval >= secondval)
+		    isokay = true;
+	    }
+	    else
+		System.out.println("Not correct operator");
+			       
+	}
+
+	else if(condition.equals("count")) {
+
+	}
+	
+	else if(condition.equals("heading")) {
+
+	}
+
+	else if(condition.equals("color")) {
+
+	}
+
+
+	else
+	    System.out.println("Improper use of if statement");
+
+	if(isokay) {
+	    System.out.println("condition true, running command");
+	}
+    }
+	
+    //if condition true, run command 1. if false, run command 2
+    public void IFELSE(String s) {
+        System.out.println("ifelse: " + s);
+    }
+
+    public void ELSE(String s) {
+        System.out.println("else: " + s);
+    }
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~         
+
     //ask commands
     public void ask ( String s1 ) {
 	//System.out.println ( "ask: " + s1 );
