@@ -826,11 +826,11 @@ class myPanel extends JLayeredPane implements MouseListener {
     }
     
     //determine if condition true for if and ifelse
-    public boolean condition(String s1) {
-     	String s = new String();
+    public boolean condition(String s) {
+	/*     	String s = new String();
 	for(int i = 0; i < s1.length(); i++) 
 	    s = s + s1.substring(i, i + 1);
-	
+	*/
 	boolean isokay = false;
 	String condition = s.substring(0, s.indexOf( ";") );
 	s = s.substring(s.indexOf(";") + 1);
@@ -874,6 +874,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	}
 	
 	else if(condition.equals("count")) {
+	    
 	}
 	    
     
@@ -886,24 +887,27 @@ class myPanel extends JLayeredPane implements MouseListener {
     public void IF(String s1) {
 	//if condition is true run
 	System.out.println("if statement: " + s1);
-
-	/*	String s = new String();
+	String s = new String();
 	for(int i = 0; i < s1.length(); i++)
             s = s + s1.substring(i, i + 1);
-	*/
+	
 	if (condition(s)) {
 	    System.out.println("condition true, running command");
-	    // do commands   s1 
+	    //	    callMethod(s);
 	}
 	else
 	    System.out.println("condition false, not running command");
-    }    
+    }
     
 	
     //if condition true, run command 1. if false, run command 2
     public void IFELSE(String s1) {
         System.out.println("ifelse: " + s1);
-	if(conditions(s1)) {
+	String s = new String();
+	for (int i = 0; i < s1.length(); i++)
+	    s = s + s1.substring(i, i + 1);
+
+	if(condition(s)) {
 	    System.out.println("condition true, running command 1");
 
 	}
