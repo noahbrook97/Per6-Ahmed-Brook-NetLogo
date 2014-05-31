@@ -126,12 +126,12 @@ class Screen extends JTabbedPane {
 
 	this.add ( "Info" , info );
 
-	//code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count turtles with [ color = red ] ) ask patches [ set pcolor red ] end to move ask turtles [ fd 1 ] end to change ask turtles [ set size 5 set color green ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
+	//code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count turtles with [ color = red ] ) ask patches [ set pcolor red ] end to move ask turtles [ fd 1 ] end to change ask turtles [ die ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
 	code = new JTextArea ( "globals [ lives sbutton ] " +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       "to setup ca ask patches with [ pycor < -5 or pycor > 10 ] [ set pcolor blue ] " +
+			       "to setup ask patches with [ pycor < -5 or pycor > 10 ] [ set pcolor blue ] " +
 			       "set lives 3 set sbutton 0 end " +
-			       "to change ask turtles [ set size 2 ] end " +
+			       "to change ask turtles with [ who = 1 ] [ die ] end " +
 			       "to create crt 1 end " +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
@@ -601,7 +601,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    //try {
 	    turtleSpace.add ( turtle );
 	    //I HAVE NO IDEA WHY 135 SETS THE TURTLE AT THE RIGHT SPOT- FIX THIS LATER!!! DON'T BE LAZY/FORGET TO DO THIS!!!
-	    turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+	    System.out.println ( "testing setbounds number: " + patches.length / 2 );
+	    //turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+	    turtle.setBounds ( patches.length / 2 * (int) patches [ 0 ] [ 0 ].size().getWidth() , patches [ patches.length / 2 ].length / 2 * (int) patches [ 0 ] [ 0 ].size().getHeight() , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 	    //System.out.println ( "turtle at : " + patches.length / 2 );
 	    //} catch ( Exception e ) {
 	    //System.out.println ( "come on man" );
@@ -955,7 +957,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    fdbk.add ( "bk" );
 		    fdbk.add ( "1" );
 		    callCommands ( turtles , fdbk );
-		    ask ( "turtles;[;fd1;bk1;];" );
+		    ask ( "turtles;[;fd;1;bk;1;];" );
 		}
 		if ( agents.get ( 0 ).equals ( "turtles" ) ) { //ask turtles to do things
 		    callCommands ( turtles , commands );
@@ -968,7 +970,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		if ( agents.get ( 1 ).equals ( "with" ) ) {
 		    //call methods on selected turtles
 		    callCommands ( with ( "turtles" , agents ) , commands );
-		    ask ( "turtles;[;fd1;bk1;];" );
+		    ask ( "turtles;[;fd;1;bk;1;];" );
 		}
 	    }
 	    //if ( agent.get ( 1 ).equals ( "at" ) ) {
@@ -978,7 +980,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		//do things
 		if ( agents.get ( 1 ).equals ( "with" ) ) {
 		    patchCommands ( with ( "patches" , agents ) , commands );
-		    ask ( "turtles;[;fd1;bk1;];" );
+		    ask ( "turtles;[;fd;1;bk;1;];" );
 		}
 	    }
 	}
@@ -1147,8 +1149,11 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    double xcor = turtle.getXcor();
 		    double ycor = turtle.getYcor();
 		    int dir = turtle.getDir();
-		    int steps = Integer.parseInt ( commands.get ( i + 1 ) ) * 10;
-		    //I DON'T KNOW WHY IT'S 10- CHANGE TO SIZE OF EACH PATCH LATER!!!
+		    //System.out.println ( "moving fd/bk, turtle at: " + xcor + ", " + ycor );
+		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( -1 * dir ) + "\ncos dir: " + Math.cos ( -1 * dir ) );
+		    double steps = Integer.parseInt ( commands.get ( i + 1 ) ) * Math.sqrt ( patches [ 0 ] [ 0 ].size().getWidth() + patches [ 0 ] [ 0 ].size().getHeight() ) * 4;
+		    System.out.println ( "steps: " + steps );
+		    //I DON'T KNOW WHY IT'S 4- CHANGE TO SIZE OF EACH PATCH LATER!!!- now it's based on size of patches, but still doesn't move enough
 		    if ( commands.get ( i ).equals ( "fd" ) ) {
 			System.out.println ( "called fd" );
 			xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( -1 * dir ) ) );
@@ -1164,7 +1169,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    System.out.println ( "array of turtles: " + turtles );
 		    turtles.add ( t );
 		    turtleSpace.add ( t );
-		    t.setBounds ( (int) xcor + 124 , (int) ycor + 124 , turtle.getIcon().getIconHeight(),  turtle.getIcon().getIconHeight() );
+		    //t.setBounds ( (int) xcor + 135 , (int) ycor + 135 , turtle.getIcon().getIconHeight(),  turtle.getIcon().getIconHeight() );
+		    t.setBounds ( patches.length / 2 * (int) patches [ 0 ] [ 0 ].size().getWidth() + (int) xcor , patches [ patches.length / 2 ].length / 2 * (int) patches [ 0 ] [ 0 ].size().getHeight() + (int) ycor , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 		}
 		for ( Turtle turtle : removeTurtles ) {
 		    turtleSpace.remove ( turtle );
@@ -1181,7 +1187,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    String color = commands.get ( i );
 		    Color newColor;
 		    System.out.println ( "color changing to: " + color );
-		    if( color.equals("red")) {
+ 		    if( color.equals("red")) {
 			newColor = Color.RED;
 		    }
 		    else if( color.equals("green")) {
@@ -1202,7 +1208,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 		    for ( Turtle turtle : turtles ) {
 			turtle.setColor ( newColor );
-			turtle.setBounds ( (int) turtle.getXcor() + 124 , (int) turtle.getYcor() + 124 , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+			//turtle.setBounds ( (int) turtle.getXcor() + 135 , (int) turtle.getYcor() + 135 , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+			turtle.setBounds ( patches.length / 2 * (int) patches [ 0 ] [ 0 ].size().getWidth() + (int) turtle.getXcor() , patches [ patches.length / 2 ].length / 2 * (int) patches [ 0 ] [ 0 ].size().getHeight() + (int) turtle.getYcor() , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 			turtleSpace.add ( turtle );
 		    }
 		    //ADD OTHER COLORS OF RAINBOW
@@ -1211,7 +1218,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    for ( Turtle turtle : turtles ) {
 			System.out.println ( "changed xcor" );
 			turtle.setXcor ( Double.parseDouble ( commands.get ( i + 1 ) ) * 10 );
-			turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 + (int)turtle.getXcor() , /*25 + patches [ patches.length / 2 ].length / 2*/135 , /*( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight()*/turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+			//turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 + (int)turtle.getXcor() , /*25 + patches [ patches.length / 2 ].length / 2*/135 , /*( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight()*/turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+			turtle.setBounds ( patches.length / 2 * (int) patches [ 0 ] [ 0 ].size().getWidth() + (int) turtle.getXcor(), patches [ patches.length / 2 ].length / 2 * (int) patches [ 0 ] [ 0 ].size().getHeight() + (int) turtle.getYcor(), turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 		    }
 		    i = i + 1;
 		}
@@ -1219,7 +1227,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    for ( Turtle turtle : turtles ) {
 			System.out.println ( "changed ycor" );
 			turtle.setYcor ( Double.parseDouble ( commands.get ( i + 1 ) ) * -10 );
-			turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 + (int)turtle.getYcor() , /*( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight()*/turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+			//turtle.setBounds ( /*25 + 12 * patches.length / 2*/135 , /*25 + patches [ patches.length / 2 ].length / 2*/135 + (int)turtle.getYcor() , /*( (BufferedImage) turtle.getImage() ).getWidth() , ( (BufferedImage) turtle.getImage() ).getHeight()*/turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
+			turtle.setBounds ( patches.length / 2 * (int) patches [ 0 ] [ 0 ].size().getWidth() + (int) turtle.getXcor(), patches [ patches.length / 2 ].length / 2 * (int) patches [ 0 ] [ 0 ].size().getHeight() + (int) turtle.getYcor(), turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 		    }
 		    i = i + 1;
 		}
@@ -1269,6 +1278,21 @@ class myPanel extends JLayeredPane implements MouseListener {
 		/*ask ( "turtles;[;fd;1;bk;1;];" );
 		  ask ( "patches;[;set;pcolor;red;];" );*/
 		this.update ( this.getGraphics() );
+	    }
+	    else if ( commands.get ( i ).equals ( "die" ) ) {
+		System.out.println ( "ask turtles to die: " + turtles );
+		ArrayList<Turtle> removeTurtles = new ArrayList<Turtle>();
+		for ( Turtle turtle : turtles )
+		    removeTurtles.add ( turtle );
+		for ( Turtle turtle : removeTurtles ) {
+		    turtleSpace.remove ( turtle );
+		    this.turtles.remove ( turtle );
+		}
+		this.update ( this.getGraphics() );
+		    //this.turtles.remove ( turtle );
+		    //System.out.println ( "ask turtle to die" );
+		//for ( Turtle turtle : turtles )
+		    //turtles.remove ( turtle );
 	    }
 	}
     }
@@ -1508,7 +1532,8 @@ class Turtle extends JLabel {
     private String breed;
     private Color color;
     public Turtle ( double xcor , double ycor  ) {
-	this.setOpaque ( true );
+	this ( xcor , ycor , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 );
+	/*this.setOpaque ( true );
 	this.xcor = xcor;
 	this.ycor = ycor;
 	breed = new String();
@@ -1522,13 +1547,13 @@ class Turtle extends JLabel {
 	else if(2 < colorprob && colorprob < 3)
 	    color = Color.BLUE;
 	else
-	color = Color.YELLOW; */
+	color = Color.YELLOW; 
 	color = Color.RED;
 	setIcon ( new ImageIcon ( "red_arrow.png" ) );
 	size = 1;
 	//setIcon ( null );
 	//this.setBackground ( null );
-	this.repaint();
+	this.repaint();*/
     }
     public Turtle ( double xcor , double ycor , int dir , Color color , String breed , int size ) {
 	System.out.println ( "turtle created at " + xcor + ", " + ycor );
@@ -1539,7 +1564,7 @@ class Turtle extends JLabel {
 	this.breed = breed;
 	setSize ( size );
     }
-    public void setSize ( int size ) {
+    public void setSize ( int size ) {}/*
 	//this.setPreferredSize ( new Dimension ( size , size ) );
 	//Image img = mgIcon.getImage();
 	Image img = ( (ImageIcon) getIcon() ).getImage();
@@ -1548,14 +1573,16 @@ class Turtle extends JLabel {
 	this.setPreferredSize ( new Dimension ( 13 * size , 13 * size ) );
 	this.size = size;
 	//this.repaint();
-	}
+	}*/
     public int getTurtleSize() {
 	return size;
     }
     public void setIcon ( ImageIcon imgIcon ) {
-	setIcon ( imgIcon , (int) ( Math.random() * 360 ) );
+	//setIcon ( imgIcon , (int) ( Math.random() * 360 ) );
+	setIcon ( imgIcon , 90 );
     }
     public void setIcon ( ImageIcon imgIcon , int rotation ) {
+	System.out.println ( "rotation in setIcon: " + rotation );
 	Image img = imgIcon.getImage(); //image of parameter
 	Image newImg = rotate ( resizeImage ( img , 13 , 13 ) , rotation );
 	super.setIcon ( new ImageIcon ( newImg ) );
@@ -1612,13 +1639,13 @@ class Turtle extends JLabel {
     //rotate image
     public BufferedImage rotate ( BufferedImage image , int rotation ) {
 	dir = rotation;
-	//System.out.println ( "rotate" + rotation );
+	System.out.println ( "rotate" + rotation );
 	int w = image.getWidth();
 	int h = image.getHeight();
 	BufferedImage buffImage = new BufferedImage ( w , h , image.getType() );
 	Graphics2D g = buffImage.createGraphics();
 	g.setRenderingHint ( RenderingHints.KEY_ANTIALIASING , RenderingHints.VALUE_ANTIALIAS_ON );
-	//rotation = -1 * rotation;
+	Integer r = new Integer ( rotation );
 	g.rotate ( Math.toRadians ( rotation ) , w / 2 , h / 2 );
 	g.drawImage ( image , null , 0 , 0 );
 	return buffImage;
