@@ -534,9 +534,9 @@ class myPanel extends JLayeredPane implements MouseListener {
     private Color backgroundColor;
     public myPanel() {
 	this.setPreferredSize ( new Dimension ( 300 , 300 ) );
-	patches = new Patch [ 70 ] [ 70 ];
+	patches = new Patch [ 71 ] [ 71 ];
 	patchSpace = new JPanel();
-	patchSpace.setLayout ( new GridLayout ( 70 , 70 ) );	
+	patchSpace.setLayout ( new GridLayout ( 71 , 71 ) );	
 	patchSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
 	turtles = new ArrayList<Turtle>();
 	globals = new HashMap<String , Integer>();
@@ -596,7 +596,9 @@ class myPanel extends JLayeredPane implements MouseListener {
     public void crt ( String s ) {
 	int nums = Integer.parseInt ( s );
 	for ( int i = 0 ; i < nums ; i++ ) {
-	    Turtle turtle = new Turtle ( patches.length / 2, patches [ patches.length / 2 ].length / 2 );
+	    Turtle turtle = new Turtle ( patches.length / 2, patches [ patches.length / 2 ].length / 2 , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 );
+	    turtle.setXcor ( 0 );
+	    turtle.setYcor ( 0 );
 	    turtles.add ( turtle );
 	    //try {
 	    turtleSpace.add ( turtle );
@@ -1163,7 +1165,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    double ycor = turtle.getYcor();
 		    int dir = turtle.getDir();
 		    //System.out.println ( "moving fd/bk, turtle at: " + xcor + ", " + ycor );
-		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( -1 * dir ) + "\ncos dir: " + Math.cos ( -1 * dir ) );
+		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + round ( Math.sin ( Math.toRadians ( -1 * dir ) ) ) + "\ncos dir: " + round ( Math.cos ( Math.toRadians ( -1 * dir ) ) ) );
 		    double steps = Integer.parseInt ( commands.get ( i + 1 ) ) * Math.sqrt ( patches [ 0 ] [ 0 ].size().getWidth() + patches [ 0 ] [ 0 ].size().getHeight() ) * 4;
 		    System.out.println ( "steps: " + steps );
 		    //I DON'T KNOW WHY IT'S 4- CHANGE TO SIZE OF EACH PATCH LATER!!!- now it's based on size of patches, but still doesn't move enough
@@ -1176,7 +1178,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( -1 * dir ) ) );
 			ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( -1 * dir ) ) );
 		    }
-		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + Math.sin ( -1 * dir ) + "\ncos dir: " + Math.cos ( -1 * dir ) );
+		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + round ( Math.sin ( Math.toRadians ( -1 * dir ) ) ) + "\ncos dir: " + round ( Math.cos ( Math.toRadians ( -1 * dir ) ) ) );
 		    removeTurtles.add ( turtle );
 		    Turtle t = new Turtle ( xcor , ycor , turtle.getDir() , turtle.getColor() , turtle.getBreed() , turtle.getTurtleSize() );
 		    System.out.println ( "array of turtles: " + turtles );
