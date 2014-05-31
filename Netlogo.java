@@ -596,7 +596,7 @@ class myPanel extends JLayeredPane implements MouseListener {
     public void crt ( String s ) {
 	int nums = Integer.parseInt ( s );
 	for ( int i = 0 ; i < nums ; i++ ) {
-	    Turtle turtle = new Turtle ( patches.length / 2, patches [ patches.length / 2 ].length / 2 , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 );
+	    Turtle turtle = new Turtle ( patches.length / 2, patches [ patches.length / 2 ].length / 2 , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 , turtles.size() );
 	    turtle.setXcor ( 0 );
 	    turtle.setYcor ( 0 );
 	    turtles.add ( turtle );
@@ -627,7 +627,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    int who = Integer.parseInt ( restrictions [ 2 ] );
 		    if ( restrictions [ 1 ].equals ( "=" ) ) {
 			for ( int i = 0 ; i < turtles.size() ; i++ ) {
-			    if ( who == i )
+			    if ( who == turtles.get ( i ).getWho() )
 				callTurtles.add ( turtles.get ( i ) );
 			}
 		    }
@@ -1180,8 +1180,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + round ( Math.sin ( Math.toRadians ( -1 * dir ) ) ) + "\ncos dir: " + round ( Math.cos ( Math.toRadians ( -1 * dir ) ) ) );
 		    removeTurtles.add ( turtle );
-		    Turtle t = new Turtle ( xcor , ycor , turtle.getDir() , turtle.getColor() , turtle.getBreed() , turtle.getTurtleSize() );
-		    System.out.println ( "array of turtles: " + turtles );
+		    Turtle t = new Turtle ( xcor , ycor , turtle.getDir() , turtle.getColor() , turtle.getBreed() , turtle.getTurtleSize() , turtle.getWho() );
 		    turtles.add ( t );
 		    turtleSpace.add ( t );
 		    //t.setBounds ( (int) xcor + 135 , (int) ycor + 135 , turtle.getIcon().getIconHeight(),  turtle.getIcon().getIconHeight() );
@@ -1191,6 +1190,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    turtleSpace.remove ( turtle );
 		    turtles.remove ( turtle );
 		}
+		System.out.println ( "array of turtles: " + turtles );
 		i = i + 1;
 		this.update ( this.getGraphics() );
 	    }
@@ -1543,11 +1543,11 @@ class Patch extends JPanel {
 
 class Turtle extends JLabel {
     private double xcor , ycor;
-    private int dir , size;
+    private int dir , size , who;
     private String breed;
     private Color color;
-    public Turtle ( double xcor , double ycor  ) {
-	this ( xcor , ycor , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 );
+    /*public Turtle ( double xcor , double ycor  ) {
+	this ( xcor , ycor , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 ,);
 	/*this.setOpaque ( true );
 	this.xcor = xcor;
 	this.ycor = ycor;
@@ -1569,15 +1569,16 @@ class Turtle extends JLabel {
 	//setIcon ( null );
 	//this.setBackground ( null );
 	this.repaint();*/
-    }
-    public Turtle ( double xcor , double ycor , int dir , Color color , String breed , int size ) {
-	System.out.println ( "turtle created at " + xcor + ", " + ycor );
+    //}
+    public Turtle ( double xcor , double ycor , int dir , Color color , String breed , int size , int who ) {
+	System.out.println ( "turtle created at " + xcor + ", " + ycor );//+ " with who: " + who );
 	this.xcor = xcor;
 	this.ycor = ycor;
 	this.dir = dir;
 	setColor ( color );
 	this.breed = breed;
 	setSize ( size );
+	this.who = who;
     }
     public void setSize ( int size ) {}/*
 	//this.setPreferredSize ( new Dimension ( size , size ) );
@@ -1592,6 +1593,9 @@ class Turtle extends JLabel {
     public int getTurtleSize() {
 	return size;
     }
+    public int getWho() {
+	return who;
+    }
     public void setIcon ( ImageIcon imgIcon ) {
 	//setIcon ( imgIcon , (int) ( Math.random() * 360 ) );
 	setIcon ( imgIcon , 90 );
@@ -1603,7 +1607,8 @@ class Turtle extends JLabel {
 	super.setIcon ( new ImageIcon ( newImg ) );
     }
     public String toString() {
-	return "Turtle at: " + xcor + ", " + ycor + " facing: " + dir + "Color: " + color;
+	//return "Turtle at: " + xcor + ", " + ycor + " facing: " + dir + "Color: " + color + "who: " + who;
+	return "who: " + who + "\n";
     }
     public double getXcor() {
 	return xcor;
