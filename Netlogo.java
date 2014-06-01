@@ -128,13 +128,16 @@ class Screen extends JTabbedPane {
 
 	//code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count turtles with [ color = red ] ) ask patches [ set pcolor red ] end to move ask turtles [ fd 1 ] end to change ask turtles [ die ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
 	code = new JTextArea ( "globals [ lives sbutton ] " +
+			       "breed [ plural singular ] " +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       "to setup ask patches with [ pycor < -5 or pycor > 10 ] [ set pcolor blue ] " +
+			       "to setup ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] " +
+			       //"to setup ca " + 
+			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ] " +
 			       "set lives 3 set sbutton 0 end " +
-			       "to change ask turtles with [ who = 1 ] [ die ] end " +
+			       "to change ask turtles with [ who = 0 ] [ set size 2 ] set lives lives - 1 end " +
 			       "to create crt 1 end " +
 			       "to move ask turtles [ fd 1 ] end" );
-	code.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
     }
     public ArrayList<ForeverButton> getForeverButtons() {
@@ -163,15 +166,15 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     private ArrayList<ForeverButton> foreverButtons;
     private ArrayList<JLabel> monitors;
     HashMap<String , ArrayList<String>> methods;
-    ArrayList<String> breeds;
+    ArrayList<String[]> breeds;
 
     public IFace() {
 	space = new JPanel();
 	f = new myPanel();
 	foreverButtons = new ArrayList<ForeverButton>();
 	monitors = new ArrayList<JLabel>();
-	breeds = new ArrayList<String>();
-	f.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	breeds = new ArrayList<String[]>();
+	f.setPreferredSize ( new Dimension ( 500 , 500 ) );
 	JButton setup = new JButton ( "setup" );
 	setup.addActionListener ( this );
 	space.add ( setup );
@@ -231,6 +234,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		s = "";
 	    }
 	}
+	System.out.println ( "words: " + words );
 	String methodName = new String();
 	for ( int i = 0 ; i < words.size() ; i++ ) {
 	    String word = words.get ( i );
@@ -241,6 +245,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    }
 	    else if ( word.equals ( "end" ) ) {
 		inMethod = false;
+		//System.out.println ( "ans at end: " + ans + " for method " + methodName );
 		methods.put ( methodName , ans );
 		ans = new ArrayList<String>();
 	    }
@@ -316,10 +321,15 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    }
 		    ans.add ( addThis + word + ";" );
 		}
-		else ans.add ( word );
+		else {
+		    ans.add ( word );
+		    System.out.println ( "word: " + word );
+		}
 	    }
 	    else if ( word.equals ( "breed" ) ) {
-		breeds.add ( words.get ( i + 2 ) + "," + words.get ( i + 3 ) );
+		String[] ad = { words.get ( i + 2 ) , words.get ( i + 3 ) };
+		breeds.add ( ad );
+		System.out.println ( "added to breeds: " + ad );
 		i = i + 4;
 	    }
 	    else if ( word.equals ( "globals" ) ) {
@@ -432,8 +442,10 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    //JButton bottom = new JButton ( "" + f.globals.get ( s ) );
 	    //whole.add ( top );
 	    //whole.add ( bottom );
-	    space.add ( m );
-	    monitors.add ( m );
+	    if ( ! s.equals ( null ) ) {
+		space.add ( m );
+		monitors.add ( m );
+	    }
 	}
 	}//end try
 	catch ( ClassCastException ex ) {
@@ -533,28 +545,29 @@ class myPanel extends JLayeredPane implements MouseListener {
     HashMap<String , Integer> globals;
     private Color backgroundColor;
     public myPanel() {
-	this.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	this.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	patches = new Patch [ 71 ] [ 71 ];
 	patchSpace = new JPanel();
 	patchSpace.setLayout ( new GridLayout ( 71 , 71 ) );	
-	patchSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	patchSpace.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	turtles = new ArrayList<Turtle>();
 	globals = new HashMap<String , Integer>();
 	turtleSpace = new JPanel();
-	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
+	turtleSpace.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	//backgroundColor = Color.BLACK;
 	//array of patches, 25x25
 	for ( int r = 0 ; r < patches.length ; r++ ) {
 	    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
 		Patch p = new Patch();
-		p.setBackground ( Color.BLACK ); 
+		p.setBackground ( Color.BLACK );
+		p.setPreferredSize ( new Dimension ( 5 , 5 ) );
 		patchSpace.add ( p );
 		patches [ r ] [ c ] = p;
 	    }
 	}
-	patchSpace.setBounds ( 25 , 25 , 300 , 300 );
+	patchSpace.setBounds ( 25 , 25 , 355 , 355 );
 	this.add ( patchSpace );
-	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
+	turtleSpace.setBounds ( 25 , 25 , 355 , 355 );
 	this.add ( turtleSpace );
 	addMouseListener ( this );
 	turtleSpace.addMouseListener ( this );
@@ -583,12 +596,32 @@ class myPanel extends JLayeredPane implements MouseListener {
 	turtles.clear();
 	//turtleSpace = new JPanel();
 	turtleSpace.removeAll();
-	turtleSpace.setPreferredSize ( new Dimension ( 300 , 300 ) );
-	//turtlespace starts at 25, 25 on the interface tab, and is 300x300 big
-	turtleSpace.setBounds ( 25 , 25 , 300 , 300 );
+	turtleSpace.setPreferredSize ( new Dimension ( 355 , 355 ) );
+	//turtlespace starts at 25, 25 on the interface tab, and is 355x355 big
+	turtleSpace.setBounds ( 25 , 25 , 355 , 355 );
 	for ( Patch[] patchRows : patches ) {
 	    for ( Patch patch : patchRows ) {
-		patch.setBackground ( Color.BLACK );
+		System.out.println ( "ca loop" );
+		int r = (int) ( Math.random() * 10 );
+		if ( r == 1 )
+		    patch.setBackground ( Color.BLACK );
+		if ( r == 2 )
+		    patch.setBackground ( Color.RED );
+		if ( r == 3 )
+		    patch.setBackground ( Color.BLUE );
+		if ( r == 4 )
+		    patch.setBackground ( Color.CYAN );
+		if ( r == 5 )
+		    patch.setBackground ( Color.GRAY );
+		if ( r == 6 )
+		    patch.setBackground ( Color.ORANGE );
+		if ( r == 7 )
+		    patch.setBackground ( Color.WHITE );
+		if ( r == 8 )
+		    patch.setBackground ( Color.YELLOW );
+		if ( r == 9 )
+		    patch.setBackground ( Color.RED );
+		//patch.setBackground ( Color.BLACK );
 	    }
 	}
     }
@@ -1132,6 +1165,12 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    else if( color.equals("yellow")) {
 			newColor = Color.YELLOW;
 		    }
+		    else if ( color.equals ( "white" ) ) {
+			newColor = Color.WHITE;
+		    }
+		    else if ( color.equals ( "brown" ) ) {
+			newColor = new Color ( 139 , 80 , 14 );
+		    }
 		    else {
 			newColor = null;
 			System.out.println ( "invalid color" );
@@ -1170,7 +1209,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    System.out.println ( "steps: " + steps );
 		    //I DON'T KNOW WHY IT'S 4- CHANGE TO SIZE OF EACH PATCH LATER!!!- now it's based on size of patches, but still doesn't move enough
 		    if ( commands.get ( i ).equals ( "fd" ) ) {
-			System.out.println ( "called fd" );
+			//JOptionPane.showMessageDialog ( null , "called fd" );
 			xcor = xcor + steps * round ( Math.cos ( Math.toRadians ( -1 * dir ) ) );
 			ycor = ycor + steps * -1 * round ( Math.sin ( Math.toRadians ( -1 * dir ) ) );
 		    }
@@ -1181,6 +1220,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + round ( Math.sin ( Math.toRadians ( -1 * dir ) ) ) + "\ncos dir: " + round ( Math.cos ( Math.toRadians ( -1 * dir ) ) ) );
 		    removeTurtles.add ( turtle );
 		    Turtle t = new Turtle ( xcor , ycor , turtle.getDir() , turtle.getColor() , turtle.getBreed() , turtle.getTurtleSize() , turtle.getWho() );
+		    System.out.println ( "new turtle created with size " + turtle.getTurtleSize() );
 		    turtles.add ( t );
 		    turtleSpace.add ( t );
 		    //t.setBounds ( (int) xcor + 135 , (int) ycor + 135 , turtle.getIcon().getIconHeight(),  turtle.getIcon().getIconHeight() );
@@ -1261,8 +1301,22 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    int size = Integer.parseInt ( commands.get ( i ) );
 		    for ( Turtle turtle : turtles ) {
 			System.out.println ( "set size to " + size );
-			turtle.setSize ( size );
+			turtle.setTurtleSize ( size );
+			turtle.setColor ( turtle.getColor() );
 		    }
+		    /*for ( Turtle turtle : turtles ) {
+			System.out.println ( "set size to " + size );
+			turtle.setTurtleSize ( size );
+			}*/
+		    //ask ( "turtles;[;fd;2;bk;2;];" );
+		    ArrayList<String> cmds = new ArrayList<String>();
+		    cmds.add ( "set" );
+		    cmds.add ( "size" );
+		    cmds.add ( "" + size );
+		    //callCommands ( turtles , cmds );
+		    //update ( getGraphics() );
+		    //turtleSpace.repaint();
+		    //patchSpace.repaint();
 		}
 		else {
 		    System.out.println("You are setting incorrectly");
@@ -1290,8 +1344,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 		fdbk.add ( "bk" );
 		fdbk.add ( "1" );
 		//callCommands ( turtles , fdbk );
-		/*ask ( "turtles;[;fd;1;bk;1;];" );
-		  ask ( "patches;[;set;pcolor;red;];" );*/
+		ask ( "turtles;[;fd;1;bk;1;];" );
+		//ask ( "turtles;[;fd;1;bk;1;];" );
+		/*ask ( "patches;[;set;pcolor;red;];" );*/
 		this.update ( this.getGraphics() );
 	    }
 	    else if ( commands.get ( i ).equals ( "die" ) ) {
@@ -1524,6 +1579,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    String color = s.substring ( s.indexOf ( ";" ) + 1 );
 	    System.out.println ( "color: " + color );
 	}
+	//ask ( "turtles;[;fd;1;bk;1;];" );
     }
     //round double to smaller double, bc doubles are slightly off
     public double round ( double x ) {
@@ -1546,6 +1602,7 @@ class Turtle extends JLabel {
     private int dir , size , who;
     private String breed;
     private Color color;
+    private ImageIcon image;
     /*public Turtle ( double xcor , double ycor  ) {
 	this ( xcor , ycor , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 ,);
 	/*this.setOpaque ( true );
@@ -1571,25 +1628,33 @@ class Turtle extends JLabel {
 	this.repaint();*/
     //}
     public Turtle ( double xcor , double ycor , int dir , Color color , String breed , int size , int who ) {
-	System.out.println ( "turtle created at " + xcor + ", " + ycor );//+ " with who: " + who );
+	System.out.println ( "turtle created at " + xcor + ", " + ycor + " facing " + dir );//+ " with who: " + who );
 	this.xcor = xcor;
 	this.ycor = ycor;
 	this.dir = dir;
 	setColor ( color );
 	this.breed = breed;
-	setSize ( size );
+	setTurtleSize ( size );
 	this.who = who;
     }
-    public void setSize ( int size ) {}/*
+    public void setTurtleSize ( int size ) {
+	System.out.println ( "setting size to " + size );
 	//this.setPreferredSize ( new Dimension ( size , size ) );
 	//Image img = mgIcon.getImage();
-	Image img = ( (ImageIcon) getIcon() ).getImage();
+	Image img = image.getImage();
 	Image newImg = rotate ( resizeImage ( img , 13 * size , 13 * size ) , dir );
+	//Image newImg = resizeImage ( img , 13 * size , 13 * size );
 	super.setIcon ( new ImageIcon ( newImg ) );
-	this.setPreferredSize ( new Dimension ( 13 * size , 13 * size ) );
+	//this.setSize ( new Dimension ( 13 * size , 13 * size ) );
+	//setIcon ( new ImageIcon ( newImg ) , dir );
+	//this.setBackground ( Color.GRAY );
+	//super.setPreferredSize ( new Dimension ( 13 * size , 13 * size ) );
 	this.size = size;
+	//this.setSize ( new Dimension ( size , size ) );
+	System.out.println ( "size of panel: " + this.getSize() );
 	//this.repaint();
-	}*/
+	//ask ( "turtles;[;fd;1;bk;1;];" );
+	}
     public int getTurtleSize() {
 	return size;
     }
@@ -1597,12 +1662,13 @@ class Turtle extends JLabel {
 	return who;
     }
     public void setIcon ( ImageIcon imgIcon ) {
-	//setIcon ( imgIcon , (int) ( Math.random() * 360 ) );
-	setIcon ( imgIcon , 90 );
+	setIcon ( imgIcon , (int) ( Math.random() * 360 ) );
+	//setIcon ( imgIcon , 90 );
     }
     public void setIcon ( ImageIcon imgIcon , int rotation ) {
 	System.out.println ( "rotation in setIcon: " + rotation );
 	Image img = imgIcon.getImage(); //image of parameter
+	//Image img = image.getImage();
 	Image newImg = rotate ( resizeImage ( img , 13 , 13 ) , rotation );
 	super.setIcon ( new ImageIcon ( newImg ) );
     }
@@ -1628,14 +1694,22 @@ class Turtle extends JLabel {
     
     public void setColor(Color color) {
 	this.color = color;
-	if ( color.equals ( Color.RED ) )
-	    setIcon ( new ImageIcon ( "red_arrow.png" ) , dir );
-	else if ( color.equals ( Color.BLUE ) )
-	    setIcon ( new ImageIcon ( "blue_arrow.png" ) , dir );
-	else if ( color.equals ( Color.GREEN ) )
-	    setIcon ( new ImageIcon ( "green_arrow.png" ) , dir );
-	else if ( color.equals ( Color.YELLOW ) )
-	    setIcon ( new ImageIcon ( "yellow_arrow.png" ) , dir );
+	if ( color.equals ( Color.RED ) ) {
+	    image = new ImageIcon ( "red_arrow.png" );
+	    setIcon ( image , dir );
+	}
+	else if ( color.equals ( Color.BLUE ) ) {
+	    image = new ImageIcon ( "blue_arrow.png" );
+	    setIcon ( image , dir );
+	}
+	else if ( color.equals ( Color.GREEN ) ) {
+	    image = new ImageIcon ( "green_arrow.png" );
+	    setIcon ( image , dir );
+	}
+	else if ( color.equals ( Color.YELLOW ) ) {
+	    image = new ImageIcon ( "yellow_arrow.png" );
+	    setIcon ( image , dir );
+	}
 	else System.out.println ( "not color" );
     }
     public Color getColor() {
