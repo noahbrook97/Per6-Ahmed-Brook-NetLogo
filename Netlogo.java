@@ -925,7 +925,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 
         if (condition(s)) {
             System.out.println("condition true, running command");
-            //      callMethod(s);                                                                                                                        
+	    //make s just the command portion
+	    s = s.substring(s.indexOf("[") + 1 , s.length() - 1);
+	    callCommands(string arraylist , string arraylist)
         }
         else
             System.out.println("condition false, not running command");
