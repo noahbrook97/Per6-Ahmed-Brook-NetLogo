@@ -1,13 +1,13 @@
-make option for grid to bounded/ looped
+make option for grid to bounded/ looped it shall be a switch
+
 create sliders and switches
 create object-own [attribute]
 
 if / ifelse / else 
-count
-create die method
-create random
+
+test random
 wait
 
 TRANSPARENCY MAKE METHOD NESTED FOR LOOPS TO CHECK EACH PIXEL OF BACKGROUND AND CHANGE IT TO TRANSPARENT BACKGROUND
 
-user message word
+make word
