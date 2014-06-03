@@ -135,7 +135,7 @@ class Screen extends JTabbedPane {
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ] " +
 			       "set lives 3 set sbutton 0 end " +
 			       "to change ask turtles with [ who = 0 ] [ set size 2 ] set lives lives - 1 end " +
-			       "to create crt 1 end " +
+			       "to create crt 1 [ set color green ] end " +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
@@ -251,10 +251,26 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    }
 	    else if ( inMethod ) {
 		if ( word.equals ( "crt" ) ) {
-		    ans.add ( word + ";" + words.get ( i + 1 ) );
+		    //String addLine = word + ";" + words.get ( i + 1 );
 		    i = i + 1;
 		    if ( words.get ( i + 1 ).equals ( "[" ) ) {
-			System.out.println ( "crt with conditions" );
+			int inBrackets = -1;
+			String addLine = word + ";";
+			while ( ! word.equals ( "]" ) || inBrackets != 0 ) {
+			    if ( word.equals ( "[" ) )
+				inBrackets++;
+			    if ( word.equals ( "]" ) )
+				inBrackets--;
+			    i = i + 1;
+			    word = words.get ( i );
+			    addLine = addLine + word + ";";
+			}
+			ans.add ( addLine );
+			System.out.println ( "calling crt with : " + ans );
+		    }
+		    else {
+			ans.add ( word + ";" + words.get ( i ) );
+			//i = i + 1;
 		    }
 		}
 		else if ( word.equals ( "ask" ) ) {
@@ -627,6 +643,8 @@ class myPanel extends JLayeredPane implements MouseListener {
     }
     //create a new turtle in middle of grid, s is integer of how many turtle you want to create
     public void crt ( String s ) {
+	System.out.println ( "crt called" );
+	if ( ! s.contains ( "]" ) ) {
 	int nums = Integer.parseInt ( s );
 	for ( int i = 0 ; i < nums ; i++ ) {
 	    Turtle turtle = new Turtle ( patches.length / 2, patches [ patches.length / 2 ].length / 2 , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 , turtles.size() );
@@ -644,8 +662,29 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    //System.out.println ( "come on man" );
 	    //}
 	}
+	}
+	else {
+	    ArrayList<String> params = new ArrayList<String>();
+	    int inBrackets = 0;
+	    if ( ! s.substring ( 0 , 2 ).equals ( "[" ) ) {
+		System.out.println ( "got heer " + s.substring ( s.indexOf ( "[" ) ) );
+		s = s.substring ( s.indexOf ( "[" ) + 2 );
+		System.out.println ( "crt string: " + s );
+		while ( s.indexOf ( "]" ) != 0 || inBrackets != 0 ) {
+		    String word = s.substring ( 0 , s.indexOf ( ";" ) );
+		    System.out.println ( "crt word: " + word );
+		    if ( word.equals ( "[" ) )
+			inBrackets++;
+		    if ( word.equals ( "]" ) )
+			inBrackets--;
+		    params.add ( word );
+		    s = s.substring ( s.indexOf ( ";" ) + 1 );
+		}
+	    }
+	    else throw new IllegalStateException();
+		System.out.println ( "crt params: " + params );
+	}
     }
-	
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private ArrayList with ( String agentType , ArrayList<String> agents ) {
@@ -908,7 +947,6 @@ class myPanel extends JLayeredPane implements MouseListener {
         else if(condition.equals("count")) {
 
         }
-
 
         else
             System.out.println("Improper use of if statement");
