@@ -250,7 +250,14 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		ans = new ArrayList<String>();
 	    }
 	    else if ( inMethod ) {
-		if ( word.equals ( "crt" ) ) {
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		if (word.equals("if") ) {
+		    ans.add ( word + ";" + words.get ( i + 1) );
+		    i += 1;
+		    System.out.println("running if statement");
+		}
+			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		else if ( word.equals ( "crt" ) ) {
 		    ans.add ( word + ";" + words.get ( i + 1 ) );
 		    i = i + 1;
 		    if ( words.get ( i + 1 ).equals ( "[" ) ) {
@@ -862,20 +869,43 @@ class myPanel extends JLayeredPane implements MouseListener {
         return val;
     }
 
-	//determine if condition true for if and ifelse                                                                                                       
+	//determine if condition true for if and ifelse                                                                                                 
     public boolean condition(String s) {
-	/*      String s = new String();                                                                                                                  
-        for(int i = 0; i < s1.length(); i++)                                                                                                              
-            s = s + s1.substring(i, i + 1);                                                                                                               
+	/*      
+	 String s = new String();                                                                                                            
+	      for(int i = 0; i < s1.length(); i++)                                                                                                   
+                s = s + s1.substring(i, i + 1);                                                                                                  
         */
         boolean isokay = false;
         String condition = s.substring(0, s.indexOf( ";") );
         s = s.substring(s.indexOf(";") + 1);
 
-        if (condition.equals("random")) {
+	//to check if condition is some kind of number 
+	String digits = "0123456789";
+	boolean isdigit = true;
+	for(int i = 0; i < condition.length(); i ++) {
+	    for (int j = 0; j < 10; j++) {
+		if (!condition.substring(i , i + 1).equals(digits.substring( j, j + 1))) {
+		    isdigit = false;
+		    break;
+		}
+	    }
+	}
 
-            //int firstval = Integer.parseInt(s.substring(0, s.indexOf(";")));                                                                            
-            int firstval = random(s.substring(0, s.indexOf(";")));
+	if ( isdigit ) {
+	    int firstval = condition;
+	    s = s.substring(s.indexOf(";") + 1);
+	    String operator = s.substring(0, s.indexOf(";"));
+	    s = s.substring(s.indexOf(";") + 1);
+	    int secondval = Integer.parseInt(s.substring(0, s.indexOf(";")));
+	    if(operator.equals("=")) {
+		//stuff
+	    }
+
+	}
+
+        else if (condition.equals("random")) {
+	    int firstval = random(s.substring(0, s.indexOf(";")));
             s = s.substring(s.indexOf(";") + 1);
 	    String operator = s.substring(0, s.indexOf(";"));
             s = s.substring(s.indexOf(";") + 1);
@@ -927,7 +957,7 @@ class myPanel extends JLayeredPane implements MouseListener {
             System.out.println("condition true, running command");
 	    //make s just the command portion
 	    s = s.substring(s.indexOf("[") + 1 , s.length() - 1);
-	    callCommands(string arraylist , string arraylist)
+	    ask(s);
         }
         else
             System.out.println("condition false, not running command");
