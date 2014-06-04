@@ -127,15 +127,15 @@ class Screen extends JTabbedPane {
 	this.add ( "Info" , info );
 
 	//code = new JTextArea ( "globals [ a ] to setup user-message ( \"hey dude man\" count turtles with [ color = red ] ) ask patches [ set pcolor red ] end to move ask turtles [ fd 1 ] end to change ask turtles [ die ] end to create crt 1 end to changeGlobal set a a + 1 crt 1 end" );
-	code = new JTextArea ( "globals [ lives sbutton ] " +
-			       "breed [ plural singular ] " + "\n\n" +
+	code = new JTextArea ( "globals [ lives sbutton ]\n" +
+			       "breed [ plural singular ]\n" +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       "to setup ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] " + "\n\n" +
+			       "to setup ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ]\n" +
 			       //"to setup ca " + 
-			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ] " +
-			       "set lives 3 set sbutton 0 end " + "\n\n" +
-			       "to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end " +
-			       "to create crt 1 [ set color yellow ] end " + "\n\n" +
+			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
+			       "set lives 3 set sbutton 0 end\n" +
+			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
+			       "to create crt 1 [ set color yellow ] end\n" +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
@@ -233,20 +233,26 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		System.out.println ( "breed" );
 		if ( ! words.get ( i + 1 ).equals ( "[" ) )
 		    JOptionPane.showMessageDialog ( null , "BREED EXPECTED [" );
-		while ( ! word.equals ( "]" ) ) {
+		if ( ! words.get ( i + 3 ).equals ( "]" ) && ! words.get ( i + 4 ).equals ( "]" ) )
+		    JOptionPane.showMessageDialog ( null , "BREED ONLY TAKES 1 OR 2 INPUTS" + words.get ( i + 4 ) );
+		else if ( words.get ( i + 3 ).equals ( "]" ) )
+		    i = i + 3;
+		else if ( words.get ( i + 4 ).equals ( "]" ) )
+		    i = i + 4;
+		/*while ( ! word.equals ( "]" ) ) {
 		    i = i + 1;
 		    word = words.get ( i );
-		}
+		    }*/
 	    }
 	    else if ( word.equals ( "to" ) ) {
 		while ( ! word.equals ( "end" ) ) {
 		    i = i + 1;
 		    word = words.get ( i );
 		}
-		i = i + 1;
+		//i = i + 1;
 	    }
 	    else {
-		JOptionPane.showMessageDialog ( null , "ERROR IN YOUR CODE, FIX IT- " + words.get ( i - 1 ) + "IS NOT VALID HERE" );
+		JOptionPane.showMessageDialog ( null , "ERROR IN YOUR CODE, FIX IT- \"" + words.get ( i ) + "\" IS NOT VALID THERE" );
 		break;
 	    }
 	}
