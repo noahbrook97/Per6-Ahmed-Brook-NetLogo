@@ -301,7 +301,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		else if ( word.equals ( "crt" ) ) {
 		    //ans.add ( word + ";" + words.get ( i + 1 ) );
-
 		    //if ( word.equals ( "crt" ) ) {
 		    //String addLine = word + ";" + words.get ( i + 1 );
 		    i = i + 1;
@@ -986,12 +985,12 @@ class myPanel extends JLayeredPane implements MouseListener {
 	for(int i = 0; i < condition.length(); i ++) {
 	    for (int j = 0; j < 10; j++) {
 		if (!condition.substring(i , i + 1).equals(digits.substring( j, j + 1))) {
+		    System.out.println("not a number");
 		    isdigit = false;
 		    break;
 		}
 	    }
 	}
-
 	if ( isdigit ) {
 	    int firstval = Integer.parseInt(condition);
 	    s = s.substring(s.indexOf(";") + 1);
