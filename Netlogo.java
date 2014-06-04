@@ -134,8 +134,8 @@ class Screen extends JTabbedPane {
 			       //"to setup ca " + 
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ] " +
 			       "set lives 3 set sbutton 0 end " +
-			       "to change ask turtles with [ who > -1 ] [ set color green ] set lives lives - 1 end " +
-			       "to create crt 1 [ set heading 90 ] end " +
+			       "to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end " +
+			       "to create crt 1 [ set color yellow ] end " +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
@@ -208,12 +208,53 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
     public HashMap<String , Integer> getGlobals() {
 	return f.getGlobals();
     }
-
+    public void checkSyntax ( ArrayList<String> words ) {
+	for ( int i = 0 ; i < words.size() ; i++ ) {
+	    String word = words.get ( i );
+	    System.out.println ( "words in checkSyntax: " + word );
+	    if ( word.equals ( "globals" ) ) {
+		if ( ! words.get ( i + 1 ).equals ( "[" ) )
+		    JOptionPane.showMessageDialog ( null , "GLOBALS EXPECTED [" );
+		i = i + 1;
+		while ( ! word.equals ( "]" ) ) {
+		    i = i + 1;
+		    word = words.get ( i );
+		    System.out.println ( "words in globals: " + word );
+		    try { 
+			Double.parseDouble ( word );
+			JOptionPane.showMessageDialog ( null , "GLOBALS EXPECTED NAME OR ]" );
+		    } catch ( Exception e ) {
+			if ( word.contains ( "\"" ) )
+			    JOptionPane.showMessageDialog ( null , "CAN'T HAVE QUOTES HERE" );
+		    }
+		}
+	    }
+	    else if ( word.equals ( "breed" ) ) {
+		System.out.println ( "breed" );
+		if ( ! words.get ( i + 1 ).equals ( "[" ) )
+		    JOptionPane.showMessageDialog ( null , "BREED EXPECTED [" );
+		while ( ! word.equals ( "]" ) ) {
+		    i = i + 1;
+		    word = words.get ( i );
+		}
+	    }
+	    else if ( word.equals ( "to" ) ) {
+		while ( ! word.equals ( "end" ) ) {
+		    i = i + 1;
+		    word = words.get ( i );
+		}
+		i = i + 1;
+	    }
+	    else {
+		JOptionPane.showMessageDialog ( null , "ERROR IN YOUR CODE, FIX IT- " + words.get ( i - 1 ) + "IS NOT VALID HERE" );
+		break;
+	    }
+	}
+    }
     public void javafy ( String s1 ) {
 	String s = new String();
 	for ( int i = 0 ; i < s1.length() ; i++ )
 	    s = s + s1.substring ( i , i + 1 );
-
 	methods = new HashMap<String , ArrayList<String>>();
 	ArrayList<String> words = new ArrayList<String>();
 	boolean inMethod = false;
@@ -235,6 +276,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    }
 	}
 	System.out.println ( "words: " + words );
+	checkSyntax ( words );
 	String methodName = new String();
 	for ( int i = 0 ; i < words.size() ; i++ ) {
 	    String word = words.get ( i );
@@ -1374,6 +1416,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			turtle.setBounds ( patches.length / 2 * (int) patches [ 0 ] [ 0 ].size().getWidth() + (int) turtle.getXcor() , patches [ patches.length / 2 ].length / 2 * (int) patches [ 0 ] [ 0 ].size().getHeight() + (int) turtle.getYcor() , turtle.getIcon().getIconWidth() , turtle.getIcon().getIconHeight() );
 			turtleSpace.add ( turtle );
 		    }
+		    ask ( "turtles;[;fd;1;bk;1;];" );
 		    //ADD OTHER COLORS OF RAINBOW
 		}
 		else if ( commands.get ( i ).equals ( "xcor" ) ) {
@@ -1853,4 +1896,3 @@ class Turtle extends JLabel {
 	return buffImage;
     }
 }
-
