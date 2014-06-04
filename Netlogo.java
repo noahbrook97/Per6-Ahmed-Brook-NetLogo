@@ -130,12 +130,12 @@ class Screen extends JTabbedPane {
 	code = new JTextArea ( "globals [ lives sbutton ] " +
 			       "breed [ plural singular ] " + "\n\n" +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       "to setup ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] " + "\n\n" +
+			       "to setup ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ]\n" +
 			       //"to setup ca " + 
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ] " +
-			       "set lives 3 set sbutton 0 end " + "\n\n" +
-			       "to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end " +
-			       "to create crt 1 [ set color yellow ] end " + "\n\n" +
+			       "set lives 3 set sbutton 0 end\n" +
+			       "to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end/n" +
+			       "to create crt 1 [ set color yellow ] end/n" +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
