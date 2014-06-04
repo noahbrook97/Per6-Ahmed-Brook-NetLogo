@@ -134,8 +134,8 @@ class Screen extends JTabbedPane {
 			       //"to setup ca " + 
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ] " +
 			       "set lives 3 set sbutton 0 end " +
-			       "to change ask turtles with [ who = 0 ] [ set size 2 ] set lives lives - 1 end " +
-			       "to create crt 1 [ set color green ] end " +
+			       "to change ask turtles with [ who > -1 ] [ set color green ] set lives lives - 1 end " +
+			       "to create crt 1 [ set heading 90 ] end " +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
@@ -258,14 +258,14 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		}
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		else if ( word.equals ( "crt" ) ) {
-		    ans.add ( word + ";" + words.get ( i + 1 ) );
+		    //ans.add ( word + ";" + words.get ( i + 1 ) );
 
-		if ( word.equals ( "crt" ) ) {
+		    //if ( word.equals ( "crt" ) ) {
 		    //String addLine = word + ";" + words.get ( i + 1 );
 		    i = i + 1;
 		    if ( words.get ( i + 1 ).equals ( "[" ) ) {
 			int inBrackets = -1;
-			String addLine = word + ";";
+			String addLine = word + ";" + words.get ( i );
 			while ( ! word.equals ( "]" ) || inBrackets != 0 ) {
 			    if ( word.equals ( "[" ) )
 				inBrackets++;
@@ -370,7 +370,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	System.out.println ( "methods: " + methods.entrySet() );
 	//System.out.println ( "method keys: " + methods.keySet() );
 	//System.out.println ( "method values: " + methods.values() );
-	}
     }
 
     public void mouseExited ( MouseEvent e ) {
@@ -525,7 +524,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    //methods is empty- user didn't type methods in code tab
 	    if ( methods.isEmpty() ) {
 		//System.out.println ( isNew );
-		JOptionPane.showMessageDialog ( null , "yes" );
 		System.exit(0);
 	    }
 	    //methods is not empty
@@ -654,9 +652,9 @@ class myPanel extends JLayeredPane implements MouseListener {
     }
     //create a new turtle in middle of grid, s is integer of how many turtle you want to create
     public void crt ( String s ) {
-	System.out.println ( "crt called" );
+	System.out.println ( "crt called with string: " + s );
+	int nums = Integer.parseInt ( s.substring ( 0 , 1 ) );
 	if ( ! s.contains ( "]" ) ) {
-	int nums = Integer.parseInt ( s );
 	for ( int i = 0 ; i < nums ; i++ ) {
 	    Turtle turtle = new Turtle ( patches.length / 2, patches [ patches.length / 2 ].length / 2 , (int) ( Math.random() * 360 ) , Color.RED , new String() , 1 , turtles.size() );
 	    turtle.setXcor ( 0 );
@@ -676,24 +674,17 @@ class myPanel extends JLayeredPane implements MouseListener {
 	}
 	else {
 	    ArrayList<String> params = new ArrayList<String>();
+	    int turtlesSize = turtles.size();
 	    int inBrackets = 0;
 	    if ( ! s.substring ( 0 , 2 ).equals ( "[" ) ) {
 		System.out.println ( "got heer " + s.substring ( s.indexOf ( "[" ) ) );
-		s = s.substring ( s.indexOf ( "[" ) + 2 );
+		//s = s.substring ( s.indexOf ( "[" ) + 2 );
 		System.out.println ( "crt string: " + s );
-		while ( s.indexOf ( "]" ) != 0 || inBrackets != 0 ) {
-		    String word = s.substring ( 0 , s.indexOf ( ";" ) );
-		    System.out.println ( "crt word: " + word );
-		    if ( word.equals ( "[" ) )
-			inBrackets++;
-		    if ( word.equals ( "]" ) )
-			inBrackets--;
-		    params.add ( word );
-		    s = s.substring ( s.indexOf ( ";" ) + 1 );
-		}
+		crt ( "" + nums );
+		ask ( "turtles;with;[;who;>;" + ( turtlesSize - 1 ) + ";];" + s.substring ( s.indexOf ( "[" ) , s.indexOf ( "]" ) + 1 ) );
 	    }
 	    else throw new IllegalStateException();
-		System.out.println ( "crt params: " + params );
+	    System.out.println ( "crt params: " + params );
 	}
     }
 
@@ -716,7 +707,31 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 		    else if ( restrictions [ 1 ].equals ( "!=" ) ) {
 			for ( int i = 0 ; i < turtles.size() ; i++ ) {
-			    if ( who != i )
+			    if ( who != turtles.get ( i ).getWho() )
+				callTurtles.add ( turtles.get ( i ) );
+			}
+		    }
+		    else if ( restrictions [ 1 ].equals ( ">" ) ) {
+			for ( int i = 0 ; i < turtles.size() ; i++ ) {
+			    if ( turtles.get ( i ).getWho() > who )
+				callTurtles.add ( turtles.get ( i ) );
+			}
+		    }
+		    else if ( restrictions [ 1 ].equals ( "<" ) ) {
+			for ( int i = 0 ; i < turtles.size() ; i++ ) {
+			    if ( turtles.get ( i ).getWho() < who )
+				callTurtles.add ( turtles.get ( i ) );
+			}
+		    }
+		    else if ( restrictions [ 1 ].equals ( ">=" ) ) {
+			for ( int i = 0 ; i < turtles.size() ; i++ ) {
+			    if ( turtles.get ( i ).getWho() >= who )
+				callTurtles.add ( turtles.get ( i ) );
+			}
+		    }
+		    else if ( restrictions [ 1 ].equals ( "<=" ) ) {
+			for ( int i = 0 ; i < turtles.size() ; i++ ) {
+			    if ( turtles.get ( i ).getWho() <= who )
 				callTurtles.add ( turtles.get ( i ) );
 			}
 		    }
@@ -1278,7 +1293,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	}
     }
     public void callCommands ( ArrayList<Turtle> turtles , ArrayList<String> commands ) {
-	//System.out.println ( "methods called on turtles: " + turtles );
+	System.out.println ( "methods called on turtles: " + turtles );
 	//System.out.println ( "commands in callCommands: " + commands );
 	for ( int i = 0 ; i < commands.size() ; i++ ) {
 	    //forward + back
@@ -1297,9 +1312,9 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    double ycor = turtle.getYcor();
 		    int dir = turtle.getDir();
 		    //System.out.println ( "moving fd/bk, turtle at: " + xcor + ", " + ycor );
-		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + round ( Math.sin ( Math.toRadians ( -1 * dir ) ) ) + "\ncos dir: " + round ( Math.cos ( Math.toRadians ( -1 * dir ) ) ) );
+		    //System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + round ( Math.sin ( Math.toRadians ( -1 * dir ) ) ) + "\ncos dir: " + round ( Math.cos ( Math.toRadians ( -1 * dir ) ) ) );
 		    double steps = Integer.parseInt ( commands.get ( i + 1 ) ) * Math.sqrt ( patches [ 0 ] [ 0 ].size().getWidth() + patches [ 0 ] [ 0 ].size().getHeight() ) * 4;
-		    System.out.println ( "steps: " + steps );
+		    //System.out.println ( "steps: " + steps );
 		    //I DON'T KNOW WHY IT'S 4- CHANGE TO SIZE OF EACH PATCH LATER!!!- now it's based on size of patches, but still doesn't move enough
 		    if ( commands.get ( i ).equals ( "fd" ) ) {
 			//JOptionPane.showMessageDialog ( null , "called fd" );
@@ -1310,7 +1325,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			xcor = xcor + steps * -1 * round ( Math.cos ( Math.toRadians ( -1 * dir ) ) );
 			ycor = ycor + steps * round ( Math.sin ( Math.toRadians ( -1 * dir ) ) );
 		    }
-		    System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + round ( Math.sin ( Math.toRadians ( -1 * dir ) ) ) + "\ncos dir: " + round ( Math.cos ( Math.toRadians ( -1 * dir ) ) ) );
+		    //System.out.println ( "x: " + xcor + "\ny: " + ycor + "\ndir: " + dir + "\nsin dir: " + round ( Math.sin ( Math.toRadians ( -1 * dir ) ) ) + "\ncos dir: " + round ( Math.cos ( Math.toRadians ( -1 * dir ) ) ) );
 		    removeTurtles.add ( turtle );
 		    Turtle t = new Turtle ( xcor , ycor , turtle.getDir() , turtle.getColor() , turtle.getBreed() , turtle.getTurtleSize() , turtle.getWho() );
 		    System.out.println ( "new turtle created with size " + turtle.getTurtleSize() );
@@ -1334,7 +1349,6 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    i = i + 1;
 		    String color = commands.get ( i );
 		    Color newColor;
-		    System.out.println ( "color changing to: " + color );
  		    if( color.equals("red")) {
 			newColor = Color.RED;
 		    }
@@ -1437,7 +1451,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		fdbk.add ( "bk" );
 		fdbk.add ( "1" );
 		//callCommands ( turtles , fdbk );
-		ask ( "turtles;[;fd;1;bk;1;];" );
+		//ask ( "turtles;[;fd;1;bk;1;];" );
 		//ask ( "turtles;[;fd;1;bk;1;];" );
 		/*ask ( "patches;[;set;pcolor;red;];" );*/
 		this.update ( this.getGraphics() );
@@ -1786,6 +1800,7 @@ class Turtle extends JLabel {
     }
     
     public void setColor(Color color) {
+	System.out.println ( "setting color to: " + color );
 	this.color = color;
 	if ( color.equals ( Color.RED ) ) {
 	    image = new ImageIcon ( "red_arrow.png" );
