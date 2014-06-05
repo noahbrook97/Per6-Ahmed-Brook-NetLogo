@@ -135,6 +135,9 @@ class Screen extends JTabbedPane {
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
 			       "set lives 3 set sbutton 0 end\n" +
 			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
+			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ] " +
+			       "set lives 3 set sbutton 0 end\n" +
+			       "to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       "to create crt 1 [ set color yellow ] end\n" +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
@@ -299,15 +302,40 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    }
 	    else if ( inMethod ) {
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		//if boolean [ ask turtles [ set color red ] ask patches [ set color yellow ] ]
+		// if;boolean; [ ask;turtles; [ set;color;red; ] ask;patches; [ set;color;yellow; ] ]
+
 		if (word.equals("if") ) {
+		    /*   if ( words.get( i + 1 ).equals( "[" )) {
 		    ans.add ( word + ";" + words.get ( i + 1) );
 		    i += 1;
-		    System.out.println("running if statement");
-		}
+		    System.out.println("running if statement"); */
+		    i += 1;
+                    if ( words.get (i + 1).equals ( "[" )) {
+                        int inBrackets = -1;
+                        String addLine = word + ";" + words.get (i);
+			i = i + 1;
+			word = words.get ( i );
+			while (!word.equals ( "]" ) || inBrackets != 0) {
+                            if ( word.equals ( "[" ))
+                                inBrackets++;
+                            if ( word.equals ( "]" ))
+                                inBrackets--;
+                            i+= 1;
+                            word = words.get (i);
+                            addLine = addLine + word + ";";
+                        }
+                        ans.add ( addLine );
+                        System.out.println ( "calling if: " + ans );
+                    }
+                    else 
+                        ans.add ( word + ";" + words.get ( i ) );
+		}  
+		
+		
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		else if ( word.equals ( "crt" ) ) {
 		    //ans.add ( word + ";" + words.get ( i + 1 ) );
-
 		    //if ( word.equals ( "crt" ) ) {
 		    //String addLine = word + ";" + words.get ( i + 1 );
 		    i = i + 1;
@@ -326,10 +354,9 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 			ans.add ( addLine );
 			System.out.println ( "calling crt with : " + ans );
 		    }
-		    else {
+		    else 
 			ans.add ( word + ";" + words.get ( i ) );
 			//i = i + 1;
-		    }
 		}
 		else if ( word.equals ( "ask" ) ) {
 		    boolean insideWith = false;
@@ -992,12 +1019,12 @@ class myPanel extends JLayeredPane implements MouseListener {
 	for(int i = 0; i < condition.length(); i ++) {
 	    for (int j = 0; j < 10; j++) {
 		if (!condition.substring(i , i + 1).equals(digits.substring( j, j + 1))) {
+		    System.out.println("not a number");
 		    isdigit = false;
 		    break;
 		}
 	    }
 	}
-
 	if ( isdigit ) {
 	    int firstval = Integer.parseInt(condition);
 	    s = s.substring(s.indexOf(";") + 1);
