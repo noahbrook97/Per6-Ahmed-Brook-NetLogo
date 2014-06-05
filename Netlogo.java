@@ -135,8 +135,6 @@ class Screen extends JTabbedPane {
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
 			       "set lives 3 set sbutton 0 end\n" +
 			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
-			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ] " +
-			       "set lives 3 set sbutton 0 end\n" +
 			       "to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       "to create crt 1 [ set color yellow ] end\n" +
 			       "to move ask turtles [ fd 1 ] end" );
