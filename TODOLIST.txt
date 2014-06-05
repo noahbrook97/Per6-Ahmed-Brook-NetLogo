@@ -3,7 +3,7 @@ make option for grid to bounded/ looped it shall be a switch
 create sliders and switches
 create object-own [attribute]
 
-if / ifelse / else 
+if / ifelse 
 
 test random
 wait
