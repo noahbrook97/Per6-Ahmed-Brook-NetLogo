@@ -256,6 +256,10 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    i = i + 4;
 	    }
 	    else if ( word.equals ( "to" ) ) {
+		word = words.get ( i + 1 );
+		i = i + 1;
+		if ( word.equals ( "crt" ) || word.equals ( "set" ) || word.equals ( "die" ) || word.equals ( "ask" ) || word.equals ( "every" ) || word.equals ( "wait" ) || word.equals ( "turtles" ) || word.equals ( "turtle" ) || word.equals ( "patches" ) || word.equals ( "patch" ) || word.equals ( "xcor" ) || word.equals ( "ycor" ) || word.equals ( "heading" ) || word.equals ( "count" ) )
+			JOptionPane.showMessageDialog ( null , "YOU CAN'T USE " + word.toUpperCase() + " TO NAME A PROCEDURE" );
 		while ( ! word.equals ( "end" ) ) {
 		    i = i + 1;
 		    word = words.get ( i );
