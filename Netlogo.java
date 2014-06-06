@@ -130,7 +130,7 @@ class Screen extends JTabbedPane {
 	code = new JTextArea ( "globals [ lives sbutton ]\n" +
 			       "breed [ plural singular ]\n" +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       "to setup ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ]\n" +
+			       "to setup if 3 < 2 [ ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] ]\n" +
 			       //"to setup ca " + 
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
 			       "set lives 3 set sbutton 0 end\n" +
@@ -341,11 +341,11 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    i += 1;
 		    System.out.println("running if statement"); */
 		    i += 1;
-                    if ( words.get (i + 1).equals ( "[" )) {
+                    //if ( words.get (i + 1).equals ( "[" )) {
                         int inBrackets = -1;
-                        String addLine = word + ";" + words.get (i);
-			i = i + 1;
-			word = words.get ( i );
+                        String addLine = "IF" + ";" + words.get (i) + ";";
+			//i = i + 1;
+			//word = words.get ( i );
 			while (!word.equals ( "]" ) || inBrackets != 0) {
                             if ( word.equals ( "[" ))
                                 inBrackets++;
@@ -357,10 +357,11 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
                         }
                         ans.add ( addLine );
                         System.out.println ( "calling if: " + ans );
-                    }
-                    else 
-                        ans.add ( word + ";" + words.get ( i ) );
-		}  
+			//}
+			//else {
+                        //ans.add ( word + ";" + words.get ( i ) );
+			//String addLine = word + ";";
+		}
 		
 		
 			//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1040,13 +1041,18 @@ class myPanel extends JLayeredPane implements MouseListener {
                 s = s + s1.substring(i, i + 1);                                                                                                  
         */
         boolean isokay = false;
-        String condition = s.substring(0, s.indexOf( ";") );
+        String condition = s.substring(0, s.indexOf( "[") );
         s = s.substring(s.indexOf(";") + 1);
 
 	//to check if condition is some kind of number 
 	String digits = "0123456789";
-	boolean isdigit = true;
-	for(int i = 0; i < condition.length(); i ++) {
+	boolean isdigit = false;
+	JOptionPane.showMessageDialog ( null , "condition: " + condition );
+	if ( condition.contains ( digits ) ) {
+	    isdigit = true;
+	    JOptionPane.showMessageDialog ( null , "condition: " + condition );
+	}
+	/*for(int i = 0; i < condition.length(); i ++) {
 	    for (int j = 0; j < 10; j++) {
 		if (!condition.substring(i , i + 1).equals(digits.substring( j, j + 1))) {
 		    System.out.println("not a number");
@@ -1054,13 +1060,15 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    break;
 		}
 	    }
-	}
+	    }*/
 	if ( isdigit ) {
+	    JOptionPane.showMessageDialog ( null , "comparing numbers " );
 	    int firstval = Integer.parseInt(condition);
 	    s = s.substring(s.indexOf(";") + 1);
 	    String operator = s.substring(0, s.indexOf(";"));
 	    s = s.substring(s.indexOf(";") + 1);
 	    int secondval = Integer.parseInt(s.substring(0, s.indexOf(";")));
+	    JOptionPane.showMessageDialog ( null , "comparison: " + firstval + operator + secondval );
 	    if(operator.equals("=")) {
 		if(firstval == secondval)
 		    isokay = true;
@@ -1132,7 +1140,7 @@ class myPanel extends JLayeredPane implements MouseListener {
         System.out.println("if statement: " + s1);
         String s = new String();
         for(int i = 0; i < s1.length(); i++)
-            s = s + s1.substring(i, i + 1);
+            s = s + s1.substring(i, i+1 );
 	//MIGHT NEED TO SUBSTRING IF OUT OF S1 BEFORE RUNNING CONDITION(S)
         if (condition(s)) {
             System.out.println("condition true, running command");
