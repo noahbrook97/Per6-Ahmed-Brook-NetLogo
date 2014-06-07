@@ -130,7 +130,7 @@ class Screen extends JTabbedPane {
 	code = new JTextArea ( "globals [ lives sbutton ]\n" +
 			       "breed [ plural singular ]\n" +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       "to setup if 3 < 2 [ ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] ]\n" +
+			       "to setup if count turtles with [ color = red ] < 2 [ ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] ]\n" +
 			       //"to setup ca " + 
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
 			       "set lives 3 set sbutton 0 end\n" +
@@ -351,6 +351,9 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
                                 inBrackets++;
                             if ( word.equals ( "]" ))
                                 inBrackets--;
+			    if ( word.equals ( "count" ) )
+				if ( words.get ( i + 2 ).equals ( "with" ) )
+				    inBrackets--;
                             i+= 1;
                             word = words.get (i);
                             addLine = addLine + word + ";";
@@ -1041,17 +1044,27 @@ class myPanel extends JLayeredPane implements MouseListener {
                 s = s + s1.substring(i, i + 1);                                                                                                  
         */
         boolean isokay = false;
-        String condition = s.substring(0, s.indexOf( "[") );
-        s = s.substring(s.indexOf(";") + 1);
+        //String condition = s.substring(0, s.indexOf( "[") );
+	String condition = new String();
+	while ( s.indexOf ( "[" ) != 0 ) {
+	    String addWord = s.substring ( 0 , s.indexOf ( ";" ) + 1 );
+	    s = s.substring ( s.indexOf ( ";" ) + 1 );
+	    if ( addWord.equals ( "with" ) ) {
+		addWord = addWord + s.substring ( 0 , s.indexOf ( "]" ) );
+		s = s.substring ( s.indexOf ( "]" ) );
+	    }
+	    condition = condition + addWord;
+	}
+        //s = s.substring(s.indexOf(";") + 1);
 
 	//to check if condition is some kind of number 
-	String digits = "0123456789";
-	boolean isdigit = false;
+	//String digits = "0123456789";
+	//boolean isdigit = false;
 	JOptionPane.showMessageDialog ( null , "condition: " + condition );
-	if ( condition.contains ( digits ) ) {
+	/*if ( condition.contains ( digits ) ) {
 	    isdigit = true;
 	    JOptionPane.showMessageDialog ( null , "condition: " + condition );
-	}
+	    }*/
 	/*for(int i = 0; i < condition.length(); i ++) {
 	    for (int j = 0; j < 10; j++) {
 		if (!condition.substring(i , i + 1).equals(digits.substring( j, j + 1))) {
@@ -1061,10 +1074,63 @@ class myPanel extends JLayeredPane implements MouseListener {
 		}
 	    }
 	    }*/
-	if ( isdigit ) {
+	//if ( isdigit ) {
+	int firstInt;
+	String firstString = s.substring ( 0 , condition.indexOf ( ";" ) );
+	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
+	JOptionPane.showMessageDialog ( null , "firstString: " + firstString );
+	try {
+	    firstInt = Integer.parseInt( firstString );
 	    JOptionPane.showMessageDialog ( null , "comparing numbers " );
-	    int firstval = Integer.parseInt(condition);
-	    s = s.substring(s.indexOf(";") + 1);
+	} catch ( NumberFormatException e ) {
+	    if ( globals.containsKey ( firstString ) ) {
+		firstInt = globals.get ( firstString );
+		JOptionPane.showMessageDialog ( null , "hi" );
+	    }
+	    else if ( firstString.equals ( "count" ) ) {
+		String countParam = new String();
+		String conditionBeginning = condition.substring ( 0 , condition.indexOf ( ";" ) );
+		String comparisons = "<>=!";
+		int inBrackets = 0;
+		while ( ! comparisons.contains ( conditionBeginning ) || inBrackets != 0 ) {
+		    if ( conditionBeginning.equals ( "[" ) )
+			inBrackets++;
+		    else if ( conditionBeginning.equals ( "]" ) )
+			inBrackets--;
+		    countParam = countParam + conditionBeginning + ";";
+		    condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
+		    conditionBeginning = condition.substring ( 0 , condition.indexOf ( ";" ) );
+		}
+		JOptionPane.showMessageDialog ( null , "count parameters: " + countParam );
+	    }
+			/*try {
+			  if ( words.get ( i + 2 ).equals ( "with" ) ) {
+			  String addLine = new String();
+			  int j = 0;
+			  while ( ! word.equals ( "]" ) ) {
+			  word = words.get ( i + j + 1 );
+			  System.out.println ( "WORD CAPS TO STAND OUT: " + word );
+				    addLine = addLine + word + ";";
+				    j = j + 1;
+				}
+				i = i + j;
+				//System.out.println ( "i is now: " + i );
+				//call method count with with
+				message = message + count ( addLine );
+			    }
+			} catch ( Exception ex ) {
+			    i = i + 1;
+			    System.out.println ( "words: " + words );
+			    e.printStackTrace();
+			    System.out.println ( "exception: " + e );
+			    message = message + count ( words.get ( i ) );
+			    //call method count without with
+			}
+		    }
+			*/
+		//}
+	    }
+	    /*s = s.substring(s.indexOf(";") + 1);
 	    String operator = s.substring(0, s.indexOf(";"));
 	    s = s.substring(s.indexOf(";") + 1);
 	    int secondval = Integer.parseInt(s.substring(0, s.indexOf(";")));
@@ -1091,10 +1157,8 @@ class myPanel extends JLayeredPane implements MouseListener {
             }
             else
                 System.out.println("Not correct operator");
-	
-	}
-
-	else if (condition.equals("random")) {
+	    */
+	/*else if (condition.equals("random")) {
 	    int firstval = random(s.substring(0, s.indexOf(";")));
             s = s.substring(s.indexOf(";") + 1);
 	    String operator = s.substring(0, s.indexOf(";"));
@@ -1127,13 +1191,13 @@ class myPanel extends JLayeredPane implements MouseListener {
 
         else if(condition.equals("count")) {
 
-        }
+        }*/
 
-        else
-            System.out.println("Improper use of if statement");
+	    //else
+            //System.out.println("Improper use of if statement");
 
         return isokay;
-    }
+}
 
     public void IF(String s1) {
         //if condition is true run                                                                                                                        
