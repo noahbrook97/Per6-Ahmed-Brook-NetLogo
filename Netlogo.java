@@ -46,20 +46,15 @@ class NetlogoBoard implements Runnable {
 	    }
 	    if ( s.getSelectedIndex() != 0 )
 		alreadyDone = false;
-	    //for forever buttons- if on, call them
-	    //need: arraylist forever buttons, change background, call methods
 	    for ( ForeverButton b : s.getForeverButtons() ) {
 		if ( b.getBackground().equals ( Color.BLACK ) ) {
-		    //System.out.println ( "call method here" );
-		    s.iface.callMethod ( b.getText() );
 		    //call method
+		    s.iface.callMethod ( b.getText() );
 		}
 	    }
 	    HashMap<String , Integer> globals = s.iface.getGlobals();
 	    ArrayList<JLabel> addLabels = new ArrayList<JLabel>();
 	    for ( JLabel m : s.getMonitors() ) {
-	    //for ( monitors ) : if globals = different, monitors.setText globals
-		//System.out.println ( "monitors: " + m.getText() );
 		String key = m.getText().substring ( 0 , m.getText().indexOf ( ":" ) );
 		Integer value = Integer.parseInt ( m.getText().substring ( m.getText().indexOf ( ":" ) + 2 ) );
 		if ( ! globals.get ( key ).equals ( value ) ) {
@@ -130,7 +125,7 @@ class Screen extends JTabbedPane {
 	code = new JTextArea ( "globals [ lives sbutton ]\n" +
 			       "breed [ plural singular ]\n" +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       "to setup if count turtles with [ color = red ] < 2 [ ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] ]\n" +
+			       "to setup if count turtles with [ color = red ] < 2 or 2 > 0 [ ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] ]\n" +
 			       //"to setup ca " + 
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
 			       "set lives 3 set sbutton 0 end\n" +
@@ -1021,9 +1016,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
 			    int[] patch = { r , c };
 			    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) && satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
-				//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
 				int[] add = { r , c };
-				//System.out.println ( "adding patch: " + r  + ", " + c );
 				callPatches.add ( add );
 			    }
 			}
@@ -1034,9 +1027,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
 			    int[] patch = { r , c };
 			    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) || satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
-				//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
 				int[] add = { r , c };
-				//System.out.println ( "adding patch: " + r  + ", " + c );
 				callPatches.add ( add );
 			    }
 			}
@@ -1061,42 +1052,17 @@ class myPanel extends JLayeredPane implements MouseListener {
 
 	//determine if condition true for if and ifelse                                                                                                 
     public boolean condition(String condition) {
-	/*String s = new String();                                                                                                            
-	 for(int i = 0; i < s1.length(); i++)                                                                                                   
-	 s = s + s1.substring(i, i + 1);*/
-        boolean isokay = false;
-        //String condition = s.substring(0, s.indexOf( "[") );
-        //s = s.substring(s.indexOf(";") + 1);
-
-	//to check if condition is some kind of number 
-	//String digits = "0123456789";
-	//boolean isdigit = false;
+        //boolean isokay = false;
 	JOptionPane.showMessageDialog ( null , "condition: " + condition);
-	/*if ( condition.contains ( digits ) ) {
-	    isdigit = true;
-	    JOptionPane.showMessageDialog ( null , "condition: " + condition );
-	    }*/
-	/*for(int i = 0; i < condition.length(); i ++) {
-	    for (int j = 0; j < 10; j++) {
-		if (!condition.substring(i , i + 1).equals(digits.substring( j, j + 1))) {
-		    System.out.println("not a number");
-		    isdigit = false;
-		    break;
-		}
-	    }
-	    }*/
-	//if ( isdigit ) {
+	//System.out.println ( "condition: " + condition );
 	int firstInt;
 	String firstString = condition.substring ( 0 , condition.indexOf ( ";" ) );
 	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
-	//JOptionPane.showMessageDialog ( null , "firstString: " + firstString );
 	try {
 	    firstInt = Integer.parseInt( firstString );
-	    //JOptionPane.showMessageDialog ( null , "comparing numbers " );
 	} catch ( NumberFormatException e ) {
 	    if ( globals.containsKey ( firstString ) ) {
 		firstInt = globals.get ( firstString );
-		//JOptionPane.showMessageDialog ( null , "hi" );
 	    }
 	    else if ( firstString.equals ( "count" ) ) {
 		String countParam = new String();
@@ -1112,27 +1078,23 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
 		    conditionBeginning = condition.substring ( 0 , condition.indexOf ( ";" ) );
 		}
-		//JOptionPane.showMessageDialog ( null , "count parameters: " + count ( countParam ) );
 		firstInt = count ( countParam );
 	    }
 	    else {
+		System.out.println ( "firstString: " + firstString );
 		throw new NumberFormatException();
 	    }
 	}
 	String operator = condition.substring ( 0 , condition.indexOf ( ";" ) );
 	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
-	//JOptionPane.showMessageDialog ( null , "operator: " + operator );
 	int secondInt;
 	String secondString = condition.substring ( 0 , condition.indexOf ( ";" ) );
 	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
-	//JOptionPane.showMessageDialog ( null , "secondString: " + secondString );
 	try {
 	    secondInt = Integer.parseInt( secondString );
-	    //JOptionPane.showMessageDialog ( null , "comparing numbers " );
 	} catch ( NumberFormatException e ) {
 	    if ( globals.containsKey ( secondString ) ) {
 		secondInt = globals.get ( secondString );
-		//JOptionPane.showMessageDialog ( null , "hi" );
 	    }
 	    else if ( secondString.equals ( "count" ) ) {
 		String countParam = new String();
@@ -1279,8 +1241,61 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    }
 	    condition = condition + addWord;
 	}
+	System.out.println ( "condition: " + condition );
+	ArrayList<String> conditions = new ArrayList<String>();
+	ArrayList<String> booleanOperators = new ArrayList<String>();
+	//boolean containsAndOr = false;
+	//for ( int i = 0 ; i < condition.length() - 3 ; i++ ) {
+	//if ( condition.substring ( i , i + 2 ).equals ( "or" ) || condition.substring ( i , i + 3 ).equals ( "and" ) )
+	//containsAndOr = true;
+	//break;
+	//}
+	if ( condition.indexOf ( ";and;" ) != -1 || condition.indexOf ( ";or;" ) != -1 ) {
+	    while ( condition.indexOf ( ";and;" ) != -1 || condition.indexOf ( ";or;" ) != -1 ) {
+	        //containsAndOr = false;
+		//for ( int i = 0 ; i < condition.length() - 3 ; i++ ) {
+		//if ( condition.substring ( i , i + 2 ).equals ( "or" ) || condition.substring ( i , i + 3 ).equals ( "and" ) )
+		//containsAndOr = true;
+		//break;
+		//}
+		System.out.println ( "testing while loop " + condition );
+		if ( condition.indexOf ( ";and;" ) < condition.indexOf ( ";or;" ) && condition.indexOf ( ";and;" ) != -1 && condition.indexOf ( ";or;" ) != -1 ) {
+		    conditions.add ( condition.substring ( 0 , condition.indexOf ( ";and;" ) + 1 ) );
+		    condition = condition.substring ( condition.indexOf ( ";and;" ) + 5 );
+		    booleanOperators.add ( "and" );
+		}
+		else if ( condition.indexOf ( ";or;" ) == -1 ) {
+		    System.out.println ( "condition where exception thrown: " + condition + " , index is : " + condition.indexOf ( ";and;" ) );
+		    conditions.add ( condition.substring ( 0 , condition.indexOf ( ";and;" ) + 1 ) );
+		    condition = condition.substring ( condition.indexOf ( ";and;" ) + 5 );
+		    booleanOperators.add ( "and" );
+		}
+		else {
+		    conditions.add ( condition.substring ( 0 , condition.indexOf ( ";or;" ) + 1 ) );
+		    condition = condition.substring ( condition.indexOf ( ";or;" ) + 4 );
+		    booleanOperators.add ( "or" );
+		}
+		//break;
+	    }
+	    conditions.add ( condition );
+	}
+	else conditions.add ( condition );
+	System.out.println ( "conditions: " + conditions );
 	//MIGHT NEED TO SUBSTRING IF OUT OF S1 BEFORE RUNNING CONDITION(S)
-        if (condition(condition)) {
+	boolean ifBoolean = condition ( conditions.get ( 0 ) );
+	for ( int i = 0 ; i < booleanOperators.size() ; i++ ) {
+	    if ( booleanOperators.get ( i ).equals ( "and" ) ) {
+		if ( ifBoolean && condition ( conditions.get ( i + 1 ) ) )
+		    ifBoolean = true;
+		else ifBoolean = false;
+	    }
+	    else {
+		if ( ifBoolean || condition ( conditions.get ( i + 1 ) ) )
+		    ifBoolean = true;
+		else ifBoolean = false;
+	    }
+	}
+        if (ifBoolean) {
             System.out.println("condition true, running command");
 	    //make s just the command portion
 	    //s = s.substring(s.indexOf("[") + 1 , s.length() - 1);
@@ -1393,6 +1408,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    System.out.println ( "methods in IF: " + ans );
 	    if ( ! ans.get ( 0 ).equals ( "[" ) || ! ans.get ( ans.size() - 1 ).equals ( "]" ) )
 		throw new IllegalStateException();
+	    ans.remove ( 0 );
+	    ans.remove ( ans.size() - 1 );
 	    for ( String mthd : ans ) {
 		try {
 		try {
@@ -1422,7 +1439,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		}
 		}
 		} catch ( Exception e ) {
-		    System.out.println ( "exception " + e + " was thrown" );
+		    System.out.println ( "exception " + e + " was thrown, " + mthd + " is not a supported method" );
 		}
 		/*} catch ( IllegalAccessException bleh ) {
 		    System.out.println ( "not permitted" );
