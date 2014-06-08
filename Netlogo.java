@@ -336,30 +336,36 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		// if;boolean; [ ask;turtles; [ set;color;red; ] ask;patches; [ set;color;yellow; ] ]
 
 		if (word.equals("if") ) {
+		    JOptionPane.showMessageDialog ( null , "if in javafy" );
 		    /*   if ( words.get( i + 1 ).equals( "[" )) {
 		    ans.add ( word + ";" + words.get ( i + 1) );
 		    i += 1;
 		    System.out.println("running if statement"); */
-		    i += 1;
+		    //i += 1;
                     //if ( words.get (i + 1).equals ( "[" )) {
-                        int inBrackets = -1;
-                        String addLine = "IF" + ";" + words.get (i) + ";";
-			//i = i + 1;
-			//word = words.get ( i );
-			while (!word.equals ( "]" ) || inBrackets != 0) {
-                            if ( word.equals ( "[" ))
-                                inBrackets++;
-                            if ( word.equals ( "]" ))
-                                inBrackets--;
-			    if ( word.equals ( "count" ) )
-				if ( words.get ( i + 2 ).equals ( "with" ) )
-				    inBrackets--;
-                            i+= 1;
-                            word = words.get (i);
-                            addLine = addLine + word + ";";
-                        }
-                        ans.add ( addLine );
-                        System.out.println ( "calling if: " + ans );
+		    int inBrackets = -1;
+		    String addLine = "IF" + ";";
+		    i = i + 1;
+		    word = words.get ( i );
+		    while (!word.equals ( "]" ) || inBrackets != 0) {
+			if ( word.equals ( "[" ))
+			    inBrackets++;
+			if ( word.equals ( "]" ))
+			    inBrackets--;
+			if ( word.equals ( "count" ) ) {
+			    //JOptionPane.showMessageDialog ( null , "not with, but " + words.get ( i + 2 ) );
+			    if ( words.get ( i + 2 ).equals ( "with" ) ) {
+				inBrackets--;
+				//JOptionPane.showMessageDialog ( null , "with" );
+			    }
+			}
+			//else JOptionPane.showMessageDialog ( null , "word is: " + word );
+			i+= 1;
+			word = words.get (i);
+			addLine = addLine + word + ";";
+		    }
+		    ans.add ( addLine );
+		    System.out.println ( "calling if: " + ans );
 			//}
 			//else {
                         //ans.add ( word + ";" + words.get ( i ) );
