@@ -498,6 +498,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    }
 	}
 	System.out.println ( "methods: " + methods.entrySet() );
+	f.methods = methods;
 	//System.out.println ( "method keys: " + methods.keySet() );
 	//System.out.println ( "method values: " + methods.values() );
     }
@@ -698,6 +699,7 @@ class myPanel extends JLayeredPane implements MouseListener {
     private JPanel turtleSpace; //layer of turtles
     private ArrayList<Turtle> turtles;
     HashMap<String , Integer> globals;
+    HashMap<String , ArrayList<String>> methods;
     private Color backgroundColor;
     public myPanel() {
 	this.setPreferredSize ( new Dimension ( 355 , 355 ) );
@@ -1021,7 +1023,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) && satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
 				//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
 				int[] add = { r , c };
-				System.out.println ( "adding patch: " + r  + ", " + c );
+				//System.out.println ( "adding patch: " + r  + ", " + c );
 				callPatches.add ( add );
 			    }
 			}
@@ -1034,7 +1036,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 			    if ( satisfiesCondition ( patch , restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) ) || satisfiesCondition ( patch , restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) ) ) {
 				//System.out.println ( "patch " + r + ", " + c + " added under condition: " + restrictions.get ( j * 4 ) + "-" + restrictions.get ( j * 4 + 1 ) + "-" + restrictions.get ( j * 4 + 2 ) + " and " + restrictions.get ( j * 4 + 4 ) + "-" + restrictions.get ( j * 4 + 5 ) + "-" + restrictions.get ( j * 4 + 6 ) );
 				int[] add = { r , c };
-				System.out.println ( "adding patch: " + r  + ", " + c );
+				//System.out.println ( "adding patch: " + r  + ", " + c );
 				callPatches.add ( add );
 			    }
 			}
@@ -1284,7 +1286,153 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    //s = s.substring(s.indexOf("[") + 1 , s.length() - 1);
 	    JOptionPane.showMessageDialog ( null , "condition is true, call methods: " + s );
 	    //ask(s);
-        }
+	    ArrayList<String> words = new ArrayList<String>();
+	    ArrayList<String> ans = new ArrayList<String>();
+	    while ( s.length() > 0 ) {
+		while ( s.indexOf ( ";" ) > -1 ) {
+		    words.add ( s.substring ( 0 , s.indexOf ( ";" ) ) );
+		    s = s.substring ( s.indexOf ( ";" ) + 1 );
+		}
+	    }
+	    for ( int i = 0 ; i < words.size() ; i++ ) {
+		String word = words.get ( i );
+		System.out.println ( "word in IF: " + word );
+		if ( word.equals ( "crt" ) ) {
+		    //ans.add ( word + ";" + words.get ( i + 1 ) );
+		    //if ( word.equals ( "crt" ) ) {
+		    //String addLine = word + ";" + words.get ( i + 1 );
+		    i = i + 1;
+		    if ( words.get ( i + 1 ).equals ( "[" ) ) {
+			int inBrackets = -1;
+			String addLine = word + ";" + words.get ( i );
+			while ( ! word.equals ( "]" ) || inBrackets != 0 ) {
+			    if ( word.equals ( "[" ) )
+				inBrackets++;
+			    if ( word.equals ( "]" ) )
+				inBrackets--;
+			    i = i + 1;
+			    word = words.get ( i );
+			    addLine = addLine + word + ";";
+			}
+			ans.add ( addLine );
+			System.out.println ( "calling crt with : " + ans );
+		    }
+		    else 
+			ans.add ( word + ";" + words.get ( i ) );
+			//i = i + 1;
+		}
+		else if ( word.equals ( "ask" ) ) {
+		    boolean insideWith = false;
+		    int inBrackets = -1;
+		    String addLine = word + ";";
+		    while ( ! word.equals ( "]" ) || insideWith || inBrackets != 0 ) {
+			if ( word.equals ( "[" ) )
+			    inBrackets++;
+			if ( word.equals ( "]" ) )
+			    inBrackets--;
+			if ( word.equals ( "with" ) )
+			    insideWith = true;
+			if ( insideWith && word.equals ( "]" ) )
+			    insideWith = false;
+			i = i + 1;
+			word = words.get ( i );
+			addLine = addLine + word + ";";
+		    }
+		    ans.add ( addLine.substring ( 0 , addLine.length() - 2 ) + "]" );//+ "fd;1;bk;1;];" );
+		}
+		else if ( word.equals ( "every" ) ) {
+		    String addLine = word + ";";
+		    int inBrackets = -1;
+		    while ( ! word.equals ( "]" ) || inBrackets != 0 ) {
+			if ( word.equals ( "[" ) )
+			    inBrackets++;
+			if ( word.equals ( "]" ) )
+			    inBrackets--;
+			i = i + 1;
+			word = words.get ( i );
+			addLine = addLine + word + ";";
+		    }
+		    ans.add ( addLine );
+		}
+
+		else if ( word.equals ( "set" ) ) {
+		    System.out.println ( "globals: " + globals.entrySet() );
+		    String addThis = word + ";";
+		    i = i + 1;
+		    word = words.get ( i );
+		    while ( "1234567890+-*/".contains ( word )  || globals.containsKey ( word ) ) {
+			addThis = addThis + word + ";";
+			//System.out.println ( "addthis: " + addThis );
+			i = i + 1;
+			word = words.get ( i );
+		    }
+		    i = i - 1;
+		    //System.out.println ( "addThis in set: " + addThis );
+		    ans.add ( addThis );
+		}
+		else if ( word.equals ( "wait" ) ) {
+		    ans.add ( word + ";" + words.get ( i + 1 ) );
+		    i = i + 1;
+		}
+		else if ( word.equals ( "user-message" ) ) {
+		    String addThis = "userMessage" + ";";
+		    i = i + 1;
+		    word = words.get ( i );
+		    while ( ! word.equals ( ")" ) ) {
+			addThis = addThis + word + ";";
+			i = i + 1;
+			word = words.get ( i );
+		    }
+		    ans.add ( addThis + word + ";" );
+		}
+		else {
+		    ans.add ( word );
+		    System.out.println ( "word: " + word );
+		}
+	    }
+	    System.out.println ( "methods in IF: " + ans );
+	    if ( ! ans.get ( 0 ).equals ( "[" ) || ! ans.get ( ans.size() - 1 ).equals ( "]" ) )
+		throw new IllegalStateException();
+	    for ( String mthd : ans ) {
+		try {
+		try {
+		if ( mthd.contains ( ";" ) ) {
+		    //System.out.println ( "mthd: " + mthd );
+		    Method m = this.getClass().getMethod 
+			(mthd.substring(0, mthd.indexOf( ";" )) , String.class );
+		    m.invoke ( this , mthd.substring ( mthd.indexOf ( ";" ) + 1 ) );
+		}
+		else {
+		    //call method with no parameters
+		    Method m = this.getClass().getMethod ( mthd , null );
+		    m.invoke ( this , null );
+		}
+		} catch ( NoSuchMethodException excep ) {
+		System.out.println ( "call method: " + mthd );
+		ArrayList<String> listMethods = methods.get ( mthd );
+		for ( String mtd : listMethods ) {
+		    if ( mtd.contains ( ";" ) ) {
+			Method m = this.getClass().getMethod ( mtd.substring ( 0 , mtd.indexOf ( ";" ) ) , String.class );
+			m.invoke ( this , mtd.substring ( mtd.indexOf ( ";" ) + 1 ) );
+		    }
+		    else {
+			Method m = this.getClass().getMethod ( mtd , null );
+			m.invoke ( this , null );
+		    }
+		}
+		}
+		} catch ( Exception e ) {
+		    System.out.println ( "exception " + e + " was thrown" );
+		}
+		/*} catch ( IllegalAccessException bleh ) {
+		    System.out.println ( "not permitted" );
+		} catch ( NoSuchMethodException aaa ) {
+		    System.out.println ( "not a method" );
+		} catch ( InvocationTargetException lastOne ) {
+		    System.out.println ( "idk what this exception means" );
+		    }*/
+	}
+	}
         else
             System.out.println("condition false, not running command");
     }
@@ -1535,7 +1683,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 		    for ( int[] coors : patches ) {
 			this.patches [ coors [ 0 ] ] [ coors [ 1 ] ].setBackground ( newColor );
-			System.out.println ( "made patch " + coors [ 0 ] + ", " + coors [ 1 ] + " into newcolor" );
+			//System.out.println ( "made patch " + coors [ 0 ] + ", " + coors [ 1 ] + " into newcolor" );
 		    }
 		    this.update ( this.getGraphics() );
 		}
