@@ -135,8 +135,8 @@ class Screen extends JTabbedPane {
 			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
 			       "set lives 3 set sbutton 0 end\n" +
 			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
-			       "to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
-			       "to create crt 1 [ set color yellow ] end\n" +
+			       //"to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
+			       "to create crt 1 end\n" +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
@@ -340,26 +340,47 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    ans.add ( word + ";" + words.get ( i + 1) );
 		    i += 1;
 		    System.out.println("running if statement"); */
-		    i += 1;
+		    //i += 1;
                     //if ( words.get (i + 1).equals ( "[" )) {
-                        int inBrackets = -1;
-                        String addLine = "IF" + ";" + words.get (i) + ";";
-			//i = i + 1;
-			//word = words.get ( i );
-			while (!word.equals ( "]" ) || inBrackets != 0) {
-                            if ( word.equals ( "[" ))
-                                inBrackets++;
-                            if ( word.equals ( "]" ))
-                                inBrackets--;
-			    if ( word.equals ( "count" ) )
-				if ( words.get ( i + 2 ).equals ( "with" ) )
-				    inBrackets--;
-                            i+= 1;
-                            word = words.get (i);
-                            addLine = addLine + word + ";";
-                        }
-                        ans.add ( addLine );
-                        System.out.println ( "calling if: " + ans );
+		    int inBrackets = 0;
+		    String addLine = "IF" + ";";
+		    //i = i + 1;
+		    //word = words.get ( i );
+		    boolean skipBracket = false;
+		    while (!word.equals ( "]" ) || inBrackets != 0) {
+			i+= 1;
+			try { 
+			    word = words.get (i);
+			} catch ( IndexOutOfBoundsException a ) {
+			    JOptionPane.showMessageDialog ( null , "inBrackets: " + inBrackets );
+			}
+			if ( word.equals ( "[" ) && !skipBracket ) {
+			    inBrackets++;
+			}
+			else if ( skipBracket ) {
+			    skipBracket = false;
+			    //JOptionPane.showMessageDialog ( null , "skipbracket" );
+			}
+			if ( word.equals ( "]" ))
+			    inBrackets--;
+			if ( word.equals ( "count" ) /*|| word.equals ( "ask" )*/ ) {
+			    //JOptionPane.showMessageDialog ( null , "not with, but " + words.get ( i + 2 ) );
+			    if ( words.get ( i + 2 ).equals ( "with" ) ) {
+				skipBracket = true;
+				//System.out.println ( "methods: " + methods );
+				inBrackets--;
+				//JOptionPane.showMessageDialog ( null , "with" );
+			    }
+			}
+  			if ( word.equals ( "ask" ) ) {
+			    skipBracket = true;
+ 			    inBrackets++;
+  			}
+			//else JOptionPane.showMessageDialog ( null , "word is: " + word );
+			addLine = addLine + word + ";";
+		    }
+		    ans.add ( addLine );
+		    System.out.println ( "calling if: " + ans );
 			//}
 			//else {
                         //ans.add ( word + ";" + words.get ( i ) );
@@ -1037,30 +1058,18 @@ class myPanel extends JLayeredPane implements MouseListener {
     }
 
 	//determine if condition true for if and ifelse                                                                                                 
-    public boolean condition(String s) {
-	/*      
-	 String s = new String();                                                                                                            
-	      for(int i = 0; i < s1.length(); i++)                                                                                                   
-                s = s + s1.substring(i, i + 1);                                                                                                  
-        */
+    public boolean condition(String condition) {
+	/*String s = new String();                                                                                                            
+	 for(int i = 0; i < s1.length(); i++)                                                                                                   
+	 s = s + s1.substring(i, i + 1);*/
         boolean isokay = false;
         //String condition = s.substring(0, s.indexOf( "[") );
-	String condition = new String();
-	while ( s.indexOf ( "[" ) != 0 ) {
-	    String addWord = s.substring ( 0 , s.indexOf ( ";" ) + 1 );
-	    s = s.substring ( s.indexOf ( ";" ) + 1 );
-	    if ( addWord.equals ( "with" ) ) {
-		addWord = addWord + s.substring ( 0 , s.indexOf ( "]" ) );
-		s = s.substring ( s.indexOf ( "]" ) );
-	    }
-	    condition = condition + addWord;
-	}
         //s = s.substring(s.indexOf(";") + 1);
 
 	//to check if condition is some kind of number 
 	//String digits = "0123456789";
 	//boolean isdigit = false;
-	JOptionPane.showMessageDialog ( null , "condition: " + condition );
+	JOptionPane.showMessageDialog ( null , "condition: " + condition);
 	/*if ( condition.contains ( digits ) ) {
 	    isdigit = true;
 	    JOptionPane.showMessageDialog ( null , "condition: " + condition );
@@ -1076,16 +1085,16 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    }*/
 	//if ( isdigit ) {
 	int firstInt;
-	String firstString = s.substring ( 0 , condition.indexOf ( ";" ) );
+	String firstString = condition.substring ( 0 , condition.indexOf ( ";" ) );
 	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
-	JOptionPane.showMessageDialog ( null , "firstString: " + firstString );
+	//JOptionPane.showMessageDialog ( null , "firstString: " + firstString );
 	try {
 	    firstInt = Integer.parseInt( firstString );
-	    JOptionPane.showMessageDialog ( null , "comparing numbers " );
+	    //JOptionPane.showMessageDialog ( null , "comparing numbers " );
 	} catch ( NumberFormatException e ) {
 	    if ( globals.containsKey ( firstString ) ) {
 		firstInt = globals.get ( firstString );
-		JOptionPane.showMessageDialog ( null , "hi" );
+		//JOptionPane.showMessageDialog ( null , "hi" );
 	    }
 	    else if ( firstString.equals ( "count" ) ) {
 		String countParam = new String();
@@ -1101,8 +1110,50 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
 		    conditionBeginning = condition.substring ( 0 , condition.indexOf ( ";" ) );
 		}
-		JOptionPane.showMessageDialog ( null , "count parameters: " + countParam );
+		//JOptionPane.showMessageDialog ( null , "count parameters: " + count ( countParam ) );
+		firstInt = count ( countParam );
 	    }
+	    else {
+		throw new NumberFormatException();
+	    }
+	}
+	String operator = condition.substring ( 0 , condition.indexOf ( ";" ) );
+	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
+	//JOptionPane.showMessageDialog ( null , "operator: " + operator );
+	int secondInt;
+	String secondString = condition.substring ( 0 , condition.indexOf ( ";" ) );
+	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
+	//JOptionPane.showMessageDialog ( null , "secondString: " + secondString );
+	try {
+	    secondInt = Integer.parseInt( secondString );
+	    //JOptionPane.showMessageDialog ( null , "comparing numbers " );
+	} catch ( NumberFormatException e ) {
+	    if ( globals.containsKey ( secondString ) ) {
+		secondInt = globals.get ( secondString );
+		//JOptionPane.showMessageDialog ( null , "hi" );
+	    }
+	    else if ( secondString.equals ( "count" ) ) {
+		String countParam = new String();
+		String conditionBeginning = condition.substring ( 0 , condition.indexOf ( ";" ) );
+		String comparisons = "<>=!";
+		int inBrackets = 0;
+		while ( ! comparisons.contains ( conditionBeginning ) || inBrackets != 0 ) {
+		    if ( conditionBeginning.equals ( "[" ) )
+			inBrackets++;
+		    else if ( conditionBeginning.equals ( "]" ) )
+			inBrackets--;
+		    countParam = countParam + conditionBeginning + ";";
+		    condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
+		    conditionBeginning = condition.substring ( 0 , condition.indexOf ( ";" ) );
+		}
+		secondInt = count ( countParam );
+	    }
+	    else {
+		throw new NumberFormatException();
+	    }
+	}
+	JOptionPane.showMessageDialog ( null , "if: " + firstInt + operator + secondInt );
+
 			/*try {
 			  if ( words.get ( i + 2 ).equals ( "with" ) ) {
 			  String addLine = new String();
@@ -1129,35 +1180,45 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 			*/
 		//}
-	    }
 	    /*s = s.substring(s.indexOf(";") + 1);
 	    String operator = s.substring(0, s.indexOf(";"));
 	    s = s.substring(s.indexOf(";") + 1);
 	    int secondval = Integer.parseInt(s.substring(0, s.indexOf(";")));
-	    JOptionPane.showMessageDialog ( null , "comparison: " + firstval + operator + secondval );
+	    JOptionPane.showMessageDialog ( null , "comparison: " + firstval + operator + secondval );*/
 	    if(operator.equals("=")) {
-		if(firstval == secondval)
-		    isokay = true;
+		if(firstInt == secondInt)
+		    return true;
+		    //isokay = true;
+		return false;
 	    }
 	    else if(operator.equals("!=")) {
-                if (firstval != secondval)
-                    isokay = true;
+                if (firstInt != secondInt)
+		    return true;
+                    //isokay = true;
+		return false;
             }
             else if(operator.equals("<")) {
-                if(firstval < secondval)
-                    isokay = true;
+                if(firstInt < secondInt)
+		    return true;
+                    //isokay = true;
+		return false;
             }
             else if(operator.equals(">")) {
-                if(firstval > secondval)
-                    isokay = true;
+                if(firstInt > secondInt)
+		    return true;
+		//isokay = true;
+		return false;
             }
             else if(operator.equals("<=")) {
-                if(firstval <= secondval)
-                    isokay = true;
+                if(firstInt <= secondInt)
+		    return true;
+                    //isokay = true;
+		return false;
             }
-            else
+            else {
                 System.out.println("Not correct operator");
-	    */
+		throw new UnsupportedOperationException();
+	    }
 	/*else if (condition.equals("random")) {
 	    int firstval = random(s.substring(0, s.indexOf(";")));
             s = s.substring(s.indexOf(";") + 1);
@@ -1196,7 +1257,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    //else
             //System.out.println("Improper use of if statement");
 
-        return isokay;
+	    //return isokay;
 }
 
     public void IF(String s1) {
@@ -1205,12 +1266,24 @@ class myPanel extends JLayeredPane implements MouseListener {
         String s = new String();
         for(int i = 0; i < s1.length(); i++)
             s = s + s1.substring(i, i+1 );
+	String condition = new String();
+	//JOptionPane.showMessageDialog ( null , "s: " + s );
+	while ( s.indexOf ( "[" ) != 0 ) {
+	    String addWord = s.substring ( 0 , s.indexOf ( ";" ) + 1 );
+	    s = s.substring ( s.indexOf ( ";" ) + 1 );
+	    if ( addWord.equals ( "with;" ) ) {
+		addWord = addWord + s.substring ( 0 , s.indexOf ( "]" ) );
+		s = s.substring ( s.indexOf ( "]" ) );
+	    }
+	    condition = condition + addWord;
+	}
 	//MIGHT NEED TO SUBSTRING IF OUT OF S1 BEFORE RUNNING CONDITION(S)
-        if (condition(s)) {
+        if (condition(condition)) {
             System.out.println("condition true, running command");
 	    //make s just the command portion
-	    s = s.substring(s.indexOf("[") + 1 , s.length() - 1);
-	    ask(s);
+	    //s = s.substring(s.indexOf("[") + 1 , s.length() - 1);
+	    JOptionPane.showMessageDialog ( null , "condition is true, call methods: " + s );
+	    //ask(s);
         }
         else
             System.out.println("condition false, not running command");
