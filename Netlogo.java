@@ -136,7 +136,7 @@ class Screen extends JTabbedPane {
 			       "set lives 3 set sbutton 0 end\n" +
 			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       "to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
-			       "to create crt 1 [ set color yellow ] end\n" +
+			       "to create crt 1 end\n" +
 			       "to move ask turtles [ fd 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
@@ -336,7 +336,6 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		// if;boolean; [ ask;turtles; [ set;color;red; ] ask;patches; [ set;color;yellow; ] ]
 
 		if (word.equals("if") ) {
-		    JOptionPane.showMessageDialog ( null , "if in javafy" );
 		    /*   if ( words.get( i + 1 ).equals( "[" )) {
 		    ans.add ( word + ";" + words.get ( i + 1) );
 		    i += 1;
@@ -345,8 +344,8 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
                     //if ( words.get (i + 1).equals ( "[" )) {
 		    int inBrackets = -1;
 		    String addLine = "IF" + ";";
-		    i = i + 1;
-		    word = words.get ( i );
+		    //i = i + 1;
+		    //word = words.get ( i );
 		    while (!word.equals ( "]" ) || inBrackets != 0) {
 			if ( word.equals ( "[" ))
 			    inBrackets++;
@@ -1052,10 +1051,11 @@ class myPanel extends JLayeredPane implements MouseListener {
         boolean isokay = false;
         //String condition = s.substring(0, s.indexOf( "[") );
 	String condition = new String();
+	JOptionPane.showMessageDialog ( null , "s: " + s );
 	while ( s.indexOf ( "[" ) != 0 ) {
 	    String addWord = s.substring ( 0 , s.indexOf ( ";" ) + 1 );
 	    s = s.substring ( s.indexOf ( ";" ) + 1 );
-	    if ( addWord.equals ( "with" ) ) {
+	    if ( addWord.equals ( "with;" ) ) {
 		addWord = addWord + s.substring ( 0 , s.indexOf ( "]" ) );
 		s = s.substring ( s.indexOf ( "]" ) );
 	    }
@@ -1082,7 +1082,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    }*/
 	//if ( isdigit ) {
 	int firstInt;
-	String firstString = s.substring ( 0 , condition.indexOf ( ";" ) );
+	String firstString = condition.substring ( 0 , condition.indexOf ( ";" ) );
 	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
 	JOptionPane.showMessageDialog ( null , "firstString: " + firstString );
 	try {
@@ -1107,7 +1107,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
 		    conditionBeginning = condition.substring ( 0 , condition.indexOf ( ";" ) );
 		}
-		JOptionPane.showMessageDialog ( null , "count parameters: " + countParam );
+		JOptionPane.showMessageDialog ( null , "count parameters: " + count ( countParam ) );
 	    }
 			/*try {
 			  if ( words.get ( i + 2 ).equals ( "with" ) ) {
