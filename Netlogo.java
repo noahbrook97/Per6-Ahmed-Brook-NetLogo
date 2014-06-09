@@ -125,11 +125,12 @@ class Screen extends JTabbedPane {
 	code = new JTextArea ( "globals [ lives sbutton ]\n" +
 			       "breed [ plural singular ]\n" +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       //"to setup if count turtles with [ color = red ] < 2 or 2 > 0 [ ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] ]\n" +
+			       //"to setup if count turtles with [ color = red ] < 2 or 2 > 0 [ ask patches with [ pycor < -10 or pycor > 10 ] [ set pcolor brown ] ask patches with [ pxcor > 5 ] [ set pcolor yellow ] ]\n" +
 			       //"to setup ca " + 
 			       //"ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
 			       //"set lives 3 set sbutton 0 end\n" +
-			       "to setup ask turtles [ ask patch-here [ set pcolor red ] ] end " +
+			       //"to setup ask turtles [ ask patch-here [ set pcolor red ] ] end " +
+			       "to setup if random 4 > 2 [ ask patches [ set pcolor green ] ] end " +
 			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       //"to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       "to create crt 1 end\n" +
@@ -338,44 +339,47 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 		    System.out.println("running if statement"); */
 		    //i += 1;
                     //if ( words.get (i + 1).equals ( "[" )) {
-		    int inBrackets = 0;
+		    int inBrackets = -1;
 		    String addLine = "IF" + ";";
-		    //i = i + 1;
-		    //word = words.get ( i );
-		    boolean skipBracket = false;
-		    while (!word.equals ( "]" ) || inBrackets != 0) {
-			i+= 1;
-			try { 
-			    word = words.get (i);
-			} catch ( IndexOutOfBoundsException a ) {
-			    JOptionPane.showMessageDialog ( null , "inBrackets: " + inBrackets );
-			}
-			if ( word.equals ( "[" ) && !skipBracket ) {
+		    i = i + 1;
+		    word = words.get ( i );
+		    //boolean skipBracket = false;
+		    int skipBracket = 0;
+		    while (!word.equals ( "]" ) || inBrackets != 0 || skipBracket != 0 ) {
+			if ( word.equals ( "[" ) && skipBracket == 0 ) {
 			    inBrackets++;
 			}
-			else if ( skipBracket ) {
-			    skipBracket = false;
+			else if ( word.equals ( "[" ) && skipBracket != 0 )
+			    skipBracket--;
 			    //JOptionPane.showMessageDialog ( null , "skipbracket" );
-			}
-			if ( word.equals ( "]" ))
+			if ( word.equals ( "]" ) && skipBracket == 0)
 			    inBrackets--;
-			if ( word.equals ( "count" ) /*|| word.equals ( "ask" )*/ ) {
+			else if ( word.equals ( "]" ) && skipBracket != 0 )
+			    skipBracket--;
+			if ( word.equals ( "count" ) || word.equals ( "ask" ) ) {
 			    //JOptionPane.showMessageDialog ( null , "not with, but " + words.get ( i + 2 ) );
 			    if ( words.get ( i + 2 ).equals ( "with" ) ) {
-				skipBracket = true;
+				skipBracket = skipBracket + 2;
 				//System.out.println ( "methods: " + methods );
-				inBrackets--;
+				//inBrackets--;
+				//inBrackets++;
 				//JOptionPane.showMessageDialog ( null , "with" );
 			    }
 			}
   			if ( word.equals ( "ask" ) ) {
-			    skipBracket = true;
- 			    inBrackets++;
-  			}
+			    skipBracket = skipBracket + 2;
+			    //inBrackets++;
+			}
 			//else JOptionPane.showMessageDialog ( null , "word is: " + word );
 			addLine = addLine + word + ";";
+			i+= 1;
+			try { 
+			    word = words.get (i);
+			} catch ( IndexOutOfBoundsException a ) {
+			    JOptionPane.showMessageDialog ( null , "inBrackets: " + inBrackets + "\nword: " + word );
+			}
 		    }
-		    ans.add ( addLine );
+		    ans.add ( addLine + word );
 		    System.out.println ( "calling if: " + ans );
 			//}
 			//else {
@@ -699,9 +703,9 @@ class myPanel extends JLayeredPane implements MouseListener {
     private Color backgroundColor;
     public myPanel() {
 	this.setPreferredSize ( new Dimension ( 355 , 355 ) );
-	patches = new Patch [ 30 ] [ 30 ];
+	patches = new Patch [ 31 ] [ 31 ];
 	patchSpace = new JPanel();
-	patchSpace.setLayout ( new GridLayout ( 30 , 30 ) );	
+	patchSpace.setLayout ( new GridLayout ( 31 , 31 ) );	
 	patchSpace.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	turtles = new ArrayList<Turtle>();
 	globals = new HashMap<String , Integer>();
@@ -1081,6 +1085,10 @@ class myPanel extends JLayeredPane implements MouseListener {
 		}
 		firstInt = count ( countParam );
 	    }
+	    else if ( firstString.equals ( "random" ) ) {
+		firstInt = random ( condition.substring ( 0 , condition.indexOf ( ";" ) ) );
+		condition = condition.substring ( condition.indexOf ( ";") + 1 );
+	    }
 	    else {
 		System.out.println ( "firstString: " + firstString );
 		throw new NumberFormatException();
@@ -1305,10 +1313,13 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    ArrayList<String> words = new ArrayList<String>();
 	    ArrayList<String> ans = new ArrayList<String>();
 	    while ( s.length() > 0 ) {
+		System.out.println ( "testing loop" + s ) ;
 		while ( s.indexOf ( ";" ) > -1 ) {
 		    words.add ( s.substring ( 0 , s.indexOf ( ";" ) ) );
 		    s = s.substring ( s.indexOf ( ";" ) + 1 );
 		}
+		words.add ( s );
+		s = "";
 	    }
 	    for ( int i = 0 ; i < words.size() ; i++ ) {
 		String word = words.get ( i );
