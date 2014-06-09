@@ -125,14 +125,15 @@ class Screen extends JTabbedPane {
 	code = new JTextArea ( "globals [ lives sbutton ]\n" +
 			       "breed [ plural singular ]\n" +
 			       //"to setup ca ask patches with [ pycor < -55 or pycor > 55 ] [ set pcolor blue ] " +
-			       "to setup if count turtles with [ color = red ] < 2 or 2 > 0 [ ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] ]\n" +
+			       //"to setup if count turtles with [ color = red ] < 2 or 2 > 0 [ ask patches with [ pycor < -20 or pycor > 20 ] [ set pcolor brown ] ]\n" +
 			       //"to setup ca " + 
-			       "ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
-			       "set lives 3 set sbutton 0 end\n" +
+			       //"ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
+			       //"set lives 3 set sbutton 0 end\n" +
+			       "to setup ask turtles [ ask patch-here [ set pcolor red ] ] end " +
 			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       //"to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       "to create crt 1 end\n" +
-			       "to move ask turtles [ fd 1 ] end" );
+			       "to move ask turtles [ bk 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
     }
@@ -698,9 +699,9 @@ class myPanel extends JLayeredPane implements MouseListener {
     private Color backgroundColor;
     public myPanel() {
 	this.setPreferredSize ( new Dimension ( 355 , 355 ) );
-	patches = new Patch [ 71 ] [ 71 ];
+	patches = new Patch [ 30 ] [ 30 ];
 	patchSpace = new JPanel();
-	patchSpace.setLayout ( new GridLayout ( 71 , 71 ) );	
+	patchSpace.setLayout ( new GridLayout ( 30 , 30 ) );	
 	patchSpace.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	turtles = new ArrayList<Turtle>();
 	globals = new HashMap<String , Integer>();
@@ -1535,7 +1536,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    //ask ( "turtles;[;fd1;bk1;];" );
 	    }
 	}
-	else if ( agents.size() > 1 ) { //agents has properties, like "with" or "at"- not complete yet
+	else if ( agents.size() > 1 ) {
 	    String agentType = agents.get ( 0 );
 	    if ( agentType.equals ( "turtles" ) ) {
 		if ( agents.get ( 1 ).equals ( "with" ) ) {
@@ -1544,9 +1545,6 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    ask ( "turtles;[;fd;1;bk;1;];" );
 		}
 	    }
-	    //if ( agent.get ( 1 ).equals ( "at" ) ) {
-	    //}
-	    //}
 	    else if ( agentType.equals ( "patches" ) ) {
 		//do things
 		if ( agents.get ( 1 ).equals ( "with" ) ) {
@@ -1668,6 +1666,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	return false;
     }
     public void patchCommands ( ArrayList<int[]> patches , ArrayList<String> commands ) {
+	System.out.println ( "patchcommands called" );
 	for ( int i = 0 ; i < commands.size() ; i++ ) {
 	    if ( commands.get ( i ).equals ( "set" ) ) {
 		i = i + 1;
@@ -1886,6 +1885,31 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    //System.out.println ( "ask turtle to die" );
 		//for ( Turtle turtle : turtles )
 		    //turtles.remove ( turtle );
+	    }
+	    else if ( commands.get ( i ).equals ( "ask" ) ) {
+		System.out.println ( "ask in turtle" );
+		i = i + 1;
+		int iPlaceHolder = i;
+		if ( commands.get ( i ).equals ( "patch-here" ) ) {
+		    for ( Turtle turtle : turtles ) {
+			i = iPlaceHolder;
+			System.out.println ( "ask patch-here coors: " + turtle.getXcor() + ", " + turtle.getYcor() );
+			ArrayList<int[]> patch = new ArrayList<int[]>();
+			int[] addPatch = { (int) ( turtle.getYcor() / 10 ) + ( patches.length / 2 ) - 1 , (int) ( turtle.getXcor() / 10 ) + ( patches.length / 2 ) - 1 };
+			patch.add ( addPatch );
+			ArrayList<String> callPatchCommands = new ArrayList<String>();
+			i = i + 2;
+			System.out.println ( "commands: " + commands + " , i: " + i );
+			while ( ! commands.get ( i ).equals ( "]" ) ) {
+			    callPatchCommands.add ( commands.get ( i ) );
+			    i = i + 1;
+			}
+			patchCommands ( patch , callPatchCommands );
+			System.out.println ( "commmands: " + callPatchCommands );
+		    }
+		    ask ( "turtles;[;fd;1;bk;1;];" );
+		}
+		else System.out.println ( "commands i: " + commands.get ( i ) );
 	    }
 	}
     }
