@@ -134,7 +134,8 @@ class Screen extends JTabbedPane {
 			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       //"to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       "to create crt 1 end\n" +
-			       "to move ask turtles [ bk 1 ] end" );
+			       "to move ask turtles [ bk 1 ] end " +
+			       "to mouse if mouse-Down? [ crt 1 ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
     }
@@ -701,6 +702,7 @@ class myPanel extends JLayeredPane implements MouseListener {
     HashMap<String , Integer> globals;
     HashMap<String , ArrayList<String>> methods;
     private Color backgroundColor;
+    private boolean mouseDown;
     public myPanel() {
 	this.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	patches = new Patch [ 31 ] [ 31 ];
@@ -711,6 +713,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	globals = new HashMap<String , Integer>();
 	turtleSpace = new JPanel();
 	turtleSpace.setPreferredSize ( new Dimension ( 355 , 355 ) );
+	mouseDown = false;
 	//backgroundColor = Color.BLACK;
 	//array of patches, 25x25
 	for ( int r = 0 ; r < patches.length ; r++ ) {
@@ -737,9 +740,11 @@ class myPanel extends JLayeredPane implements MouseListener {
 	//System.out.println ( MouseInfo.getPointerInfo().getLocation() );
     }
     public void mouseReleased ( MouseEvent e ) {
+	mouseDown = false;
 	//System.out.println ( "mouseReleased" );
     }
     public void mousePressed ( MouseEvent e ) {
+	mouseDown = true;
 	//System.out.println ( "mousePressed" );
     }
     public void mouseClicked ( MouseEvent e ) {
@@ -1058,8 +1063,10 @@ class myPanel extends JLayeredPane implements MouseListener {
 	//determine if condition true for if and ifelse                                                                                                 
     public boolean condition(String condition) {
         //boolean isokay = false;
-	JOptionPane.showMessageDialog ( null , "condition: " + condition);
+	//JOptionPane.showMessageDialog ( null , "condition: " + condition);
 	//System.out.println ( "condition: " + condition );
+	if ( condition.equals ( "mouse-Down?;" ) )
+	     return mouseDown;
 	int firstInt;
 	String firstString = condition.substring ( 0 , condition.indexOf ( ";" ) );
 	condition = condition.substring ( condition.indexOf ( ";" ) + 1 );
@@ -1125,7 +1132,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		throw new NumberFormatException();
 	    }
 	}
-	JOptionPane.showMessageDialog ( null , "if: " + firstInt + operator + secondInt );
+	//JOptionPane.showMessageDialog ( null , "if: " + firstInt + operator + secondInt );
 
 			/*try {
 			  if ( words.get ( i + 2 ).equals ( "with" ) ) {
@@ -1308,7 +1315,7 @@ class myPanel extends JLayeredPane implements MouseListener {
             System.out.println("condition true, running command");
 	    //make s just the command portion
 	    //s = s.substring(s.indexOf("[") + 1 , s.length() - 1);
-	    JOptionPane.showMessageDialog ( null , "condition is true, call methods: " + s );
+	    //JOptionPane.showMessageDialog ( null , "condition is true, call methods: " + s );
 	    //ask(s);
 	    ArrayList<String> words = new ArrayList<String>();
 	    ArrayList<String> ans = new ArrayList<String>();
@@ -1460,7 +1467,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		} catch ( InvocationTargetException lastOne ) {
 		    System.out.println ( "idk what this exception means" );
 		    }*/
-	}
+	    }
 	}
         else
             System.out.println("condition false, not running command");
