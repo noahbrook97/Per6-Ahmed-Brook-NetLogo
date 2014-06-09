@@ -130,12 +130,13 @@ class Screen extends JTabbedPane {
 			       //"ask patches with [ pycor >= -20 and pycor <= 20 ] [ set pcolor white ]\n" +
 			       //"set lives 3 set sbutton 0 end\n" +
 			       //"to setup ask turtles [ ask patch-here [ set pcolor red ] ] end " +
-			       "to setup if random 4 > 2 [ ask patches [ set pcolor green ] ] end " +
+			       //"to setup if random 4 > 2 [ ask patches [ set pcolor green ] ] end " +
+			       "to setup ask patch 0 0 [ set pcolor red ] end " +
 			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       //"to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       "to create crt 1 end\n" +
 			       "to move ask turtles [ bk 1 ] end " +
-			       "to mouse if mouse-Down? [ crt 1 ] end" );
+			       "to mouse if mouse-Down? [ ask patch mouse-xcor mouse-ycor [ set pcolor red ] ] end" );
 	code.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	this.add ( "Code" , code );
     }
@@ -186,6 +187,10 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	JButton create = new JButton ( "create" );
 	create.addActionListener ( this );
 	space.add ( create );
+	ForeverButton mouse = new ForeverButton ( "mouse" );
+	mouse.addActionListener ( this );
+	space.add ( mouse );
+	foreverButtons.add ( mouse );
 	this.add ( space );
 	this.add ( f );
 	this.setPreferredSize ( new Dimension ( 400 , 400 ) );
@@ -524,7 +529,7 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    //create options menu with their buttons and stuff
 	    JPopupMenu menu = new JPopupMenu();
 	    JMenuItem button = new JMenuItem("Button" );
-	    JSlider slider = new JSlider();
+	    //JSlider slider = new JSlider();
 	    JMenuItem swtch = new JMenuItem("Switch");
 	    JMenuItem monitor = new JMenuItem ( "Monitor" );
 
@@ -534,14 +539,14 @@ class IFace extends JPanel implements MouseListener , KeyListener , ActionListen
 	    //slider.addActionListener ( this );
 
 	    menu.add ( button );
-	    menu.add ( "Slider");
+	    //menu.add ( "Slider");
 	    menu.add ( swtch );
-	    menu.add ( "Chooser" );
-	    menu.add ( "Input" );
+	    //menu.add ( "Chooser" );
+	    //menu.add ( "Input" );
 	    menu.add ( monitor );
-	    menu.add ( "Plot" );
-	    menu.add ( "Output" );
-	    menu.add ( "Note" );
+	    //menu.add ( "Plot" );
+	    //menu.add ( "Output" );
+	    //menu.add ( "Note" );
 	    menu.show ( e.getComponent() , e.getX() , e.getY() );
 	}
     }
@@ -703,6 +708,7 @@ class myPanel extends JLayeredPane implements MouseListener {
     HashMap<String , ArrayList<String>> methods;
     private Color backgroundColor;
     private boolean mouseDown;
+    private int mouseX , mouseY;
     public myPanel() {
 	this.setPreferredSize ( new Dimension ( 355 , 355 ) );
 	patches = new Patch [ 31 ] [ 31 ];
@@ -718,10 +724,11 @@ class myPanel extends JLayeredPane implements MouseListener {
 	//array of patches, 25x25
 	for ( int r = 0 ; r < patches.length ; r++ ) {
 	    for ( int c = 0 ; c < patches [ r ].length ; c++ ) {
-		Patch p = new Patch();
+		Patch p = new Patch ( c , r );
 		p.setBackground ( Color.BLACK );
 		p.setPreferredSize ( new Dimension ( 5 , 5 ) );
 		patchSpace.add ( p );
+		p.addMouseListener ( this );
 		patches [ r ] [ c ] = p;
 	    }
 	}
@@ -729,8 +736,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 	this.add ( patchSpace );
 	turtleSpace.setBounds ( 25 , 25 , 355 , 355 );
 	this.add ( turtleSpace );
-	addMouseListener ( this );
-	turtleSpace.addMouseListener ( this );
+	//addMouseListener ( this );
+	//turtleSpace.addMouseListener ( this );
     }
     public void mouseExited ( MouseEvent e ) {
 	System.out.println ( "mouseExited" );
@@ -745,7 +752,10 @@ class myPanel extends JLayeredPane implements MouseListener {
     }
     public void mousePressed ( MouseEvent e ) {
 	mouseDown = true;
-	//System.out.println ( "mousePressed" );
+	mouseX = ( (Patch) e.getSource() ).getXcor();
+	mouseY = ( (Patch) e.getSource() ).getYcor();
+	//System.out.println ( "mousePressed, coors: " + mouseX + ", " + mouseY );
+	//System.out.println ( ( (Patch) e.getSource() ).getXcor() + " should be the patch's xcor" );
     }
     public void mouseClicked ( MouseEvent e ) {
     }
@@ -1242,7 +1252,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 
     public void IF(String s1) {
         //if condition is true run                                                                                                                        
-        System.out.println("if statement: " + s1);
+        //System.out.println("if statement: " + s1);
         String s = new String();
         for(int i = 0; i < s1.length(); i++)
             s = s + s1.substring(i, i+1 );
@@ -1257,7 +1267,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    }
 	    condition = condition + addWord;
 	}
-	System.out.println ( "condition: " + condition );
+	//System.out.println ( "condition: " + condition );
 	ArrayList<String> conditions = new ArrayList<String>();
 	ArrayList<String> booleanOperators = new ArrayList<String>();
 	//boolean containsAndOr = false;
@@ -1296,7 +1306,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	    conditions.add ( condition );
 	}
 	else conditions.add ( condition );
-	System.out.println ( "conditions: " + conditions );
+	//System.out.println ( "conditions: " + conditions );
 	//MIGHT NEED TO SUBSTRING IF OUT OF S1 BEFORE RUNNING CONDITION(S)
 	boolean ifBoolean = condition ( conditions.get ( 0 ) );
 	for ( int i = 0 ; i < booleanOperators.size() ; i++ ) {
@@ -1459,6 +1469,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 		}
 		} catch ( Exception e ) {
 		    System.out.println ( "exception " + e + " was thrown, " + mthd + " is not a supported method" );
+		    //e.printStackTrace();
 		}
 		/*} catch ( IllegalAccessException bleh ) {
 		    System.out.println ( "not permitted" );
@@ -1469,8 +1480,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }*/
 	    }
 	}
-        else
-            System.out.println("condition false, not running command");
+        //else
+            //System.out.println("condition false, not running command");
     }
 
      //if condition true, run command 1. if false, run command 2                                                                                           
@@ -1496,7 +1507,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 
     //ask commands
     public void ask ( String s1 ) {
-	//System.out.println ( "ask: " + s1 );
+	System.out.println ( "ask: " + s1 );
 	ArrayList<String> agents = new ArrayList<String>();
 	ArrayList<String> commands = new ArrayList<String>();
 	String s = new String();
@@ -1556,6 +1567,7 @@ class myPanel extends JLayeredPane implements MouseListener {
 	}
 	else if ( agents.size() > 1 ) {
 	    String agentType = agents.get ( 0 );
+	    if ( agents.contains ( "with" ) ) {
 	    if ( agentType.equals ( "turtles" ) ) {
 		if ( agents.get ( 1 ).equals ( "with" ) ) {
 		    //call methods on selected turtles
@@ -1567,6 +1579,23 @@ class myPanel extends JLayeredPane implements MouseListener {
 		//do things
 		if ( agents.get ( 1 ).equals ( "with" ) ) {
 		    patchCommands ( with ( "patches" , agents ) , commands );
+		    ask ( "turtles;[;fd;1;bk;1;];" );
+		}
+	    }
+	    }
+	    else {
+		if ( agentType.equals ( "patch" ) ) {
+		    int x , y;
+		    if ( agents.get ( 1 ).equals ( "mouse-xcor" ) )
+			x = mouseX;// + patches.length / 2;
+		    else x = Integer.parseInt ( agents.get ( 1 ) );
+		    if ( agents.get ( 2 ).equals ( "mouse-ycor" ) )
+			y = mouseY;// + patches.length / 2;
+		    else y = Integer.parseInt ( agents.get ( 2 ) );
+		    ArrayList<int[]> callPatch = new ArrayList<int[]>();
+		    int[] addPatch = { y , x };
+		    callPatch.add ( addPatch );
+		    patchCommands ( callPatch , commands );
 		    ask ( "turtles;[;fd;1;bk;1;];" );
 		}
 	    }
@@ -1716,8 +1745,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 			System.out.println ( "invalid color" );
 		    }
 		    for ( int[] coors : patches ) {
+			System.out.println ( "made patch " + coors [ 0 ] + ", " + coors [ 1 ] + " into newcolor" );
 			this.patches [ coors [ 0 ] ] [ coors [ 1 ] ].setBackground ( newColor );
-			//System.out.println ( "made patch " + coors [ 0 ] + ", " + coors [ 1 ] + " into newcolor" );
 		    }
 		    this.update ( this.getGraphics() );
 		}
@@ -2152,14 +2181,42 @@ class myPanel extends JLayeredPane implements MouseListener {
     }
 }
 
-class Patch extends JPanel {
+class Patch extends JPanel/* implements MouseListener*/ {
     private Image image;
-    public Patch() {
+    private int x , y;
+    public Patch ( int x , int y ) {
 	image = null;
+	this.x = x;
+	this.y = y;
 	super.setPreferredSize ( new Dimension ( 2 , 2 ) );
 	super.setMaximumSize ( new Dimension ( 2 , 2 ) );
 	super.setMinimumSize ( new Dimension ( 2 , 2 ) );
     }
+    public int getXcor() {
+	return x;
+    }
+    public int getYcor() {
+	return y;
+    }
+    /*public void mouseExited ( MouseEvent e ) {
+	System.out.println ( "mouseExited" );
+    }
+    public void mouseEntered ( MouseEvent e ) {
+	System.out.println ( "mouseEntered" );
+	//System.out.println ( MouseInfo.getPointerInfo().getLocation() );
+    }
+    public void mouseReleased ( MouseEvent e ) {
+	//mouseDown = false;
+	//System.out.println ( "mouseReleased" );
+    }
+    public void mousePressed ( MouseEvent e ) {
+	//mouseDown = true;
+	//mouseX = e.getX();
+	//mouseY = e.getY();
+	//System.out.println ( "mousePressed, coors: " + mouseX + ", " + mouseY );
+    }
+    public void mouseClicked ( MouseEvent e ) {
+    }*/
 }
 
 class Turtle extends JLabel {
