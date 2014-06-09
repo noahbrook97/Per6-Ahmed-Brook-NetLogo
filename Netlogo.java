@@ -774,27 +774,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 	turtleSpace.setBounds ( 25 , 25 , 355 , 355 );
 	for ( Patch[] patchRows : patches ) {
 	    for ( Patch patch : patchRows ) {
-		System.out.println ( "ca loop" );
-		int r = (int) ( Math.random() * 10 );
-		if ( r == 1 )
-		    patch.setBackground ( Color.BLACK );
-		if ( r == 2 )
-		    patch.setBackground ( Color.RED );
-		if ( r == 3 )
-		    patch.setBackground ( Color.BLUE );
-		if ( r == 4 )
-		    patch.setBackground ( Color.CYAN );
-		if ( r == 5 )
-		    patch.setBackground ( Color.GRAY );
-		if ( r == 6 )
-		    patch.setBackground ( Color.ORANGE );
-		if ( r == 7 )
-		    patch.setBackground ( Color.WHITE );
-		if ( r == 8 )
-		    patch.setBackground ( Color.YELLOW );
-		if ( r == 9 )
-		    patch.setBackground ( Color.RED );
-		//patch.setBackground ( Color.BLACK );
+		//System.out.println ( "ca loop" );
+		patch.setBackground ( Color.BLACK );
 	    }
 	}
     }
