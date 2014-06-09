@@ -132,7 +132,8 @@ class Screen extends JTabbedPane {
 			       //"to setup ask turtles [ ask patch-here [ set pcolor red ] ] end " +
 			       //"to setup if random 4 > 2 [ ask patches [ set pcolor green ] ] end " +
 			       "to setup ask patch 0 0 [ set pcolor red ] end " +
-			       "to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
+			       //"to change if 2 = 2 [ crt 1 ] ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
+			       "to change ask turtles [ ask patch-at 5 1 [ set pcolor blue ] ] end " +
 			       //"to change ask turtles with [ who > 1 ] [ set xcor 5 ] set lives lives - 1 end\n" +
 			       "to create crt 1 end\n" +
 			       "to move ask turtles [ bk 1 ] end " +
@@ -1746,7 +1747,8 @@ class myPanel extends JLayeredPane implements MouseListener {
 		    }
 		    for ( int[] coors : patches ) {
 			System.out.println ( "made patch " + coors [ 0 ] + ", " + coors [ 1 ] + " into newcolor" );
-			this.patches [ coors [ 0 ] ] [ coors [ 1 ] ].setBackground ( newColor );
+			if ( coors [ 0 ] > 0 && coors [ 0 ] < this.patches.length && coors [ 1 ] > 0 && coors [ 1 ] < this.patches [ 0 ].length )
+			    this.patches [ coors [ 0 ] ] [ coors [ 1 ] ].setBackground ( newColor );
 		    }
 		    this.update ( this.getGraphics() );
 		}
@@ -1943,6 +1945,25 @@ class myPanel extends JLayeredPane implements MouseListener {
 			System.out.println ( "ask patch-here coors: " + turtle.getXcor() + ", " + turtle.getYcor() );
 			ArrayList<int[]> patch = new ArrayList<int[]>();
 			int[] addPatch = { (int) ( turtle.getYcor() / 10 ) + ( patches.length / 2 ) - 1 , (int) ( turtle.getXcor() / 10 ) + ( patches.length / 2 ) - 1 };
+			patch.add ( addPatch );
+			ArrayList<String> callPatchCommands = new ArrayList<String>();
+			i = i + 2;
+			System.out.println ( "commands: " + commands + " , i: " + i );
+			while ( ! commands.get ( i ).equals ( "]" ) ) {
+			    callPatchCommands.add ( commands.get ( i ) );
+			    i = i + 1;
+			}
+			patchCommands ( patch , callPatchCommands );
+			System.out.println ( "commmands: " + callPatchCommands );
+		    }
+		    ask ( "turtles;[;fd;1;bk;1;];" );
+		}
+		else if ( commands.get ( i ).equals ( "patch-at" ) ) {
+		    for ( Turtle turtle : turtles ) {
+			i = iPlaceHolder;
+			System.out.println ( "ask patch-at coors: " + turtle.getXcor() + ", " + turtle.getYcor() );
+			ArrayList<int[]> patch = new ArrayList<int[]>();
+			int[] addPatch = { (int) ( turtle.getYcor() / 10 ) + ( patches.length / 2 ) - 1 - Integer.parseInt ( commands.get ( i + 2 ) ) , (int) ( turtle.getXcor() / 10 ) + ( patches.length / 2 ) - 1 + Integer.parseInt ( commands.get ( i + 1 ) ) };
 			patch.add ( addPatch );
 			ArrayList<String> callPatchCommands = new ArrayList<String>();
 			i = i + 2;
