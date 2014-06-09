@@ -94,12 +94,12 @@ class Screen extends JTabbedPane {
 	              "ask: used to call on the type of object you wish to command, whether it be a patch, turtle, or breed \n" +
 	              "set: used to change the attributes of an object \n" +          
 	              "with: keyword used after ask or set to specify restrictions object must have to be acted on \n" +
-                      "every: \n" +
+                      "every: repeats a function a certain amount of times\n" +
                       "crt: creates a turtle \n" +
                       "die: DEATH TO TURTLE!!! \n" +
                       "fd/bk: moves turtle forward and back respectively \n \n" +
-                      "random: \n" +
-                      "wait: \n" +
+                      "random: randomly selects integer value\n" +
+                      "wait: wait to perform function for period of time\n" +
                       "user-message \n" +
                       "Attributes Tutorial \n \n" +
                       "xcor/ycor: Display a turtles (x, y) coordinates \n" +
@@ -108,14 +108,14 @@ class Screen extends JTabbedPane {
                       "pcolor: Displays patches color \n" +
                       "heading: Displays the direction a turtle is facing [0-360] \n \n" +
                       "Other Stuff \n \n" +
-                      "count: \n" +
+                      "count: counts number of objects present\n" +
 	              "breed: \n" +
                       "globals: \n \n" +
                       "Operators: \n \n" +
                       "Standard = , != , > , < , >= , <= \n" +
                       " \t and , or \n" +
                       "if , ifelse , else \n" +
-	              "If you master this syntax, son someday all this will be yours";                                       
+	              "If you master this syntax, son someday this will all be yours";                                       
 
 	JTextArea info = new JTextArea(txt);
 
